@@ -4,17 +4,22 @@
 }
 <div style="padding-top:10px">
     @using (Ajax.BeginForm("Upload", "Home",
-     new AjaxOptions {  HttpMethod = "POST" },
+    new AjaxOptions {  HttpMethod = "POST" },
     new { enctype = "multipart/form-data" ,@id = "form0" }))
     {
         <label for="file">轉檔檔案:</label>
         <input type="file" name="file" />
-        <input type="submit" value="資料上傳" />
+        <input type="button" value="資料上傳" id="transfer" />
     }
     <input type="button" value="轉檔" id="btnTransfer"/>
     <input type="button" value="A81查詢" id="btnA81Search"/>
     <input type="button" value="A82查詢" id="btnA82Search" />
     <input type="button" value="A83查詢" id="btnA83Search" />
+
+</div>
+<div>
+    <table id="list1"></table>
+    <div id="pager1"></div>
 </div>
 
 <script type="text/javascript">
@@ -23,9 +28,8 @@
     //    debugger
     //}
     $(function () {
-        $("#form0").submit(function (event) {
+        $("#transfer").click(function () {
             var dataString;
-            event.preventDefault();
             var action = $("#form0").attr("action");
             if ($("#form0").attr("enctype") == "multipart/form-data")
             {
@@ -35,7 +39,8 @@
             else
             {
                 // regular form, do your own thing if you need it
-            }        
+            }
+            debugger
             $.ajax({
                 type: "POST",
                 url: action,
@@ -44,10 +49,43 @@
                 contentType: false,
                 processData: false,
                 success: function (result) {
-                    //console.log(JSON.stringify(data.DESCRIPTION));
                     if (result.RETURN_FLAG)
-                    {
-
+                    {                       
+                        var jagridLWidth = 210;
+                        var jagridMWidth = 120;
+                        $("#list1").jqGrid({
+                            data: result.Datas.Data,
+                            datatype: "local",
+                            mtype: "POST",
+                            colNames: ['Trailing', 'Actual_Allcorp', 'Baseline_forecast_Allcorp',
+                                'Pessimistic_Forecast_Allcorp', 'Actual_SG',
+                                'Baseline_forecast_SG', 'Pessimistic_Forecast_SG'],
+                            colModel: [
+                                { name: 'Trailing', index: 'Trailing', width: jagridMWidth },
+                                { name: 'Actual_Allcorp', index: 'Actual_Allcorp', width: jagridMWidth, align: "right" },
+                                { name: 'Baseline_forecast_Allcorp', index: 'Baseline_forecast_Allcorp', width: jagridLWidth, align: "right" },
+                                { name: 'Pessimistic_Forecast_Allcorp', index: 'Pessimistic_Forecast_Allcorp', width: jagridLWidth, align: "right" },
+                                { name: 'Actual_SG', index: 'Actual_SG', width: jagridMWidth, align: "right" },
+                                { name: 'Baseline_forecast_SG', index: 'Baseline_forecast_SG', width: jagridLWidth, align: "right" },
+                                { name: 'Pessimistic_Forecast_SG', index: 'Pessimistic_Forecast_SG', width: jagridLWidth, align: "right" }
+                            ],
+                            rowNum: 10,
+                            rowList: [10, 20, 30],
+                            pager: '#pager1',
+                            height: '222',
+                            //sortname: 'id',
+                            //viewrecords: true,
+                            sortorder: "desc",
+                            caption: "title",
+                            resizable: false,
+                            autoencode: true,
+                            viewsortcols: [true, 'vertical', true],
+                            ajaxRowOptions: { contentType: "application/json" },
+                            serializeRowData: function (data) {
+                                return JSON.stringify(data);
+                            },
+                        });
+                        $("#list1").jqGrid('navGrid', '#pager1', { edit: false, add: false, del: false });
                     }
                     else
                     {

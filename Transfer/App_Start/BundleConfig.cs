@@ -14,6 +14,10 @@ namespace Transfer
             bundles.Add(new ScriptBundle("~/bundles/jqueryajax").Include(
                         "~/Scripts/jquery.unobtrusive-ajax*"));
 
+            bundles.Add(new ScriptBundle("~/bundles/jqueryjqgrid").Include(
+                        "~/Scripts/jquery.jqGrid*",
+                        "~/Scripts/i18n/grid.locale-tw*"));
+
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*"));
 
@@ -28,7 +32,10 @@ namespace Transfer
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
-                      "~/Content/site.css"));
+                      "~/Content/site.css",
+                      "~/Content/jquery.jqGrid/ui.jqgrid.css",
+                      "~/Content/themes/base/minified/jquery-ui.min.css"
+                      ));
         }
     }
 }

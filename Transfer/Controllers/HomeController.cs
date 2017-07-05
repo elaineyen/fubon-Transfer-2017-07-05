@@ -24,6 +24,12 @@ namespace Transfer.Controllers
         {
             MSGReturnModel result = new MSGReturnModel();
             try {
+                if (FileModel.File == null)
+                {
+                    result.RETURN_FLAG = false;
+                    result.DESCRIPTION = "請選擇檔案!";
+                    return Json(result);
+                }
                 if (FileModel.File.ContentLength > 0 && ModelState.IsValid)
                 {
                     var fileName = Path.GetFileName(FileModel.File.FileName);
@@ -70,21 +76,21 @@ namespace Transfer.Controllers
                     if (resultData.Tables[0].Rows.Count > 2)
                     {
                         dataModel = (from q in resultData.Tables[0].AsEnumerable()
-                         select getExhibitModels(q)).Take(1).ToList();
+                         select getExhibitModels(q)).Skip(1).ToList();
                         result.RETURN_FLAG = true;
                         result.Datas = Json(dataModel);
                     }
                     else
                     {
                         result.RETURN_FLAG = false;
-                        result.DESCRIPTION = "無資料";
+                        result.DESCRIPTION = "無筆對到資料!";
                     }
                     #endregion
                 }
                 else
                 {
                     result.RETURN_FLAG = false;
-                    result.DESCRIPTION = "請確認檔案為Excel檔案或超過大小";
+                    result.DESCRIPTION = "請確認檔案為Excel檔案或超過大小!";
                 }
             }
             catch (Exception ex){
