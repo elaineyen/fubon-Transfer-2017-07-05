@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="IFRS9Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <!--產生期間發現錯誤:
+警告 6013: 資料表/檢視 'D:\FUBON\TRANSFER\TRANSFER\APP_DATA\IFRS9.MDF.dbo.IFRS9_Log' 未定義主索引鍵，也無法推斷有效的主索引鍵。此資料表/檢視已被排除。如果要使用此實體，您必須檢閱您的結構描述，加入正確的索引鍵，並將它取消註解。
+        <EntityType Name="IFRS9_Log">
+          <Property Name="Table_name" Type="varchar" MaxLength="20" />
+          <Property Name="File_name" Type="varchar" MaxLength="30" />
+          <Property Name="Program_name" Type="varchar" MaxLength="20" />
+          <Property Name="Create_date" Type="varchar" MaxLength="8" />
+          <Property Name="Create_time" Type="varchar" MaxLength="8" />
+          <Property Name="End_date" Type="varchar" MaxLength="8" />
+          <Property Name="End_time" Type="varchar" MaxLength="8" />
+          <Property Name="TYPE" Type="char" MaxLength="1" />
+        </EntityType>-->
+        <!--產生期間發現錯誤:
+警告 6013: 資料表/檢視 'D:\FUBON\TRANSFER\TRANSFER\APP_DATA\IFRS9.MDF.dbo.Moody_Monthly_PD_Info' 未定義主索引鍵，也無法推斷有效的主索引鍵。此資料表/檢視已被排除。如果要使用此實體，您必須檢閱您的結構描述，加入正確的索引鍵，並將它取消註解。
+        <EntityType Name="Moody_Monthly_PD_Info">
+          <Property Name="Trailing_12m_Ending" Type="date" />
+          <Property Name="Actual_Allcorp" Type="float" />
+          <Property Name="Baseline_forecast_Allcorp" Type="float" />
+          <Property Name="Pessimistic_Forecast_Allcorp" Type="float" />
+          <Property Name="Actual_SG" Type="float" />
+          <Property Name="Baseline_forecast_SG" Type="float" />
+          <Property Name="Pessimistic_Forecast_SG" Type="float" />
+          <Property Name="Data_Year" Type="varchar" MaxLength="4" />
+        </EntityType>-->
+        <!--產生期間發現錯誤:
+警告 6013: 資料表/檢視 'D:\FUBON\TRANSFER\TRANSFER\APP_DATA\IFRS9.MDF.dbo.Moody_Predit_PD_Info' 未定義主索引鍵，也無法推斷有效的主索引鍵。此資料表/檢視已被排除。如果要使用此實體，您必須檢閱您的結構描述，加入正確的索引鍵，並將它取消註解。
+        <EntityType Name="Moody_Predit_PD_Info">
+          <Property Name="Data_Year" Type="varchar" MaxLength="4" />
+          <Property Name="Period" Type="varchar" MaxLength="10" />
+          <Property Name="PD_TYPE" Type="varchar" MaxLength="20" />
+          <Property Name="PD" Type="float" />
+        </EntityType>-->
+        <!--產生期間發現錯誤:
+警告 6013: 資料表/檢視 'D:\FUBON\TRANSFER\TRANSFER\APP_DATA\IFRS9.MDF.dbo.Moody_Quartly_PD_Info' 未定義主索引鍵，也無法推斷有效的主索引鍵。此資料表/檢視已被排除。如果要使用此實體，您必須檢閱您的結構描述，加入正確的索引鍵，並將它取消註解。
+        <EntityType Name="Moody_Quartly_PD_Info">
+          <Property Name="Data_Year" Type="varchar" MaxLength="4" />
+          <Property Name="Year_Quartly" Type="varchar" MaxLength="6" />
+          <Property Name="PD" Type="float" />
+        </EntityType>-->
+        <EntityContainer Name="IFRS9ModelStoreContainer" />
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="IFRS9Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="IFRS9Entities" annotation:LazyLoadingEnabled="true" />
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="IFRS9ModelStoreContainer" CdmEntityContainer="IFRS9Entities" />
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="無" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

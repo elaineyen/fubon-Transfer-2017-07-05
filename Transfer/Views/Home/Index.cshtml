@@ -1,0 +1,76 @@
+﻿@{
+    ViewBag.Title = "IFRS9";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div style="padding-top:10px">
+    @*<input type="button" value="資料上傳" id="btnUpload"/>*@
+    @*@using (Html.BeginForm("Upload", "Home", FormMethod.Post, 
+        new { enctype = "multipart/form-data", OnSuccess = "uploadDone(event)"}))*@
+    @*@using (Ajax.BeginForm("Upload", "Home",
+     new AjaxOptions { HttpMethod = "POST", OnSuccess = "uploadDone" },
+    new { enctype = "multipart/form-data" }))
+    {
+        <label for="file">轉檔檔案:</label>
+        <input type="file" name="file" />
+        <input type="submit" value="資料上傳" />
+    }*@
+    <form id="myForm" url="/Home/Upload" method="post" enctype="multipart/form-data">
+        <label>File</label>
+        <input name="file" type="file" />
+        <input type="submit" value="資料上傳" />
+    </form>
+    <input type="button" value="轉檔" id="btnTransfer"/>
+    <input type="button" value="A81查詢" id="btnA81Search"/>
+    <input type="button" value="A82查詢" id="btnA82Search" />
+    <input type="button" value="A83查詢" id="btnA83Search" />
+</div>
+
+<script type="text/javascript">
+    //function uploadDone(result)
+    //{
+    //    debugger
+    //}
+
+    function bindAjaxForm(selector, onComplete, beforeSerialize) {
+        var form = $(selector);
+        $.validator.unobtrusive.parse(selector);
+        form.data("validator").settings.submitHandler = function (frm) {
+            $(frm).ajaxSubmit({
+                beforeSerialize: function ($form, options) {
+                    if (typeof (beforeSerialize) === "function") {
+                        beforeSerialize($form, options);
+                    }
+                },
+                complete: function (response, statusText) {
+                    if (typeof onComplete === "function") {
+                        onComplete(response, statusText);
+                    }
+                }
+            });
+        }
+    };
+
+    bindAjaxForm("#myForm", function (data, status) {
+        alert("complete");
+        console.log(arguments);
+    });
+
+    $(function () {
+        $('input').each(function () {
+            switch ($(this).attr('id'))
+            {
+                case 'btnUpload':
+                    break;
+                case 'btnTransfer':
+                    break;
+                case 'btnA81Search':
+                    break;
+                case 'btnA82Search':
+                    break;
+                case 'btnA83Search':
+                    break;
+            }
+        })
+    });
+
+</script>
