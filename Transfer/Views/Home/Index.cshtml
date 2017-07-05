@@ -3,22 +3,14 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div style="padding-top:10px">
-    @*<input type="button" value="資料上傳" id="btnUpload"/>*@
-    @*@using (Html.BeginForm("Upload", "Home", FormMethod.Post, 
-        new { enctype = "multipart/form-data", OnSuccess = "uploadDone(event)"}))*@
-    @*@using (Ajax.BeginForm("Upload", "Home",
-     new AjaxOptions { HttpMethod = "POST", OnSuccess = "uploadDone" },
-    new { enctype = "multipart/form-data" }))
+    @using (Ajax.BeginForm("Upload", "Home",
+     new AjaxOptions {  HttpMethod = "POST" },
+    new { enctype = "multipart/form-data" ,@id = "form0" }))
     {
         <label for="file">轉檔檔案:</label>
         <input type="file" name="file" />
         <input type="submit" value="資料上傳" />
-    }*@
-    <form id="myForm" url="/Home/Upload" method="post" enctype="multipart/form-data">
-        <label>File</label>
-        <input name="file" type="file" />
-        <input type="submit" value="資料上傳" />
-    </form>
+    }
     <input type="button" value="轉檔" id="btnTransfer"/>
     <input type="button" value="A81查詢" id="btnA81Search"/>
     <input type="button" value="A82查詢" id="btnA82Search" />
@@ -30,47 +22,62 @@
     //{
     //    debugger
     //}
+    $(function () {
+        $("#form0").submit(function (event) {
+            var dataString;
+            event.preventDefault();
+            var action = $("#form0").attr("action");
+            if ($("#form0").attr("enctype") == "multipart/form-data")
+            {
+                dataString = new FormData($("#form0").get(0));
+                processData = false;
+            }
+            else
+            {
+                // regular form, do your own thing if you need it
+            }        
+            $.ajax({
+                type: "POST",
+                url: action,
+                data: dataString,
+                dataType: "json", //change to your own, else read my note above on enabling the JsonValueProviderFactory in MVC
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    //console.log(JSON.stringify(data.DESCRIPTION));
+                    if (result.RETURN_FLAG)
+                    {
 
-    function bindAjaxForm(selector, onComplete, beforeSerialize) {
-        var form = $(selector);
-        $.validator.unobtrusive.parse(selector);
-        form.data("validator").settings.submitHandler = function (frm) {
-            $(frm).ajaxSubmit({
-                beforeSerialize: function ($form, options) {
-                    if (typeof (beforeSerialize) === "function") {
-                        beforeSerialize($form, options);
+                    }
+                    else
+                    {
+                        alert(result.DESCRIPTION);
                     }
                 },
-                complete: function (response, statusText) {
-                    if (typeof onComplete === "function") {
-                        onComplete(response, statusText);
-                    }
+                error: function (result) {                  
+                    alert(result.DESCRIPTION);
                 }
             });
-        }
-    };
-
-    bindAjaxForm("#myForm", function (data, status) {
-        alert("complete");
-        console.log(arguments);
+        }); //end .submit()
     });
 
-    $(function () {
-        $('input').each(function () {
-            switch ($(this).attr('id'))
-            {
-                case 'btnUpload':
-                    break;
-                case 'btnTransfer':
-                    break;
-                case 'btnA81Search':
-                    break;
-                case 'btnA82Search':
-                    break;
-                case 'btnA83Search':
-                    break;
-            }
-        })
-    });
+
+    //$(function () {
+    //    $('input').each(function () {
+    //        switch ($(this).attr('id'))
+    //        {
+    //            case 'btnUpload':
+    //                break;
+    //            case 'btnTransfer':
+    //                break;
+    //            case 'btnA81Search':
+    //                break;
+    //            case 'btnA82Search':
+    //                break;
+    //            case 'btnA83Search':
+    //                break;
+    //        }
+    //    })
+    //});
 
 </script>

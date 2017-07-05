@@ -66,17 +66,21 @@ namespace Transfer.Controllers
 
                     #region 把Excel資料抓出來並且組成 json
 
-
-                    List<ExhibitModel> dataModel =
-                        (from q in resultData.Tables[0].AsEnumerable()
-                         select getExhibitModels(q)).ToList();
-
-
+                    List<ExhibitModel> dataModel = new List<ExhibitModel>();
+                    if (resultData.Tables[0].Rows.Count > 2)
+                    {
+                        dataModel = (from q in resultData.Tables[0].AsEnumerable()
+                         select getExhibitModels(q)).Take(1).ToList();
+                        result.RETURN_FLAG = true;
+                        result.Datas = Json(dataModel);
+                    }
+                    else
+                    {
+                        result.RETURN_FLAG = false;
+                        result.DESCRIPTION = "無資料";
+                    }
                     #endregion
-
-                    result.RETURN_FLAG = true;
-                    result.DESCRIPTION = Json(dataModel).ToString();
-            }
+                }
                 else
                 {
                     result.RETURN_FLAG = false;
@@ -91,16 +95,17 @@ namespace Transfer.Controllers
             return Json(result);
         }
 
+        #region private function
         private ExhibitModel getExhibitModels(DataRow item)
         {
             DateTime minDate = DateTime.MinValue;
-            if(item[0] != null)
-            DateTime.TryParse(item[0].ToString(),out minDate);
+            if (item[0] != null)
+                DateTime.TryParse(item[0].ToString(), out minDate);
             return new ExhibitModel()
             {
                 Trailing = (item[0] != null) && (minDate != DateTime.MinValue) ?
                 minDate.ToString("yyyy/MM/dd") : string.Empty,
-                Actual_Allcorp = (item[1] != null) ? 
+                Actual_Allcorp = (item[1] != null) ?
                 item[1].ToString() : string.Empty,
                 Baseline_forecast_Allcorp = (item[2] != null) ?
                 item[2].ToString() : string.Empty,
@@ -114,6 +119,9 @@ namespace Transfer.Controllers
                 item[6].ToString() : string.Empty
             };
         }
+
+        #endregion
+
 
     }
 }
