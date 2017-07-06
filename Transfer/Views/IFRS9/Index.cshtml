@@ -1,0 +1,143 @@
+﻿@{
+    ViewBag.Title = "IFRS9";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div style="padding-top:10px;padding-bottom:10px">
+    @using (Ajax.BeginForm("Upload", "IFRS9",
+    new AjaxOptions {  HttpMethod = "POST" },
+    new { enctype = "multipart/form-data" ,@id = "form0" }))
+    {
+        <label for="file">轉檔檔案:</label>
+        <input type="file" name="file" />
+        <input type="button" value="資料上傳" id="fileSubmit" />
+    }
+    <input type="button" value="轉檔" id="btnTransfer"/>
+    <input type="button" value="A81查詢" id="btnA81Search"/>
+    <input type="button" value="A82查詢" id="btnA82Search" />
+    <input type="button" value="A83查詢" id="btnA83Search" />
+</div>
+<div id="jqgridDiv">
+    @*<table id="list1"></table>*@
+    @*<div id="pager1"></div>*@
+</div>
+
+<script type="text/javascript">
+    //function uploadDone(result)
+    //{
+    //    debugger
+    //}
+    $(function () {
+
+        //#region 註冊click事件
+        $('input').each(function () {
+            switch ($(this).attr('id')) {
+                case 'fileSubmit':
+                    $("#fileSubmit").click(fileSubmitFunction);
+                    break;
+                case 'btnTransfer':
+                    break;
+                case 'btnA81Search':
+                    break;
+                case 'btnA82Search':
+                    break;
+                case 'btnA83Search':
+                    break;
+            }
+        })
+        //#endregion 註冊click事件
+
+        //#region fileSubmitFunction
+        function fileSubmitFunction()
+        {
+            var dataString;
+            var action = $("#form0").attr("action");
+            if ($("#form0").attr("enctype") == "multipart/form-data") {
+                dataString = new FormData($("#form0").get(0));
+                processData = false;
+            }
+            else {
+                // regular form, do your own thing if you need it
+            }
+            clearJqgrid();
+            $.ajax({
+                type: "POST",
+                url: action,
+                data: dataString,
+                dataType: "json", //change to your own, else read my note above on enabling the JsonValueProviderFactory in MVC
+                contentType: false,
+                processData: false,
+                success: function (result) {
+                    if (result.RETURN_FLAG) {
+                        var colNameArray =
+                            ['Trailing', 'Actual_Allcorp', 'Baseline_forecast_Allcorp',
+                             'Pessimistic_Forecast_Allcorp', 'Actual_SG',
+                             'Baseline_forecast_SG', 'Pessimistic_Forecast_SG'];
+                        var widthArray = ['M', 'M', 'L', 'L', 'M', 'L', 'L'];
+                        var data = result.Datas.Data;
+                        createJqgrid("list1", "pager1", colNameArray, widthArray, data)
+                    }
+                    else {
+                        alert(result.DESCRIPTION);
+                    }
+                },
+                error: function (result) {
+                    alert(result.DESCRIPTION);
+                }
+            });
+        }
+        //#endregion fileSubmitFunction
+
+        //#region clearJqgrid
+        function clearJqgrid()
+        {
+            $('#jqgridDiv').children().remove();
+        }
+        //#endregion clearJqgrid
+
+        //#region createJqgrid
+        function createJqgrid(listId, pagerId, colNameArray, widthArray,data)
+        {
+            var colModelArray = [];
+            var jagridLWidth = 210;
+            var jagridMWidth = 120;
+            if (colNameArray.length > 0 && colNameArray.length === widthArray.length)
+            {
+                for (let i = 0; i < colNameArray.length; i++)
+                {
+                    var obj = {
+                        name: colNameArray[i],
+                        index: colNameArray[i],
+                        width: widthArray[i] === 'L' ? jagridLWidth : jagridMWidth
+                    }
+                    colModelArray.push(obj);
+                }
+                $('#jqgridDiv').append('<table id="' + listId + '"></table>');
+                $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');
+                $("#" + listId).jqGrid({
+                    data: data,
+                    datatype: "local",
+                    mtype: "POST",
+                    colNames: colNameArray,
+                    colModel: colModelArray,
+                    rowNum: 10,
+                    rowList: [10, 20, 30],
+                    pager: '#' + pagerId,
+                    height: '222',
+                    //sortname: 'id',
+                    //viewrecords: true,
+                    sortorder: "desc",
+                    caption: "title",
+                    resizable: false,
+                    autoencode: true,
+                    viewsortcols: [true, 'vertical', true],
+                    ajaxRowOptions: { contentType: "application/json" },
+                    serializeRowData: function (data) {
+                        return JSON.stringify(data);
+                    },
+                });
+                $("#" + listId).jqGrid('navGrid', '#' + pagerId, { edit: false, add: false, del: false });
+            }
+        }
+        //#endregion createJqgrid
+    });
+</script>
