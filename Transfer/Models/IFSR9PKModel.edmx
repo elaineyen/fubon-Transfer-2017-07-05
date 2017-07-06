@@ -1,0 +1,199 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="IFRS9SecondModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="IFRS9_Log">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Table_name" Type="varchar" MaxLength="20" />
+          <Property Name="File_name" Type="varchar" MaxLength="30" />
+          <Property Name="Program_name" Type="varchar" MaxLength="20" />
+          <Property Name="Create_date" Type="varchar" MaxLength="8" />
+          <Property Name="Create_time" Type="varchar" MaxLength="8" />
+          <Property Name="End_date" Type="varchar" MaxLength="8" />
+          <Property Name="End_time" Type="varchar" MaxLength="8" />
+          <Property Name="TYPE" Type="char" MaxLength="1" />
+        </EntityType>
+        <EntityType Name="Moody_Monthly_PD_Info">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Trailing_12m_Ending" Type="date" />
+          <Property Name="Actual_Allcorp" Type="float" />
+          <Property Name="Baseline_forecast_Allcorp" Type="float" />
+          <Property Name="Pessimistic_Forecast_Allcorp" Type="float" />
+          <Property Name="Actual_SG" Type="float" />
+          <Property Name="Baseline_forecast_SG" Type="float" />
+          <Property Name="Pessimistic_Forecast_SG" Type="float" />
+          <Property Name="Data_Year" Type="varchar" MaxLength="4" />
+        </EntityType>
+        <EntityType Name="Moody_Predit_PD_Info">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Data_Year" Type="varchar" MaxLength="4" />
+          <Property Name="Period" Type="varchar" MaxLength="10" />
+          <Property Name="PD_TYPE" Type="varchar" MaxLength="20" />
+          <Property Name="PD" Type="float" />
+        </EntityType>
+        <EntityType Name="Moody_Quartly_PD_Info">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Data_Year" Type="varchar" MaxLength="4" />
+          <Property Name="Year_Quartly" Type="varchar" MaxLength="6" />
+          <Property Name="PD" Type="float" />
+        </EntityType>
+        <EntityContainer Name="IFRS9SecondModelStoreContainer">
+          <EntitySet Name="IFRS9_Log" EntityType="Self.IFRS9_Log" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Moody_Monthly_PD_Info" EntityType="Self.Moody_Monthly_PD_Info" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Moody_Predit_PD_Info" EntityType="Self.Moody_Predit_PD_Info" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Moody_Quartly_PD_Info" EntityType="Self.Moody_Quartly_PD_Info" Schema="dbo" store:Type="Tables" />
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="IFRS9SecondModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="IFRS9_Log">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Table_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="File_name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Program_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Create_date" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="Create_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="End_date" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="End_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="TYPE" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Moody_Monthly_PD_Info">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Trailing_12m_Ending" Type="DateTime" Precision="0" />
+          <Property Name="Actual_Allcorp" Type="Double" />
+          <Property Name="Baseline_forecast_Allcorp" Type="Double" />
+          <Property Name="Pessimistic_Forecast_Allcorp" Type="Double" />
+          <Property Name="Actual_SG" Type="Double" />
+          <Property Name="Baseline_forecast_SG" Type="Double" />
+          <Property Name="Pessimistic_Forecast_SG" Type="Double" />
+          <Property Name="Data_Year" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Moody_Predit_PD_Info">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Data_Year" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
+          <Property Name="Period" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="PD_TYPE" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="PD" Type="Double" />
+        </EntityType>
+        <EntityType Name="Moody_Quartly_PD_Info">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Data_Year" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
+          <Property Name="Year_Quartly" Type="String" MaxLength="6" FixedLength="false" Unicode="false" />
+          <Property Name="PD" Type="Double" />
+        </EntityType>
+        <EntityContainer Name="IFRS9SecondEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="IFRS9_Log" EntityType="Self.IFRS9_Log" />
+          <EntitySet Name="Moody_Monthly_PD_Info" EntityType="Self.Moody_Monthly_PD_Info" />
+          <EntitySet Name="Moody_Predit_PD_Info" EntityType="Self.Moody_Predit_PD_Info" />
+          <EntitySet Name="Moody_Quartly_PD_Info" EntityType="Self.Moody_Quartly_PD_Info" />
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="IFRS9SecondModelStoreContainer" CdmEntityContainer="IFRS9SecondEntities">
+          <EntitySetMapping Name="IFRS9_Log">
+            <EntityTypeMapping TypeName="IFRS9SecondModel.IFRS9_Log">
+              <MappingFragment StoreEntitySet="IFRS9_Log">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Table_name" ColumnName="Table_name" />
+                <ScalarProperty Name="File_name" ColumnName="File_name" />
+                <ScalarProperty Name="Program_name" ColumnName="Program_name" />
+                <ScalarProperty Name="Create_date" ColumnName="Create_date" />
+                <ScalarProperty Name="Create_time" ColumnName="Create_time" />
+                <ScalarProperty Name="End_date" ColumnName="End_date" />
+                <ScalarProperty Name="End_time" ColumnName="End_time" />
+                <ScalarProperty Name="TYPE" ColumnName="TYPE" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Moody_Monthly_PD_Info">
+            <EntityTypeMapping TypeName="IFRS9SecondModel.Moody_Monthly_PD_Info">
+              <MappingFragment StoreEntitySet="Moody_Monthly_PD_Info">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Trailing_12m_Ending" ColumnName="Trailing_12m_Ending" />
+                <ScalarProperty Name="Actual_Allcorp" ColumnName="Actual_Allcorp" />
+                <ScalarProperty Name="Baseline_forecast_Allcorp" ColumnName="Baseline_forecast_Allcorp" />
+                <ScalarProperty Name="Pessimistic_Forecast_Allcorp" ColumnName="Pessimistic_Forecast_Allcorp" />
+                <ScalarProperty Name="Actual_SG" ColumnName="Actual_SG" />
+                <ScalarProperty Name="Baseline_forecast_SG" ColumnName="Baseline_forecast_SG" />
+                <ScalarProperty Name="Pessimistic_Forecast_SG" ColumnName="Pessimistic_Forecast_SG" />
+                <ScalarProperty Name="Data_Year" ColumnName="Data_Year" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Moody_Predit_PD_Info">
+            <EntityTypeMapping TypeName="IFRS9SecondModel.Moody_Predit_PD_Info">
+              <MappingFragment StoreEntitySet="Moody_Predit_PD_Info">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Data_Year" ColumnName="Data_Year" />
+                <ScalarProperty Name="Period" ColumnName="Period" />
+                <ScalarProperty Name="PD_TYPE" ColumnName="PD_TYPE" />
+                <ScalarProperty Name="PD" ColumnName="PD" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Moody_Quartly_PD_Info">
+            <EntityTypeMapping TypeName="IFRS9SecondModel.Moody_Quartly_PD_Info">
+              <MappingFragment StoreEntitySet="Moody_Quartly_PD_Info">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Data_Year" ColumnName="Data_Year" />
+                <ScalarProperty Name="Year_Quartly" ColumnName="Year_Quartly" />
+                <ScalarProperty Name="PD" ColumnName="PD" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="無" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

@@ -13,10 +13,10 @@ namespace Transfer.Models
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class IFRS9Entities : DbContext
+    public partial class IFRS9SecondEntities : DbContext
     {
-        public IFRS9Entities()
-            : base("name=IFRS9Entities")
+        public IFRS9SecondEntities()
+            : base("name=IFRS9SecondEntities")
         {
         }
     
@@ -25,5 +25,9 @@ namespace Transfer.Models
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<IFRS9_Log> IFRS9_Log { get; set; }
+        public virtual DbSet<Moody_Monthly_PD_Info> Moody_Monthly_PD_Info { get; set; }
+        public virtual DbSet<Moody_Predit_PD_Info> Moody_Predit_PD_Info { get; set; }
+        public virtual DbSet<Moody_Quartly_PD_Info> Moody_Quartly_PD_Info { get; set; }
     }
 }

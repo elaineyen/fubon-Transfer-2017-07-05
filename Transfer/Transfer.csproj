@@ -140,23 +140,36 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\IFRS9Controller.cs" />
+    <Compile Include="Enum\PDType.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Models\IFRS9Model.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>IFRS9Model.Context.tt</DependentUpon>
+    <Compile Include="Models\IFRS9_Log.cs">
+      <DependentUpon>IFSR9PKModel.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\IFRS9Model.cs">
+    <Compile Include="Models\IFSR9PKModel.Context.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>IFRS9Model.tt</DependentUpon>
+      <DependentUpon>IFSR9PKModel.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\IFRS9Model.Designer.cs">
+    <Compile Include="Models\IFSR9PKModel.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>IFRS9Model.edmx</DependentUpon>
+      <DependentUpon>IFSR9PKModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\IFSR9PKModel.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IFSR9PKModel.edmx</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Moody_Monthly_PD_Info.cs">
+      <DependentUpon>IFSR9PKModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Moody_Predit_PD_Info.cs">
+      <DependentUpon>IFSR9PKModel.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Moody_Quartly_PD_Info.cs">
+      <DependentUpon>IFSR9PKModel.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\Utility.cs" />
@@ -164,9 +177,9 @@
     <Compile Include="ViewModels\ValidateFiles.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\IFRS9.mdf" />
-    <Content Include="App_Data\IFRS9_log.ldf">
-      <DependentUpon>IFRS9.mdf</DependentUpon>
+    <Content Include="App_Data\IFRS9Second.mdf" />
+    <Content Include="App_Data\IFRS9Second_log.ldf">
+      <DependentUpon>IFRS9Second.mdf</DependentUpon>
     </Content>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
@@ -238,24 +251,24 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="Models\IFRS9Model.Context.tt">
+    <Content Include="Models\IFSR9PKModel.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>IFRS9Model.edmx</DependentUpon>
-      <LastGenOutput>IFRS9Model.Context.cs</LastGenOutput>
+      <DependentUpon>IFSR9PKModel.edmx</DependentUpon>
+      <LastGenOutput>IFSR9PKModel.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="Models\IFRS9Model.tt">
+    <Content Include="Models\IFSR9PKModel.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>IFRS9Model.edmx</DependentUpon>
-      <LastGenOutput>IFRS9Model.cs</LastGenOutput>
+      <DependentUpon>IFSR9PKModel.edmx</DependentUpon>
+      <LastGenOutput>IFSR9PKModel.cs</LastGenOutput>
     </Content>
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
-    <EntityDeploy Include="Models\IFRS9Model.edmx">
+    <EntityDeploy Include="Models\IFSR9PKModel.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>IFRS9Model.Designer.cs</LastGenOutput>
+      <LastGenOutput>IFSR9PKModel.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <Content Include="Models\IFRS9Model.edmx.diagram">
-      <DependentUpon>IFRS9Model.edmx</DependentUpon>
+    <Content Include="Models\IFSR9PKModel.edmx.diagram">
+      <DependentUpon>IFSR9PKModel.edmx</DependentUpon>
     </Content>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\i18n\grid.locale-ar.js" />
@@ -332,9 +345,7 @@
     <Content Include="Views\IFRS9\Index.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Enum\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
