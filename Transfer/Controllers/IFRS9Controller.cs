@@ -4,9 +4,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Web;
-
 using System.Web.Mvc;
+using Transfer.Models;
 using Transfer.Utility;
 using Transfer.ViewModels;
 
@@ -14,6 +13,7 @@ namespace Transfer.Controllers
 {
     public class IFRS9Controller : Controller
     {
+        private IFRS9Entities db = new IFRS9Entities();
         public ActionResult Index()
         {
             return View();
@@ -60,35 +60,14 @@ namespace Transfer.Controllers
                 }
                 #endregion
 
-                #region 讀取Excel資料 使用ExcelDataReader
-
-                IExcelDataReader reader = null;
+                #region 讀取Excel資料 使用ExcelDataReader 並且組成 json
                 string pathType =
                     Path.GetExtension(FileModel.File.FileName)
                     .Substring(1); //檔案類型
                 var stream = FileModel.File.InputStream;
-                switch (pathType)
+                List<ExhibitModel> dataModel = getExcel(pathType, stream);
+                if (dataModel.Count > 0)
                 {
-                    case "xls":
-                        reader = ExcelReaderFactory.CreateBinaryReader(stream);
-                        break;
-                    case "xlsx":
-                        reader = ExcelReaderFactory.CreateOpenXmlReader(stream);
-                        break;
-                }
-                reader.IsFirstRowAsColumnNames = true;
-                DataSet resultData = reader.AsDataSet();
-                reader.Close();
-
-                #endregion
-
-                #region 把Excel資料抓出來並且組成 json
-
-                List<ExhibitModel> dataModel = new List<ExhibitModel>();
-                if (resultData.Tables[0].Rows.Count > 2)
-                {
-                    dataModel = (from q in resultData.Tables[0].AsEnumerable()
-                                 select getExhibitModels(q)).Skip(1).ToList();
                     result.RETURN_FLAG = true;
                     result.Datas = Json(dataModel);
                 }
@@ -98,6 +77,7 @@ namespace Transfer.Controllers
                     result.DESCRIPTION = "無筆對到資料!";
                 }
                 #endregion
+
                 #endregion
             }
             catch (Exception ex)
@@ -105,6 +85,30 @@ namespace Transfer.Controllers
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = ex.Message;
             }
+            return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult Transfer()
+        {
+            MSGReturnModel result = new MSGReturnModel();
+            try
+            {
+                // Excel 檔案位置
+                string projectFile = Server.MapPath("~/FileUploads");
+                string path = Path.Combine(projectFile, @"Exhibit 10.xlsx");
+                FileStream stream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read);
+
+                string pathType = path.Split('.')[1];
+                List<ExhibitModel> dataModel = getExcel(pathType, stream);
+
+
+
+            }
+            catch (Exception ex)
+            {
+
+            }      
             return Json(result);
         }
 
@@ -136,6 +140,38 @@ namespace Transfer.Controllers
         }
         #endregion
 
+        #region get Excel to List<ExhibitModel>
+        private List<ExhibitModel> getExcel(string pathType,Stream stream)
+        {
+            DataSet resultData = new DataSet();
+            List<ExhibitModel> dataModel = new List<ExhibitModel>();
+            try
+            {
+                IExcelDataReader reader = null;
+                switch (pathType)
+                {
+                    case "xls":
+                        reader = ExcelReaderFactory.CreateBinaryReader(stream);
+                        break;
+                    case "xlsx":
+                        reader = ExcelReaderFactory.CreateOpenXmlReader(stream);
+                        break;
+                }
+                reader.IsFirstRowAsColumnNames = true;
+                resultData = reader.AsDataSet();
+                reader.Close();
+                              
+                if (resultData.Tables[0].Rows.Count > 2)
+                {
+                    dataModel = (from q in resultData.Tables[0].AsEnumerable()
+                                 select getExhibitModels(q)).Skip(1).ToList();
+                }
+            }
+            catch
+            {}
+            return dataModel;
+        }
+        #endregion
 
         #endregion
 

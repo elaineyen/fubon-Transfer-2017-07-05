@@ -22,19 +22,24 @@
 </div>
 
 <script type="text/javascript">
-    //function uploadDone(result)
-    //{
-    //    debugger
-    //}
+
     $(function () {
+        //#region 註冊URL
+        var url = {};
+        url.transfer = '@Url.Action("Transfer", "IFRS9")';
+        //#endregion 註冊URL
 
         //#region 註冊click事件
         $('input').each(function () {
-            switch ($(this).attr('id')) {
+            var id = $(this).attr('id');
+            var url = {};
+            url
+            switch (id) {
                 case 'fileSubmit':
-                    $("#fileSubmit").click(fileSubmitFunction);
+                    $("#" + id).click(fileSubmitFunction);
                     break;
                 case 'btnTransfer':
+                    $("#" + id).click(transfer);
                     break;
                 case 'btnA81Search':
                     break;
@@ -45,6 +50,18 @@
             }
         })
         //#endregion 註冊click事件
+
+        function transfer()
+        {
+            $.ajax({
+                type: "POST",
+                url: url.transfer,
+                contentType: 'application/json'
+            })
+            .done(function (result) {
+
+            })
+        }
 
         //#region fileSubmitFunction
         function fileSubmitFunction()
