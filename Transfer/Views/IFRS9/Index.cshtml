@@ -27,6 +27,7 @@
         //#region 註冊URL
         var url = {};
         url.transfer = '@Url.Action("Transfer", "IFRS9")';
+        url.getData = '@Url.Action("GetData", "IFRS9")';
         //#endregion 註冊URL
 
         //#region 註冊click事件
@@ -42,30 +43,82 @@
                     $("#" + id).click(transfer);
                     break;
                 case 'btnA81Search':
+                    $("#" + id).on('click', function () { showJqgrid('A81') });
                     break;
                 case 'btnA82Search':
+                    $("#" + id).on('click', function () { showJqgrid('A82') });
                     break;
                 case 'btnA83Search':
+                    $("#" + id).on('click', function () { showJqgrid('A83') });
                     break;
             }
         })
         //#endregion 註冊click事件
 
+        function showJqgrid(type)
+        {
+            clearJqgrid();
+            var colNameArray = [];
+            var widthArray = [];
+            var data ;
+            switch (type)
+            {
+                case "A81":
+                    colNameArray = ['Trailing_12m_Ending', 'Actual_Allcorp',
+                    'Baseline_forecast_Allcorp', 'Pessimistic_Forecast_Allcorp',
+                    'Actual_SG', 'Baseline_forecast_SG', 'Pessimistic_Forecast_SG	',
+                    'Data_Year'];
+                    widthArray = ['L', 'M', 'L', 'L', 'M', 'L', 'L', 'M'];
+                    break;
+                case "A82":
+                    colNameArray = ['Data_Year', 'Year_Quartly', 'PD'];
+                    widthArray = ['M','M','M'];
+                    break;
+                case "A83":
+                    colNameArray = ['Data_Year', 'Period', 'PD_TYPE', 'PD'];
+                    widthArray = ['M', 'M', 'M','M'];
+                    break;
+            }
+            $.ajax({
+                type: "POST",
+                data: JSON.stringify({
+                    type: type
+                }),
+                dataType: "json",
+                url: url.getData,
+                contentType: 'application/json'
+            })
+            .done(function (result) {
+                if (result.RETURN_FLAG) {
+                    data = result.Datas.Data;
+                    createJqgrid("list1", "pager1", colNameArray, widthArray, data);
+                }
+                else {
+                    alert(result.DESCRIPTION);
+                }
+            });
+        }
+
+        //#region 資料上傳(Excel 資料寫入 local sql)
         function transfer()
         {
+            $.blockUI()
             $.ajax({
                 type: "POST",
                 url: url.transfer,
                 contentType: 'application/json'
             })
             .done(function (result) {
+                $.unblockUI();
                 alert(result.DESCRIPTION);
             })
         }
+        //#endregion 資料上傳(Excel 資料寫入 local sql)
 
         //#region fileSubmitFunction
         function fileSubmitFunction()
         {
+            $.blockUI();
             var dataString;
             var action = $("#form0").attr("action");
             if ($("#form0").attr("enctype") == "multipart/form-data") {
@@ -84,6 +137,7 @@
                 contentType: false,
                 processData: false,
                 success: function (result) {
+                    $.unblockUI();
                     if (result.RETURN_FLAG) {
                         var colNameArray =
                             ['Trailing', 'Actual_Allcorp', 'Baseline_forecast_Allcorp',
@@ -91,13 +145,14 @@
                              'Baseline_forecast_SG', 'Pessimistic_Forecast_SG'];
                         var widthArray = ['M', 'M', 'L', 'L', 'M', 'L', 'L'];
                         var data = result.Datas.Data;
-                        createJqgrid("list1", "pager1", colNameArray, widthArray, data)
+                        createJqgrid("list1", "pager1", colNameArray, widthArray, data);
                     }
                     else {
                         alert(result.DESCRIPTION);
                     }
                 },
                 error: function (result) {
+                    $.unblockUI();
                     alert(result.DESCRIPTION);
                 }
             });

@@ -15,6 +15,7 @@ namespace Transfer.Controllers
     public class IFRS9Controller : Controller
     {
         private IFRS9SecondEntities db = new IFRS9SecondEntities();
+
         public ActionResult Index()
         {
             return View();
@@ -131,7 +132,7 @@ namespace Transfer.Controllers
                 }
                 else
                 {
-                    result.DESCRIPTION = "Sucess!";
+                    result.DESCRIPTION = "Success!";
                 }
             }
             catch (Exception ex)
@@ -139,6 +140,49 @@ namespace Transfer.Controllers
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = ex.Message;
             }      
+            return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult GetData(string type)
+        {
+            MSGReturnModel result = new MSGReturnModel();
+            result.RETURN_FLAG = false;
+            result.DESCRIPTION = "No Data !";
+            try
+            {
+                switch (type)
+                {
+                    case "A81":
+                        if (db.Moody_Monthly_PD_Info.Count() > 0)
+                        {
+                            result.RETURN_FLAG = true;
+                            result.Datas = Json(db.Moody_Monthly_PD_Info.ToList());
+                        }
+                        break;
+                    case "A82":
+                        if (db.Moody_Quartly_PD_Info.Count() > 0)
+                        {
+                            result.RETURN_FLAG = true;
+                            result.Datas = Json(db.Moody_Quartly_PD_Info.ToList());
+                        }
+                        break;
+                    case "A83":
+                        if (db.Moody_Predit_PD_Info.Count() > 0)
+                        {
+                            result.RETURN_FLAG = true;
+                            result.Datas = Json(db.Moody_Predit_PD_Info.ToList());
+                        }
+                        break;
+                }
+                if(result.RETURN_FLAG)
+                    result.DESCRIPTION = "Success!";
+            }
+            catch(Exception ex)
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = ex.Message;
+            }
             return Json(result);
         }
 
