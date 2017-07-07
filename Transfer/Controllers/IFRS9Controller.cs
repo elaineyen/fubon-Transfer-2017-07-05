@@ -9,6 +9,7 @@ using Transfer.Models;
 using Transfer.Utility;
 using Transfer.ViewModels;
 using static Transfer.Enum.Ref;
+using System.Configuration;
 
 namespace Transfer.Controllers
 {
@@ -21,6 +22,11 @@ namespace Transfer.Controllers
             return View();
         }
 
+        /// <summary>
+        /// 選擇檔案後點選資料上傳觸發
+        /// </summary>
+        /// <param name="FileModel"></param>
+        /// <returns>MSGReturnModel</returns>
         [HttpPost]
         public JsonResult Upload(ValidateFiles FileModel)
         {
@@ -36,7 +42,7 @@ namespace Transfer.Controllers
                 }
                 #endregion
 
-                #region 前端檔案大小不服或不為Excel檔案
+                #region 前端檔案大小不服或不為Excel檔案(驗證)
                 if (FileModel.File.ContentLength == 0 || !ModelState.IsValid)
                 {
                     result.RETURN_FLAG = false;
@@ -46,11 +52,11 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region 上傳檔案
-                var fileName = Path.GetFileName(FileModel.File.FileName);
+                var fileName = Path.GetFileName(FileModel.File.FileName); //檔案名稱
 
                 #region 檢查是否有FileUploads資料夾,如果沒有就新增 並加入 excel 檔案
 
-                string projectFile = Server.MapPath("~/FileUploads");
+                string projectFile = Server.MapPath("~/FileUploads"); //專案資料夾
                 string path = Path.Combine(projectFile, fileName);
                 createFile(projectFile);
 
@@ -99,6 +105,8 @@ namespace Transfer.Controllers
                 DateTime startTime = DateTime.Now;
                 string projectFile = Server.MapPath("~/FileUploads");
                 string fileName = @"Exhibit 10.xlsx";
+                //string configFileName = ConfigurationManager.AppSettings["fileName"];
+                
                 string path = Path.Combine(projectFile, fileName);
                 FileStream stream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read);
 
@@ -139,7 +147,7 @@ namespace Transfer.Controllers
             {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = ex.Message;
-            }      
+            }
             return Json(result);
         }
 
@@ -157,7 +165,21 @@ namespace Transfer.Controllers
                         if (db.Moody_Monthly_PD_Info.Count() > 0)
                         {
                             result.RETURN_FLAG = true;
-                            result.Datas = Json(db.Moody_Monthly_PD_Info.ToList());
+                            result.Datas = Json(
+                                (from item in db.Moody_Monthly_PD_Info.AsEnumerable()
+                                 select new A81ViewModel()
+                                {
+                                     Trailing_12m_Ending =
+                                    item.Trailing_12m_Ending.HasValue ?
+                                    item.Trailing_12m_Ending.Value.ToString("yyyy/MM/dd") : string.Empty,
+                                    Actual_Allcorp = doubleToString(item.Actual_Allcorp),
+                                    Actual_SG = doubleToString(item.Actual_SG),
+                                    Baseline_forecast_Allcorp = doubleToString(item.Baseline_forecast_Allcorp),
+                                    Baseline_forecast_SG = doubleToString(item.Baseline_forecast_SG),
+                                    Pessimistic_Forecast_Allcorp = doubleToString(item.Pessimistic_Forecast_Allcorp),
+                                    Pessimistic_Forecast_SG = doubleToString(item.Pessimistic_Forecast_SG),
+                                    Data_Year = item.Data_Year
+                                }).ToList());
                         }
                         break;
                     case "A82":
@@ -175,10 +197,10 @@ namespace Transfer.Controllers
                         }
                         break;
                 }
-                if(result.RETURN_FLAG)
+                if (result.RETURN_FLAG)
                     result.DESCRIPTION = "Success!";
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = ex.Message;
@@ -264,11 +286,11 @@ namespace Transfer.Controllers
                 }
                 int id = 1;
                 List<Moody_Quartly_PD_Info> allData = new List<Moody_Quartly_PD_Info>();
-                List<int> months =  new List<int>() {3, 6, 9, 12 };
+                List<int> months = new List<int>() { 3, 6, 9, 12 };
                 foreach (var item in dataModel
-                    .Where(x=>!string.IsNullOrWhiteSpace(x.Actual_Allcorp) 
-                    &&  months.Contains(DateTime.Parse(x.Trailing).Month) )
-                    .OrderByDescending(x=>x.Trailing))
+                    .Where(x => !string.IsNullOrWhiteSpace(x.Actual_Allcorp)
+                    && months.Contains(DateTime.Parse(x.Trailing).Month))
+                    .OrderByDescending(x => x.Trailing))
                 {
                     DateTime dt = DateTime.Parse(item.Trailing);
                     string quartly = dt.Year.ToString();
@@ -301,7 +323,7 @@ namespace Transfer.Controllers
                 }
                 db.SaveChanges();
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 foreach (var item in db.Moody_Quartly_PD_Info)
                 {
@@ -314,6 +336,11 @@ namespace Transfer.Controllers
         #endregion
 
         #region save A83
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="dataModel"></param>
+        /// <returns></returns>
         private bool saveA83(List<ExhibitModel> dataModel)
         {
             bool flag = true;
@@ -331,7 +358,7 @@ namespace Transfer.Controllers
                 string minYear = models.Min(x => DateTime.Parse(x.Trailing)).Year.ToString();
 
                 double? PD = null;
-                double PDValue = models.Sum(x => double.Parse(x.Actual_Allcorp))/ models.Count;
+                double PDValue = models.Sum(x => double.Parse(x.Actual_Allcorp)) / models.Count;
                 if (PDValue > 0)
                     PD = PDValue;
 
@@ -340,7 +367,7 @@ namespace Transfer.Controllers
                 {
                     Id = 1,
                     Data_Year = maxYear,
-                    Period = minYear + "-"+ maxYear,
+                    Period = minYear + "-" + maxYear,
                     PD_TYPE = PD_Type.Past_Year_AVG.ToString(),
                     PD = PD
                 });
@@ -348,13 +375,13 @@ namespace Transfer.Controllers
                 ExhibitModel model =
                     dataModel.Where(x => dtn.Equals(DateTime.Parse(x.Trailing).Year)
                     && 12.Equals(DateTime.Parse(x.Trailing).Month)).FirstOrDefault();
-                string baselineForecastAllcorp = string.Empty;   
-                if(model != null)
+                string baselineForecastAllcorp = string.Empty;
+                if (model != null)
                     baselineForecastAllcorp = model.Baseline_forecast_Allcorp;
                 PD = null;
                 if (!string.IsNullOrWhiteSpace(baselineForecastAllcorp))
                     PD = double.Parse(baselineForecastAllcorp);
-                
+
                 db.Moody_Predit_PD_Info.Add(new Moody_Predit_PD_Info()
                 {
                     Id = 2,
@@ -378,16 +405,28 @@ namespace Transfer.Controllers
         #endregion
 
         #region save txtlog
+        /// <summary>
+        /// 寫入 Txt Log
+        /// </summary>
+        /// <param name="tableName">table名</param>
+        /// <param name="falg">成功或失敗</param>
+        /// <param name="start">開始時間</param>
         private void txtLog(string tableName, bool falg, DateTime start)
         {
             try
             {
-                string projectFile = Server.MapPath("~/FileUploads");
+                string projectFile = Server.MapPath("~/FileUploads"); //預設txt位置
+                string configTxtLocation = ConfigurationManager.AppSettings["txtLogLocation"];
+                if (!string.IsNullOrWhiteSpace(configTxtLocation))
+                    projectFile = configTxtLocation; //有設定webConfig且不為空就取代
                 createFile(projectFile);
-                string path = "ExhibitTransfer.txt";
-                string folderPath = Path.Combine(projectFile, path);
+                string path = "ExhibitTransfer.txt"; //預設txt名稱
+                string configTxtName = ConfigurationManager.AppSettings["txtLogName"];
+                if (!string.IsNullOrWhiteSpace(configTxtName))
+                    path = configTxtName; //有設定webConfig且不為空就取代
+                string folderPath = Path.Combine(projectFile, path); //合併路徑&檔名
                 string txtData = string.Empty;
-                try // intercept file not exists, protected, etc..
+                try //試著抓取舊資料
                 {
                     txtData = System.IO.File.ReadAllText(folderPath);
                 }
@@ -396,18 +435,18 @@ namespace Transfer.Controllers
                              tableName,
                              start.ToString("yyyyMMddHHmmss"),
                              falg ? "Y" : "N");
-                if (!string.IsNullOrWhiteSpace(txtData))
+                if (!string.IsNullOrWhiteSpace(txtData)) //有舊資料就換行寫入下一筆
                 {
                     txtData += string.Format("\r\n{0}", txt);
                 }
-                else
+                else //沒有就直接寫入
                 {
                     txtData = txt;
                 }
                 FileStream fs = new FileStream(folderPath, FileMode.Create, FileAccess.Write);
                 StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
-                sw.Write(txtData);
-                sw.Close();
+                sw.Write(txtData); //存檔
+                sw.Close(); 
             }
             catch (Exception ex)
             {
@@ -417,6 +456,16 @@ namespace Transfer.Controllers
         #endregion
 
         #region save sqllog
+        /// <summary>
+        /// Log資料存到Sql
+        /// </summary>
+        /// <param name="tableName">table名</param>
+        /// <param name="fileName">檔案名</param>
+        /// <param name="programName">專案名</param>
+        /// <param name="falg">成功失敗</param>
+        /// <param name="start">開始時間</param>
+        /// <param name="end">結束時間</param>
+        /// <returns>回傳成功或失敗</returns>
         private bool saveLog(
             string tableName,
             string fileName,
@@ -429,15 +478,14 @@ namespace Transfer.Controllers
             try
             {
                 int id = 1;
-                if (db.IFRS9_Log.Count() > 0)
+                if (db.IFRS9_Log.Count() > 0) //判斷有無舊的Log
                 {
-                    id += db.IFRS9_Log.Max(x => x.Id);
+                    id += db.IFRS9_Log.Max(x => x.Id); //Id(Pk) 加一
                 }
-                
-                db.IFRS9_Log.Add(new IFRS9_Log()
+                db.IFRS9_Log.Add(new IFRS9_Log() //寫入DB
                 {
                     Id = id,
-                    Table_name = tableName.Substring(0,20),
+                    Table_name = tableName.Substring(0, 20),
                     File_name = fileName,
                     Program_name = programName,
                     Create_date = start.ToString("yyyyMMdd"),
@@ -446,7 +494,7 @@ namespace Transfer.Controllers
                     End_time = end.ToString("HHmmss"),
                     TYPE = falg ? "Y" : "N"
                 });
-                db.SaveChanges();
+                db.SaveChanges(); //DB SAVE
             }
             catch (Exception ex)
             {
@@ -457,6 +505,11 @@ namespace Transfer.Controllers
         #endregion
 
         #region datarow 組成 ExhibitModel
+        /// <summary>
+        /// datarow 組成 ExhibitModel
+        /// </summary>
+        /// <param name="item">DataRow</param>
+        /// <returns>ExhibitModel</returns>
         private ExhibitModel getExhibitModels(DataRow item)
         {
             DateTime minDate = DateTime.MinValue;
@@ -483,14 +536,20 @@ namespace Transfer.Controllers
         #endregion
 
         #region get Excel to List<ExhibitModel>
-        private List<ExhibitModel> getExcel(string pathType,Stream stream)
+        /// <summary>
+        /// 把Excel 資料轉換成 ExhibitModel
+        /// </summary>
+        /// <param name="pathType">string</param>
+        /// <param name="stream">Stream</param>
+        /// <returns>ExhibitModels</returns>
+        private List<ExhibitModel> getExcel(string pathType, Stream stream)
         {
             DataSet resultData = new DataSet();
             List<ExhibitModel> dataModel = new List<ExhibitModel>();
             try
             {
                 IExcelDataReader reader = null;
-                switch (pathType)
+                switch (pathType) //判斷型別
                 {
                     case "xls":
                         reader = ExcelReaderFactory.CreateBinaryReader(stream);
@@ -502,24 +561,43 @@ namespace Transfer.Controllers
                 reader.IsFirstRowAsColumnNames = true;
                 resultData = reader.AsDataSet();
                 reader.Close();
-                              
-                if (resultData.Tables[0].Rows.Count > 2)
+
+                if (resultData.Tables[0].Rows.Count > 2) //判斷有無資料
                 {
                     dataModel = (from q in resultData.Tables[0].AsEnumerable()
                                  select getExhibitModels(q)).Skip(1).ToList();
+                                 //skip(1) 為排除Excel Title列那行(參數可調)
                 }
             }
             catch
-            {}
+            { }
             return dataModel;
         }
         #endregion
 
         #region Create 資料夾
+        /// <summary>
+        /// Create 資料夾(判斷如果沒有的話就新增)
+        /// </summary>
+        /// <param name="projectFile">資料夾位置</param>
         private void createFile(string projectFile)
         {
             bool exists = Directory.Exists(projectFile);
             if (!exists) Directory.CreateDirectory(projectFile);
+        }
+        #endregion
+
+        #region Double? To String
+        /// <summary>
+        /// Double? 轉string (null 回傳 string.Empty)
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private string doubleToString(double? value)
+        {
+            if (value.HasValue)
+                return value.Value.ToString();
+            return string.Empty;
         }
         #endregion
 

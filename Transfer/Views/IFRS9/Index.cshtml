@@ -55,6 +55,7 @@
         })
         //#endregion 註冊click事件
 
+        //#region 去controller 撈取資料並且
         function showJqgrid(type)
         {
             clearJqgrid();
@@ -98,24 +99,25 @@
                 }
             });
         }
+        //#endregion
 
         //#region 資料上傳(Excel 資料寫入 local sql)
         function transfer()
         {
-            $.blockUI()
+            $.blockUI(); //畫面鎖起來
             $.ajax({
                 type: "POST",
                 url: url.transfer,
                 contentType: 'application/json'
             })
             .done(function (result) {
-                $.unblockUI();
+                $.unblockUI(); //畫面打開
                 alert(result.DESCRIPTION);
             })
         }
         //#endregion 資料上傳(Excel 資料寫入 local sql)
 
-        //#region fileSubmitFunction
+        //#region fileSubmitFunction (把檔案上傳到指定資料夾)
         function fileSubmitFunction()
         {
             $.blockUI();
@@ -159,15 +161,21 @@
         }
         //#endregion fileSubmitFunction
 
-        //#region clearJqgrid
+        //#region clearJqgrid (清除JqGrid)
         function clearJqgrid()
         {
             $('#jqgridDiv').children().remove();
         }
         //#endregion clearJqgrid
 
-        //#region createJqgrid
-        function createJqgrid(listId, pagerId, colNameArray, widthArray,data)
+        //#region createJqgrid (建立JqGrid套件)
+        //listId (Jqgrid產生table的ID)
+        //pagerId (下方產生筆數的ID)
+        //colNameArray (設定上方Title *要與Data 傳入Json 屬性相對應)
+        //widthArray (寬度設定 L=> 210 M=>120)
+        //data (要秀的資料Json型別Data)
+        //title (標題)
+        function createJqgrid(listId, pagerId, colNameArray, widthArray,data,title)
         {
             var colModelArray = [];
             var jagridLWidth = 210;
@@ -191,14 +199,14 @@
                     mtype: "POST",
                     colNames: colNameArray,
                     colModel: colModelArray,
-                    rowNum: 10,
-                    rowList: [10, 20, 30],
+                    rowNum: 10, //一頁筆數
+                    rowList: [10, 20, 30], //設定一頁幾筆
                     pager: '#' + pagerId,
-                    height: '222',
+                    height: '222', 
                     //sortname: 'id',
                     //viewrecords: true,
                     sortorder: "desc",
-                    caption: "title",
+                    caption: title, //標題
                     resizable: false,
                     autoencode: true,
                     viewsortcols: [true, 'vertical', true],

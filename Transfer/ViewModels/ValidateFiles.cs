@@ -7,6 +7,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Transfer.ViewModels
 {
+    /// <summary>
+    /// 檔案驗證
+    /// </summary>
     public class ValidateFiles
     {
         [FileSize(30000)]
