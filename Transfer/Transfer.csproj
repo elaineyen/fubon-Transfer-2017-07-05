@@ -144,32 +144,32 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Models\IFRS9Model.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IFRS9Model.Context.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\IFRS9Model.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\IFRS9Model.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>IFRS9Model.edmx</DependentUpon>
+    </Compile>
     <Compile Include="Models\IFRS9_Log.cs">
-      <DependentUpon>IFSR9PKModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\IFSR9PKModel.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>IFSR9PKModel.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\IFSR9PKModel.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>IFSR9PKModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\IFSR9PKModel.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>IFSR9PKModel.edmx</DependentUpon>
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Moody_Monthly_PD_Info.cs">
-      <DependentUpon>IFSR9PKModel.tt</DependentUpon>
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Moody_Predit_PD_Info.cs">
-      <DependentUpon>IFSR9PKModel.tt</DependentUpon>
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Moody_Quartly_PD_Info.cs">
-      <DependentUpon>IFSR9PKModel.tt</DependentUpon>
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\Utility.cs" />
@@ -252,25 +252,26 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
-    <Content Include="Models\IFSR9PKModel.Context.tt">
+    <Content Include="Models\IFRS9Model.Context.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>IFSR9PKModel.edmx</DependentUpon>
-      <LastGenOutput>IFSR9PKModel.Context.cs</LastGenOutput>
+      <DependentUpon>IFRS9Model.edmx</DependentUpon>
+      <LastGenOutput>IFRS9Model.Context.cs</LastGenOutput>
     </Content>
-    <Content Include="Models\IFSR9PKModel.tt">
+    <Content Include="Models\IFRS9Model.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>IFSR9PKModel.edmx</DependentUpon>
-      <LastGenOutput>IFSR9PKModel.cs</LastGenOutput>
+      <DependentUpon>IFRS9Model.edmx</DependentUpon>
+      <LastGenOutput>IFRS9Model.cs</LastGenOutput>
     </Content>
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
-    <EntityDeploy Include="Models\IFSR9PKModel.edmx">
+    <EntityDeploy Include="Models\IFRS9Model.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>IFSR9PKModel.Designer.cs</LastGenOutput>
+      <LastGenOutput>IFRS9Model.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <Content Include="Models\IFSR9PKModel.edmx.diagram">
-      <DependentUpon>IFSR9PKModel.edmx</DependentUpon>
+    <Content Include="Models\IFRS9Model.edmx.diagram">
+      <DependentUpon>IFRS9Model.edmx</DependentUpon>
     </Content>
+    <None Include="Properties\PublishProfiles\mark-test-10607.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\i18n\grid.locale-ar.js" />
     <Content Include="Scripts\i18n\grid.locale-bg.js" />
@@ -333,7 +334,9 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </Content>

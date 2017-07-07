@@ -13,10 +13,10 @@ namespace Transfer.Models
     using System.Data.Entity;
     using System.Data.Entity.Infrastructure;
     
-    public partial class IFRS9SecondEntities : DbContext
+    public partial class IFRS9Entities : DbContext
     {
-        public IFRS9SecondEntities()
-            : base("name=IFRS9SecondEntities")
+        public IFRS9Entities()
+            : base("name=IFRS9Entities")
         {
         }
     

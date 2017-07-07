@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="IFRS9SecondModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="IFRS9Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="IFRS9_Log">
           <Key>
             <PropertyRef Name="Id" />
@@ -52,7 +52,7 @@
           <Property Name="Year_Quartly" Type="varchar" MaxLength="6" />
           <Property Name="PD" Type="float" />
         </EntityType>
-        <EntityContainer Name="IFRS9SecondModelStoreContainer">
+        <EntityContainer Name="IFRS9ModelStoreContainer">
           <EntitySet Name="IFRS9_Log" EntityType="Self.IFRS9_Log" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Monthly_PD_Info" EntityType="Self.Moody_Monthly_PD_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Predit_PD_Info" EntityType="Self.Moody_Predit_PD_Info" Schema="dbo" store:Type="Tables" />
@@ -62,7 +62,7 @@
     </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="IFRS9SecondModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+      <Schema Namespace="IFRS9Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityType Name="IFRS9_Log">
           <Key>
             <PropertyRef Name="Id" />
@@ -110,7 +110,7 @@
           <Property Name="Year_Quartly" Type="String" MaxLength="6" FixedLength="false" Unicode="false" />
           <Property Name="PD" Type="Double" />
         </EntityType>
-        <EntityContainer Name="IFRS9SecondEntities" annotation:LazyLoadingEnabled="true">
+        <EntityContainer Name="IFRS9Entities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="IFRS9_Log" EntityType="Self.IFRS9_Log" />
           <EntitySet Name="Moody_Monthly_PD_Info" EntityType="Self.Moody_Monthly_PD_Info" />
           <EntitySet Name="Moody_Predit_PD_Info" EntityType="Self.Moody_Predit_PD_Info" />
@@ -121,9 +121,9 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="IFRS9SecondModelStoreContainer" CdmEntityContainer="IFRS9SecondEntities">
+        <EntityContainerMapping StorageEntityContainer="IFRS9ModelStoreContainer" CdmEntityContainer="IFRS9Entities">
           <EntitySetMapping Name="IFRS9_Log">
-            <EntityTypeMapping TypeName="IFRS9SecondModel.IFRS9_Log">
+            <EntityTypeMapping TypeName="IFRS9Model.IFRS9_Log">
               <MappingFragment StoreEntitySet="IFRS9_Log">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Table_name" ColumnName="Table_name" />
@@ -138,7 +138,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Moody_Monthly_PD_Info">
-            <EntityTypeMapping TypeName="IFRS9SecondModel.Moody_Monthly_PD_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Moody_Monthly_PD_Info">
               <MappingFragment StoreEntitySet="Moody_Monthly_PD_Info">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Trailing_12m_Ending" ColumnName="Trailing_12m_Ending" />
@@ -153,7 +153,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Moody_Predit_PD_Info">
-            <EntityTypeMapping TypeName="IFRS9SecondModel.Moody_Predit_PD_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Moody_Predit_PD_Info">
               <MappingFragment StoreEntitySet="Moody_Predit_PD_Info">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Data_Year" ColumnName="Data_Year" />
@@ -164,7 +164,7 @@
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Moody_Quartly_PD_Info">
-            <EntityTypeMapping TypeName="IFRS9SecondModel.Moody_Quartly_PD_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Moody_Quartly_PD_Info">
               <MappingFragment StoreEntitySet="Moody_Quartly_PD_Info">
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Data_Year" ColumnName="Data_Year" />

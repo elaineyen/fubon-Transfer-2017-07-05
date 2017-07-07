@@ -15,7 +15,7 @@ namespace Transfer.Controllers
 {
     public class IFRS9Controller : Controller
     {
-        private IFRS9SecondEntities db = new IFRS9SecondEntities();
+        private IFRS9Entities db = new IFRS9Entities();
 
         public ActionResult Index()
         {
