@@ -58,12 +58,12 @@ namespace Transfer.Controllers
 
                 string projectFile = Server.MapPath("~/FileUploads"); //專案資料夾
                 string path = Path.Combine(projectFile, fileName);
-                createFile(projectFile);
+                createFile(projectFile); //檢查是否有FileUploads資料夾,如果沒有就新增
 
                 using (var fileStream = new FileStream(path,
                     FileMode.Create, FileAccess.ReadWrite))
                 {
-                    FileModel.File.InputStream.CopyTo(fileStream);
+                    FileModel.File.InputStream.CopyTo(fileStream); //資料複製一份到FileUploads,存在就覆寫
                 }
                 #endregion
 
@@ -76,7 +76,7 @@ namespace Transfer.Controllers
                 if (dataModel.Count > 0)
                 {
                     result.RETURN_FLAG = true;
-                    result.Datas = Json(dataModel);
+                    result.Datas = Json(dataModel); //給JqGrid 顯示
                 }
                 else
                 {
@@ -95,41 +95,54 @@ namespace Transfer.Controllers
             return Json(result);
         }
 
+        /// <summary>
+        /// 轉檔把Excel 資料存到 DB
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult Transfer()
         {
             MSGReturnModel result = new MSGReturnModel();
             try
             {
+                #region 抓Excel檔案 轉成 model
                 // Excel 檔案位置
                 DateTime startTime = DateTime.Now;
                 string projectFile = Server.MapPath("~/FileUploads");
-                string fileName = @"Exhibit 10.xlsx";
-                //string configFileName = ConfigurationManager.AppSettings["fileName"];
-                
+                string fileName = @"Exhibit 10.xlsx"; //預設
+                string configFileName = ConfigurationManager.AppSettings["fileName"];
+                if (!string.IsNullOrWhiteSpace(configFileName))
+                    fileName = configFileName; //config 設定就取代
                 string path = Path.Combine(projectFile, fileName);
                 FileStream stream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read);
 
-                string pathType = path.Split('.')[1];
-                List<ExhibitModel> dataModel = getExcel(pathType, stream);
+                string pathType = path.Split('.')[1]; //抓副檔名
+                List<ExhibitModel> dataModel = getExcel(pathType, stream); //Excel轉成 ExhibitModel
 
                 string proName = "Transfer";
                 string tableName = string.Empty;
+                #endregion
 
+                #region save Moody_Monthly_PD_Info(A81)
                 tableName = "Moody_Monthly_PD_Info";
-                bool flagA81 = saveA81(dataModel);
-                bool A81Log = saveLog(tableName, fileName, proName, flagA81, startTime, DateTime.Now);
-                txtLog(tableName, flagA81, startTime);
+                bool flagA81 = saveA81(dataModel); //save to DB
+                bool A81Log = saveLog(tableName, fileName, proName, flagA81, startTime, DateTime.Now); //寫sql Log
+                txtLog(tableName, flagA81, startTime); //寫txt Log
+                #endregion
 
+                #region save Moody_Quartly_PD_Info(A82)
                 tableName = "Moody_Quartly_PD_Info";
-                bool flagA82 = saveA82(dataModel);
-                bool A82Log = saveLog(tableName, fileName, proName, flagA82, startTime, DateTime.Now);
-                txtLog(tableName, A82Log, startTime);
+                bool flagA82 = saveA82(dataModel); //save to DB
+                bool A82Log = saveLog(tableName, fileName, proName, flagA82, startTime, DateTime.Now); //寫sql Log
+                txtLog(tableName, A82Log, startTime); //寫txt Log
+                #endregion
 
+                #region save Moody_Predit_PD_Info(A83)
                 tableName = "Moody_Predit_PD_Info";
-                bool flagA83 = saveA83(dataModel);
-                bool A83Log = saveLog(tableName, fileName, proName, flagA83, startTime, DateTime.Now);
-                txtLog(tableName, A82Log, startTime);
+                bool flagA83 = saveA83(dataModel); //save to DB
+                bool A83Log = saveLog(tableName, fileName, proName, flagA83, startTime, DateTime.Now); //寫sql Log
+                txtLog(tableName, A82Log, startTime); //寫txt Log
+                #endregion
 
                 result.RETURN_FLAG = flagA81 && flagA82 && flagA83;
                 if (!result.RETURN_FLAG)
@@ -151,23 +164,28 @@ namespace Transfer.Controllers
             return Json(result);
         }
 
+        /// <summary>
+        /// 前端抓資料時呼叫
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult GetData(string type)
         {
             MSGReturnModel result = new MSGReturnModel();
             result.RETURN_FLAG = false;
-            result.DESCRIPTION = "No Data !";
+            result.DESCRIPTION = "No Data!";
             try
             {
                 switch (type)
                 {
-                    case "A81":
+                    case "A81": //抓Moody_Monthly_PD_Info(A81)資料
                         if (db.Moody_Monthly_PD_Info.Count() > 0)
                         {
                             result.RETURN_FLAG = true;
                             result.Datas = Json(
                                 (from item in db.Moody_Monthly_PD_Info.AsEnumerable()
-                                 select new A81ViewModel()
+                                 select new A81ViewModel() //轉型 Datetime
                                 {
                                      Trailing_12m_Ending =
                                     item.Trailing_12m_Ending.HasValue ?
@@ -182,14 +200,14 @@ namespace Transfer.Controllers
                                 }).ToList());
                         }
                         break;
-                    case "A82":
+                    case "A82"://抓Moody_Quartly_PD_Info(A82)資料
                         if (db.Moody_Quartly_PD_Info.Count() > 0)
                         {
                             result.RETURN_FLAG = true;
                             result.Datas = Json(db.Moody_Quartly_PD_Info.ToList());
                         }
                         break;
-                    case "A83":
+                    case "A83"://抓Moody_Predit_PD_Info(A83)資料
                         if (db.Moody_Predit_PD_Info.Count() > 0)
                         {
                             result.RETURN_FLAG = true;
@@ -210,7 +228,12 @@ namespace Transfer.Controllers
 
         #region private function
 
-        #region save A81
+        #region save Moody_Monthly_PD_Info(A81)
+        /// <summary>
+        /// Save  Moody_Monthly_PD_Info(A81)
+        /// </summary>
+        /// <param name="dataModel"></param>
+        /// <returns></returns>
         private bool saveA81(List<ExhibitModel> dataModel)
         {
             bool flag = true;
@@ -218,7 +241,7 @@ namespace Transfer.Controllers
             {
                 foreach (var item in db.Moody_Monthly_PD_Info)
                 {
-                    db.Moody_Monthly_PD_Info.Remove(item);
+                    db.Moody_Monthly_PD_Info.Remove(item); //資料全刪除
                 }
                 int id = 1;
                 foreach (var item in dataModel)
@@ -260,13 +283,13 @@ namespace Transfer.Controllers
                     id += 1;
                 }
 
-                db.SaveChanges();
+                db.SaveChanges(); //Save
             }
             catch (Exception ex)
             {
                 foreach (var item in db.Moody_Monthly_PD_Info)
                 {
-                    db.Moody_Monthly_PD_Info.Remove(item);
+                    db.Moody_Monthly_PD_Info.Remove(item); //失敗先刪除
                 }
                 flag = false;
             }
@@ -274,7 +297,12 @@ namespace Transfer.Controllers
         }
         #endregion
 
-        #region save A82
+        #region save Moody_Quartly_PD_Info(A82)
+        /// <summary>
+        /// save Moody_Quartly_PD_Info(A82)
+        /// </summary>
+        /// <param name="dataModel"></param>
+        /// <returns></returns>
         private bool saveA82(List<ExhibitModel> dataModel)
         {
             bool flag = true;
@@ -286,15 +314,15 @@ namespace Transfer.Controllers
                 }
                 int id = 1;
                 List<Moody_Quartly_PD_Info> allData = new List<Moody_Quartly_PD_Info>();
-                List<int> months = new List<int>() { 3, 6, 9, 12 };
+                List<int> months = new List<int>() { 3, 6, 9, 12 }; //只搜尋3.6.9.12 月份
                 foreach (var item in dataModel
-                    .Where(x => !string.IsNullOrWhiteSpace(x.Actual_Allcorp)
-                    && months.Contains(DateTime.Parse(x.Trailing).Month))
-                    .OrderByDescending(x => x.Trailing))
+                    .Where(x => !string.IsNullOrWhiteSpace(x.Actual_Allcorp) //要有Actual_Allcorp (排除今年)
+                    && months.Contains(DateTime.Parse(x.Trailing).Month)) //只搜尋3.6.9.12 月份
+                    .OrderByDescending(x => x.Trailing)) //排序=>日期大到小
                 {
                     DateTime dt = DateTime.Parse(item.Trailing);
                     string quartly = dt.Year.ToString();
-                    switch (dt.Month)
+                    switch (dt.Month) //判斷季別
                     {
                         case 3:
                             quartly += "Q1";
@@ -335,9 +363,9 @@ namespace Transfer.Controllers
         }
         #endregion
 
-        #region save A83
+        #region save Moody_Predit_PD_Info(A83)
         /// <summary>
-        /// 
+        /// save Moody_Predit_PD_Info(A83)
         /// </summary>
         /// <param name="dataModel"></param>
         /// <returns></returns>
@@ -354,11 +382,11 @@ namespace Transfer.Controllers
                                              where !string.IsNullOrWhiteSpace(q.Actual_Allcorp) && //排除掉今年
                                              12.Equals(DateTime.Parse(q.Trailing).Month) //只取12月
                                              select q).ToList();
-                string maxYear = models.Max(x => DateTime.Parse(x.Trailing)).Year.ToString();
-                string minYear = models.Min(x => DateTime.Parse(x.Trailing)).Year.ToString();
+                string maxYear = models.Max(x => DateTime.Parse(x.Trailing)).Year.ToString(); //抓取最大年
+                string minYear = models.Min(x => DateTime.Parse(x.Trailing)).Year.ToString(); //抓取最小年
 
                 double? PD = null;
-                double PDValue = models.Sum(x => double.Parse(x.Actual_Allcorp)) / models.Count;
+                double PDValue = models.Sum(x => double.Parse(x.Actual_Allcorp)) / models.Count; //計算 PD
                 if (PDValue > 0)
                     PD = PDValue;
 
@@ -374,7 +402,7 @@ namespace Transfer.Controllers
                 var dtn = DateTime.Now.Year;
                 ExhibitModel model =
                     dataModel.Where(x => dtn.Equals(DateTime.Parse(x.Trailing).Year)
-                    && 12.Equals(DateTime.Parse(x.Trailing).Month)).FirstOrDefault();
+                    && 12.Equals(DateTime.Parse(x.Trailing).Month)).FirstOrDefault(); //抓今年又是12月的資料
                 string baselineForecastAllcorp = string.Empty;
                 if (model != null)
                     baselineForecastAllcorp = model.Baseline_forecast_Allcorp;
@@ -602,7 +630,6 @@ namespace Transfer.Controllers
         #endregion
 
         #endregion
-
 
     }
 }
