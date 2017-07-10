@@ -8,7 +8,7 @@ namespace Transfer.ViewModels
     /// <summary>
     /// Exhibit 前段顯示Model
     /// </summary>
-    public class ExhibitModel
+    public class Exhibit10Model
     {
         public string Trailing { get; set; }
         public string Actual_Allcorp { get; set; }

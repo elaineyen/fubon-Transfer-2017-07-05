@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="IFRS9Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="IFRS9Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="IFRS9_Log">
           <Key>
             <PropertyRef Name="Id" />
@@ -52,14 +52,43 @@
           <Property Name="Year_Quartly" Type="varchar" MaxLength="6" />
           <Property Name="PD" Type="float" />
         </EntityType>
+        <EntityType Name="Moody_Tm_YYYY">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="From_To" Type="varchar" MaxLength="4" />
+          <Property Name="Aaa" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="Aa1" Type="float" />
+          <Property Name="Aa2" Type="float" />
+          <Property Name="Aa3" Type="float" />
+          <Property Name="A1" Type="float" />
+          <Property Name="A2" Type="float" />
+          <Property Name="A3" Type="float" />
+          <Property Name="Baa1" Type="float" />
+          <Property Name="Baa2" Type="float" />
+          <Property Name="Baa3" Type="float" />
+          <Property Name="Ba1" Type="float" />
+          <Property Name="Ba2" Type="float" />
+          <Property Name="Ba3" Type="float" />
+          <Property Name="B1" Type="float" />
+          <Property Name="B2" Type="float" />
+          <Property Name="B3" Type="float" />
+          <Property Name="Caa1" Type="float" />
+          <Property Name="Caa2" Type="float" />
+          <Property Name="Caa3" Type="float" />
+          <Property Name="Ca_C" Type="float" />
+          <Property Name="WR" Type="float" />
+          <Property Name="Default_Value" Type="float" />
+        </EntityType>
         <EntityContainer Name="IFRS9ModelStoreContainer">
           <EntitySet Name="IFRS9_Log" EntityType="Self.IFRS9_Log" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Monthly_PD_Info" EntityType="Self.Moody_Monthly_PD_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Predit_PD_Info" EntityType="Self.Moody_Predit_PD_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Quartly_PD_Info" EntityType="Self.Moody_Quartly_PD_Info" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Moody_Tm_YYYY" EntityType="Self.Moody_Tm_YYYY" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="IFRS9Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -115,7 +144,37 @@
           <EntitySet Name="Moody_Monthly_PD_Info" EntityType="Self.Moody_Monthly_PD_Info" />
           <EntitySet Name="Moody_Predit_PD_Info" EntityType="Self.Moody_Predit_PD_Info" />
           <EntitySet Name="Moody_Quartly_PD_Info" EntityType="Self.Moody_Quartly_PD_Info" />
+          <EntitySet Name="Moody_Tm_YYYY" EntityType="IFRS9Model.Moody_Tm_YYYY" />
         </EntityContainer>
+        <EntityType Name="Moody_Tm_YYYY">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="From_To" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
+          <Property Name="Aaa" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="Aa1" Type="Double" />
+          <Property Name="Aa2" Type="Double" />
+          <Property Name="Aa3" Type="Double" />
+          <Property Name="A1" Type="Double" />
+          <Property Name="A2" Type="Double" />
+          <Property Name="A3" Type="Double" />
+          <Property Name="Baa1" Type="Double" />
+          <Property Name="Baa2" Type="Double" />
+          <Property Name="Baa3" Type="Double" />
+          <Property Name="Ba1" Type="Double" />
+          <Property Name="Ba2" Type="Double" />
+          <Property Name="Ba3" Type="Double" />
+          <Property Name="B1" Type="Double" />
+          <Property Name="B2" Type="Double" />
+          <Property Name="B3" Type="Double" />
+          <Property Name="Caa1" Type="Double" />
+          <Property Name="Caa2" Type="Double" />
+          <Property Name="Caa3" Type="Double" />
+          <Property Name="Ca_C" Type="Double" />
+          <Property Name="WR" Type="Double" />
+          <Property Name="Default_Value" Type="Double" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -170,6 +229,36 @@
                 <ScalarProperty Name="Data_Year" ColumnName="Data_Year" />
                 <ScalarProperty Name="Year_Quartly" ColumnName="Year_Quartly" />
                 <ScalarProperty Name="PD" ColumnName="PD" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Moody_Tm_YYYY">
+            <EntityTypeMapping TypeName="IFRS9Model.Moody_Tm_YYYY">
+              <MappingFragment StoreEntitySet="Moody_Tm_YYYY">
+                <ScalarProperty Name="Default_Value" ColumnName="Default_Value" />
+                <ScalarProperty Name="WR" ColumnName="WR" />
+                <ScalarProperty Name="Ca_C" ColumnName="Ca_C" />
+                <ScalarProperty Name="Caa3" ColumnName="Caa3" />
+                <ScalarProperty Name="Caa2" ColumnName="Caa2" />
+                <ScalarProperty Name="Caa1" ColumnName="Caa1" />
+                <ScalarProperty Name="B3" ColumnName="B3" />
+                <ScalarProperty Name="B2" ColumnName="B2" />
+                <ScalarProperty Name="B1" ColumnName="B1" />
+                <ScalarProperty Name="Ba3" ColumnName="Ba3" />
+                <ScalarProperty Name="Ba2" ColumnName="Ba2" />
+                <ScalarProperty Name="Ba1" ColumnName="Ba1" />
+                <ScalarProperty Name="Baa3" ColumnName="Baa3" />
+                <ScalarProperty Name="Baa2" ColumnName="Baa2" />
+                <ScalarProperty Name="Baa1" ColumnName="Baa1" />
+                <ScalarProperty Name="A3" ColumnName="A3" />
+                <ScalarProperty Name="A2" ColumnName="A2" />
+                <ScalarProperty Name="A1" ColumnName="A1" />
+                <ScalarProperty Name="Aa3" ColumnName="Aa3" />
+                <ScalarProperty Name="Aa2" ColumnName="Aa2" />
+                <ScalarProperty Name="Aa1" ColumnName="Aa1" />
+                <ScalarProperty Name="Aaa" ColumnName="Aaa" />
+                <ScalarProperty Name="From_To" ColumnName="From_To" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

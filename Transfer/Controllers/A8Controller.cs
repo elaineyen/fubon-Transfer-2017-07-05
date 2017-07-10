@@ -67,21 +67,26 @@ namespace Transfer.Controllers
 
                 string projectFile = Server.MapPath("~/FileUploads"); //專案資料夾
                 string path = Path.Combine(projectFile, fileName);
-                createFile(projectFile); //檢查是否有FileUploads資料夾,如果沒有就新增
 
-                using (var fileStream = new FileStream(path,
-                    FileMode.Create, FileAccess.ReadWrite))
-                {
-                    FileModel.File.InputStream.CopyTo(fileStream); //資料複製一份到FileUploads,存在就覆寫
-                }
-                #endregion
+                FileUpLoad.createFile(projectFile); //檢查是否有FileUploads資料夾,如果沒有就新增
 
-                #region 讀取Excel資料 使用ExcelDataReader 並且組成 json
+                //呼叫上傳檔案 function
+                result = FileUpLoad.FileUpLoadinPath(path, FileModel.File);
+                if (!result.RETURN_FLAG)
+                    return Json(result);
+                //using (var fileStream = new FileStream(path,
+                //    FileMode.Create, FileAccess.ReadWrite))
+                //{
+                //    FileModel.File.InputStream.CopyTo(fileStream); //資料複製一份到FileUploads,存在就覆寫
+                //}
+                    #endregion
+
+                    #region 讀取Excel資料 使用ExcelDataReader 並且組成 json
                 string pathType =
                     Path.GetExtension(FileModel.File.FileName)
                     .Substring(1); //檔案類型
                 var stream = FileModel.File.InputStream;
-                List<ExhibitModel> dataModel = getExcel(pathType, stream);
+                List<Exhibit10Model> dataModel = getExcel(pathType, stream);
                 if (dataModel.Count > 0)
                 {
                     result.RETURN_FLAG = true;
@@ -126,7 +131,7 @@ namespace Transfer.Controllers
                 FileStream stream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read);
 
                 string pathType = path.Split('.')[1]; //抓副檔名
-                List<ExhibitModel> dataModel = getExcel(pathType, stream); //Excel轉成 ExhibitModel
+                List<Exhibit10Model> dataModel = getExcel(pathType, stream); //Excel轉成 Exhibit10Model
 
                 string proName = "Transfer";
                 string tableName = string.Empty;
@@ -243,7 +248,7 @@ namespace Transfer.Controllers
         /// </summary>
         /// <param name="dataModel"></param>
         /// <returns></returns>
-        private bool saveA81(List<ExhibitModel> dataModel)
+        private bool saveA81(List<Exhibit10Model> dataModel)
         {
             bool flag = true;
             try
@@ -312,7 +317,7 @@ namespace Transfer.Controllers
         /// </summary>
         /// <param name="dataModel"></param>
         /// <returns></returns>
-        private bool saveA82(List<ExhibitModel> dataModel)
+        private bool saveA82(List<Exhibit10Model> dataModel)
         {
             bool flag = true;
             try
@@ -378,7 +383,7 @@ namespace Transfer.Controllers
         /// </summary>
         /// <param name="dataModel"></param>
         /// <returns></returns>
-        private bool saveA83(List<ExhibitModel> dataModel)
+        private bool saveA83(List<Exhibit10Model> dataModel)
         {
             bool flag = true;
             try
@@ -387,7 +392,7 @@ namespace Transfer.Controllers
                 {
                     db.Moody_Predit_PD_Info.Remove(item);
                 }
-                List<ExhibitModel> models = (from q in dataModel
+                List<Exhibit10Model> models = (from q in dataModel
                                              where !string.IsNullOrWhiteSpace(q.Actual_Allcorp) && //排除掉今年
                                              12.Equals(DateTime.Parse(q.Trailing).Month) //只取12月
                                              select q).ToList();
@@ -409,7 +414,7 @@ namespace Transfer.Controllers
                     PD = PD
                 });
                 var dtn = DateTime.Now.Year;
-                ExhibitModel model =
+                Exhibit10Model model =
                     dataModel.Where(x => dtn.Equals(DateTime.Parse(x.Trailing).Year)
                     && 12.Equals(DateTime.Parse(x.Trailing).Month)).FirstOrDefault(); //抓今年又是12月的資料
                 string baselineForecastAllcorp = string.Empty;
@@ -456,7 +461,7 @@ namespace Transfer.Controllers
                 string configTxtLocation = ConfigurationManager.AppSettings["txtLogLocation"];
                 if (!string.IsNullOrWhiteSpace(configTxtLocation))
                     projectFile = configTxtLocation; //有設定webConfig且不為空就取代
-                createFile(projectFile);
+                FileUpLoad.createFile(projectFile);
                 string path = "ExhibitTransfer.txt"; //預設txt名稱
                 string configTxtName = ConfigurationManager.AppSettings["txtLogName"];
                 if (!string.IsNullOrWhiteSpace(configTxtName))
@@ -541,18 +546,18 @@ namespace Transfer.Controllers
         }
         #endregion
 
-        #region datarow 組成 ExhibitModel
+        #region datarow 組成 Exhibit10Model
         /// <summary>
-        /// datarow 組成 ExhibitModel
+        /// datarow 組成 Exhibit10Model
         /// </summary>
         /// <param name="item">DataRow</param>
-        /// <returns>ExhibitModel</returns>
-        private ExhibitModel getExhibitModels(DataRow item)
+        /// <returns>Exhibit10Model</returns>
+        private Exhibit10Model getExhibit10Models(DataRow item)
         {
             DateTime minDate = DateTime.MinValue;
             if (item[0] != null)
                 DateTime.TryParse(item[0].ToString(), out minDate);
-            return new ExhibitModel()
+            return new Exhibit10Model()
             {
                 Trailing = (item[0] != null) && (minDate != DateTime.MinValue) ?
                 minDate.ToString("yyyy/MM/dd") : string.Empty,
@@ -572,17 +577,17 @@ namespace Transfer.Controllers
         }
         #endregion
 
-        #region get Excel to List<ExhibitModel>
+        #region get Excel to List<Exhibit10Model>
         /// <summary>
-        /// 把Excel 資料轉換成 ExhibitModel
+        /// 把Excel 資料轉換成 Exhibit10Model
         /// </summary>
         /// <param name="pathType">string</param>
         /// <param name="stream">Stream</param>
-        /// <returns>ExhibitModels</returns>
-        private List<ExhibitModel> getExcel(string pathType, Stream stream)
+        /// <returns>Exhibit10Models</returns>
+        private List<Exhibit10Model> getExcel(string pathType, Stream stream)
         {
             DataSet resultData = new DataSet();
-            List<ExhibitModel> dataModel = new List<ExhibitModel>();
+            List<Exhibit10Model> dataModel = new List<Exhibit10Model>();
             try
             {
                 IExcelDataReader reader = null;
@@ -602,25 +607,13 @@ namespace Transfer.Controllers
                 if (resultData.Tables[0].Rows.Count > 2) //判斷有無資料
                 {
                     dataModel = (from q in resultData.Tables[0].AsEnumerable()
-                                 select getExhibitModels(q)).Skip(1).ToList();
-                                 //skip(1) 為排除Excel Title列那行(參數可調)
+                                 select getExhibit10Models(q)).Skip(1).ToList();
+                    //skip(1) 為排除Excel Title列那行(參數可調)
                 }
             }
             catch
             { }
             return dataModel;
-        }
-        #endregion
-
-        #region Create 資料夾
-        /// <summary>
-        /// Create 資料夾(判斷如果沒有的話就新增)
-        /// </summary>
-        /// <param name="projectFile">資料夾位置</param>
-        private void createFile(string projectFile)
-        {
-            bool exists = Directory.Exists(projectFile);
-            if (!exists) Directory.CreateDirectory(projectFile);
         }
         #endregion
 

@@ -29,5 +29,6 @@ namespace Transfer.Models
         public virtual DbSet<Moody_Monthly_PD_Info> Moody_Monthly_PD_Info { get; set; }
         public virtual DbSet<Moody_Predit_PD_Info> Moody_Predit_PD_Info { get; set; }
         public virtual DbSet<Moody_Quartly_PD_Info> Moody_Quartly_PD_Info { get; set; }
+        public virtual DbSet<Moody_Tm_YYYY> Moody_Tm_YYYY { get; set; }
     }
 }

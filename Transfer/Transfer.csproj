@@ -138,6 +138,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\A7Controller.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\A8Controller.cs" />
     <Compile Include="Enum\PDType.cs" />
@@ -171,10 +172,14 @@
     <Compile Include="Models\Moody_Quartly_PD_Info.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Moody_Tm_YYYY.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility\FileUpLoad.cs" />
     <Compile Include="Utility\Utility.cs" />
     <Compile Include="ViewModels\A81ViewModel.cs" />
-    <Compile Include="ViewModels\ExhibitModel.cs" />
+    <Compile Include="ViewModels\Exhibit10Model.cs" />
     <Compile Include="ViewModels\ValidateFiles.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -359,6 +364,7 @@
     <Content Include="Views\A8\Index.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\A8\Detail.cshtml" />
+    <Content Include="Views\A7\Index.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
