@@ -19,6 +19,15 @@ namespace Transfer.Controllers
 
         public ActionResult Index()
         {
+            ViewBag.Manu = "A8Main";
+            ViewBag.SubManu = "A80SubMain";
+            return View();
+        }
+
+        public ActionResult Detail()
+        {
+            ViewBag.Manu = "A8Main";
+            ViewBag.SubManu = "A81SubMain";
             return View();
         }
 

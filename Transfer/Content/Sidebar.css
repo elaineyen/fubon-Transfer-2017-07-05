@@ -144,14 +144,16 @@
       height:100%
   }
 }
-
-.viewDetail {
-    display: flex;
+#main .main_hand {
+    padding:10px;
 }
-
-    .viewDetail .jqd {
-        flex: 1 ;
-    }
+#main .main_hand_div {
+    border: 2px solid #23282e;
+    border-radius: 25px;
+    height:126px;
+    background-color:silver;
+    padding:20px;
+}
 
 body {
   margin: 0px;

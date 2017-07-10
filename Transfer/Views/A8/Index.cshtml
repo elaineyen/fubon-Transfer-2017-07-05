@@ -3,29 +3,32 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div class="container" id="main" >
-    <div class="row">
-        <div class="col-md-12">
-            @*<h4>This is suppose to be in the main content</h4>*@
-
-            <div style="padding-top:10px;padding-bottom:10px">
-                @using (Ajax.BeginForm("Upload", "A8",
-new AjaxOptions { HttpMethod = "POST" },
-new { enctype = "multipart/form-data", @id = "form0" }))
-                {
-                    <label for="file">轉檔檔案:</label>
-                    <input type="file" name="file" />
-                    <input type="button" value="資料上傳" id="fileSubmit" />
-                }
-                <input type="button" value="轉檔" id="btnTransfer" />
-                <input type="button" value="A81查詢" id="btnA81Search" />
-                <input type="button" value="A82查詢" id="btnA82Search" />
-                <input type="button" value="A83查詢" id="btnA83Search" />
-            </div>
-
+    <div class="row main_hand">
+        <div class="col-md-12 main_hand_div">
+            <table>
+                <tr>
+                    <td>
+                        @using (Ajax.BeginForm("Upload", "A8",
+                                new AjaxOptions { HttpMethod = "POST" },
+                                new { enctype = "multipart/form-data", @id = "form0" }))
+                        {
+                            <label for="file" class="filestyle">轉檔檔案:</label>
+                            <input type="file" name="file" />
+                            @*<input type="button" class="btn btn-primary" value="資料上傳" id="fileSubmit" />*@
+                        }
+                        @*<input type="button" value="A81查詢" id="btnA81Search" />
+                          <input type="button" value="A82查詢" id="btnA82Search" />
+                           <input type="button" value="A83查詢" id="btnA83Search" />*@
+                    </td>
+                    <td>
+                        <input type="button" class="btn btn-primary" style="margin-right:10px" value="資料上傳" id="fileSubmit" />
+                        <input type="button" class="btn btn-primary" value="轉檔" id="btnTransfer" />
+                    </td>
+                </tr>
+            </table>
         </div>
-
     </div>
-    <div class="row" style="overflow:auto;height:100%">
+    <div class="row main_body" style="overflow:auto;height:100%">
         <div class="col-md-12">
             <div class="viewDetail">
                 <div id="jqgridDiv" class="jqd">
@@ -43,7 +46,7 @@ new { enctype = "multipart/form-data", @id = "form0" }))
         //#region 註冊URL
         var url = {};
         url.transfer = '@Url.Action("Transfer", "A8")';
-        url.getData = '@Url.Action("GetData", "A8")';
+        @*url.getData = '@Url.Action("GetData", "A8")';*@
         //#endregion 註冊URL
 
         //#region 註冊click事件
@@ -56,67 +59,67 @@ new { enctype = "multipart/form-data", @id = "form0" }))
                 case 'btnTransfer':
                     $("#" + id).click(transfer);
                     break;
-                case 'btnA81Search':
-                    $("#" + id).on('click', function () { showJqgrid('A81') });
-                    break;
-                case 'btnA82Search':
-                    $("#" + id).on('click', function () { showJqgrid('A82') });
-                    break;
-                case 'btnA83Search':
-                    $("#" + id).on('click', function () { showJqgrid('A83') });
-                    break;
+                //case 'btnA81Search':
+                //    $("#" + id).on('click', function () { showJqgrid('A81') });
+                //    break;
+                //case 'btnA82Search':
+                //    $("#" + id).on('click', function () { showJqgrid('A82') });
+                //    break;
+                //case 'btnA83Search':
+                //    $("#" + id).on('click', function () { showJqgrid('A83') });
+                //    break;
             }
         })
         //#endregion 註冊click事件
 
         //#region 去controller 撈取資料並且用JqGrid套件顯示
-        function showJqgrid(type)
-        {
-            clearJqgrid();
-            var title = ''; //標頭
-            var colNameArray = []; //每個欄位名稱要對應傳入資料屬性
-            var widthArray = []; //每個欄位大小 L,M
-            var data ; // json Data 由Ajax 拿到
-            switch (type)
-            {
-                case "A81":
-                    title = 'Moody_Monthly_PD_Info(A81)';
-                    colNameArray = ['Trailing_12m_Ending', 'Actual_Allcorp',
-                    'Baseline_forecast_Allcorp', 'Pessimistic_Forecast_Allcorp',
-                    'Actual_SG', 'Baseline_forecast_SG', 'Pessimistic_Forecast_SG	',
-                    'Data_Year'];
-                    widthArray = ['L', 'M', 'L', 'L', 'M', 'L', 'L', 'M'];
-                    break;
-                case "A82": 
-                    title = 'Moody_Quartly_PD_Info(A82)';
-                    colNameArray = ['Data_Year', 'Year_Quartly', 'PD'];
-                    widthArray = ['M','M','M'];
-                    break;
-                case "A83":
-                    title = 'Moody_Predit_PD_Info(A83)';
-                    colNameArray = ['Data_Year', 'Period', 'PD_TYPE', 'PD'];
-                    widthArray = ['M', 'M', 'M','M'];
-                    break;
-            }
-            $.ajax({
-                type: "POST",
-                data: JSON.stringify({
-                    type: type
-                }),
-                dataType: "json",
-                url: url.getData,
-                contentType: 'application/json'
-            })
-            .done(function (result) {
-                if (result.RETURN_FLAG) {
-                    data = result.Datas.Data;
-                    createJqgrid("list1", "pager1", colNameArray, widthArray, data, title);
-                }
-                else {
-                    alert(result.DESCRIPTION);
-                }
-            });
-        }
+        //function showJqgrid(type)
+        //{
+        //    clearJqgrid();
+        //    var title = ''; //標頭
+        //    var colNameArray = []; //每個欄位名稱要對應傳入資料屬性
+        //    var widthArray = []; //每個欄位大小 L,M
+        //    var data ; // json Data 由Ajax 拿到
+        //    switch (type)
+        //    {
+        //        case "A81":
+        //            title = 'Moody_Monthly_PD_Info(A81)';
+        //            colNameArray = ['Trailing_12m_Ending', 'Actual_Allcorp',
+        //            'Baseline_forecast_Allcorp', 'Pessimistic_Forecast_Allcorp',
+        //            'Actual_SG', 'Baseline_forecast_SG', 'Pessimistic_Forecast_SG	',
+        //            'Data_Year'];
+        //            widthArray = ['L', 'M', 'L', 'L', 'M', 'L', 'L', 'M'];
+        //            break;
+        //        case "A82": 
+        //            title = 'Moody_Quartly_PD_Info(A82)';
+        //            colNameArray = ['Data_Year', 'Year_Quartly', 'PD'];
+        //            widthArray = ['M','M','M'];
+        //            break;
+        //        case "A83":
+        //            title = 'Moody_Predit_PD_Info(A83)';
+        //            colNameArray = ['Data_Year', 'Period', 'PD_TYPE', 'PD'];
+        //            widthArray = ['M', 'M', 'M','M'];
+        //            break;
+        //    }
+        //    $.ajax({
+        //        type: "POST",
+        //        data: JSON.stringify({
+        //            type: type
+        //        }),
+        //        dataType: "json",
+        //        url: url.getData,
+        //        contentType: 'application/json'
+        //    })
+        //    .done(function (result) {
+        //        if (result.RETURN_FLAG) {
+        //            data = result.Datas.Data;
+        //            createJqgrid("list1", "pager1", colNameArray, widthArray, data, title);
+        //        }
+        //        else {
+        //            alert(result.DESCRIPTION);
+        //        }
+        //    });
+        //}
         //#endregion
 
         //#region 資料上傳(Excel 資料寫入 local sql)
@@ -220,12 +223,14 @@ new { enctype = "multipart/form-data", @id = "form0" }))
                     rowNum: 10, //一頁筆數
                     rowList: [10, 20, 30], //設定一頁幾筆
                     pager: '#' + pagerId,
-                    height: '222', 
+                    height: '237',
+                    width: '1030',
                     //sortname: 'id',
                     //viewrecords: true,
                     sortorder: "desc",
                     caption: title, //標題
                     resizable: false,
+                    shrinkToFit: false,
                     autoencode: true,
                     viewsortcols: [true, 'vertical', true],
                     ajaxRowOptions: { contentType: "application/json" },

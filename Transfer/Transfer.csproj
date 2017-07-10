@@ -358,6 +358,7 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\A8\Index.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
+    <Content Include="Views\A8\Detail.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

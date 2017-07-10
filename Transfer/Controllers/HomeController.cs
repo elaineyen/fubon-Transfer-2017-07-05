@@ -6,6 +6,7 @@ namespace Transfer.Controllers
     {
         public ActionResult Index()
         {
+            ViewBag.manu = "HomeMain";
             return View();
         }
     }
