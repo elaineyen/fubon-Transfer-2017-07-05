@@ -1,34 +1,49 @@
 ﻿@{
-    ViewBag.Title = "IFRS9";
+    ViewBag.Title = "A8";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div style="padding-top:10px;padding-bottom:10px">
-    @using (Ajax.BeginForm("Upload", "IFRS9",
-    new AjaxOptions {  HttpMethod = "POST" },
-    new { enctype = "multipart/form-data" ,@id = "form0" }))
-    {
-        <label for="file">轉檔檔案:</label>
-        <input type="file" name="file" />
-        <input type="button" value="資料上傳" id="fileSubmit" />
-    }
-    <input type="button" value="轉檔" id="btnTransfer"/>
-    <input type="button" value="A81查詢" id="btnA81Search"/>
-    <input type="button" value="A82查詢" id="btnA82Search" />
-    <input type="button" value="A83查詢" id="btnA83Search" />
-</div>
-<div id="jqgridDiv">
-    @*<table id="list1"></table>*@
-    @*<div id="pager1"></div>*@
-</div>
+<div class="container" id="main" >
+    <div class="row">
+        <div class="col-md-12">
+            @*<h4>This is suppose to be in the main content</h4>*@
 
+            <div style="padding-top:10px;padding-bottom:10px">
+                @using (Ajax.BeginForm("Upload", "A8",
+new AjaxOptions { HttpMethod = "POST" },
+new { enctype = "multipart/form-data", @id = "form0" }))
+                {
+                    <label for="file">轉檔檔案:</label>
+                    <input type="file" name="file" />
+                    <input type="button" value="資料上傳" id="fileSubmit" />
+                }
+                <input type="button" value="轉檔" id="btnTransfer" />
+                <input type="button" value="A81查詢" id="btnA81Search" />
+                <input type="button" value="A82查詢" id="btnA82Search" />
+                <input type="button" value="A83查詢" id="btnA83Search" />
+            </div>
+
+        </div>
+
+    </div>
+    <div class="row" style="overflow:auto;height:100%">
+        <div class="col-md-12">
+            <div class="viewDetail">
+                <div id="jqgridDiv" class="jqd">
+                    @*<table id="list1"></table>*@
+                    @*<div id="pager1"></div>*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <script type="text/javascript">
 
     $(function () {
 
         //#region 註冊URL
         var url = {};
-        url.transfer = '@Url.Action("Transfer", "IFRS9")';
-        url.getData = '@Url.Action("GetData", "IFRS9")';
+        url.transfer = '@Url.Action("Transfer", "A8")';
+        url.getData = '@Url.Action("GetData", "A8")';
         //#endregion 註冊URL
 
         //#region 註冊click事件

@@ -13,7 +13,7 @@ using System.Configuration;
 
 namespace Transfer.Controllers
 {
-    public class IFRS9Controller : Controller
+    public class A8Controller : Controller
     {
         private IFRS9Entities db = new IFRS9Entities();
 

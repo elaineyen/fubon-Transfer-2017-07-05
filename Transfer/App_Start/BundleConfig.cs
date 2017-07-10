@@ -31,11 +31,16 @@ namespace Transfer
                       "~/Scripts/bootstrap.js",
                       "~/Scripts/respond.js"));
 
+            bundles.Add(new ScriptBundle("~/bundles/Sidebar").Include(
+                      "~/Scripts/Sidebar.js"));
+
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.css",
                       "~/Content/site.css",
                       "~/Content/jquery.jqGrid/ui.jqgrid.css",
-                      "~/Content/themes/base/minified/jquery-ui.min.css"
+                      "~/Content/themes/base/minified/jquery-ui.min.css",
+                      "~/Content/Sidebar.css",
+                      "~/Content/font-awesome.min.css"
                       ));
         }
     }

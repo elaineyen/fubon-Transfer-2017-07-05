@@ -12,7 +12,71 @@
     @Scripts.Render("~/bundles/jqueryjqgrid")
 </head>
 <body>
-    <div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="nav-side-menu">
+        <div class="brand">IFRS9</div>
+        <i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
+        <div class="menu-list">
+            <ul id="menu-content" class="menu-content collapse out">
+                <li >
+                    <a href='@Url.Action("Index","Home",null)'>首頁
+                    </a>
+                </li>
+                <li data-toggle="collapse" data-target="#A7" class="collapsed active">
+                    <a href="#">
+                    <i class="fa fa-gift fa-lg"></i> 
+                        轉移矩陣資料檔
+                    <span class="arrow"></span>
+                    </a>
+                </li>
+                <ul class="sub-menu collapse" id="A7">
+                    <li class="active "><a href='@Url.Action("Index","A7",null)'>上傳檔案</a></li>
+                    <li class=""><a href="#">A71 (轉移矩陣資料檔_Moody)</a></li>
+                    <li class=""><a href="#">A72 (轉移矩陣資料檔_調整後)</a></li>
+                    <li class=""><a href="#">A73 (等級違約率矩陣)</a></li>
+                    @*<li><a href="#">Tabs &amp; Accordions</a></li>*@
+                </ul>
+                <li data-toggle="collapse" data-target="#A8" class="collapsed">
+                    <a href="#">
+                    <i class="fa fa-globe fa-lg"></i>
+                        違約機率資料檔 
+                    <span class="arrow"></span>
+                    </a>
+                </li>
+                <ul class="sub-menu collapse" id="A8">
+                    <li class="active "><a href='@Url.Action("Index","A8",null)'>上傳檔案</a></li>
+                    <li class=""><a href="#">A81 (月違約機率資料檔_Moody)</a></liclass="same_as_a">
+                    <li class=""><a href="#">A82 (季違約機率資料檔_Moody)</a></li>
+                    <li class=""><a href="#">A83 (機率預測資料_Moody)</a></li>
+                </ul>
+                @*<li data-toggle="collapse" data-target="#new" class="collapsed">
+                    <a href="#"><i class="fa fa-car fa-lg"></i> New <span class="arrow"></span></a>
+                </li>
+                <ul class="sub-menu collapse" id="new">
+                    <li>New New 1</li>
+                    <li>New New 2</li>
+                    <li>New New 3</li>
+                </ul>*@
+                <li>
+                    <a href="#">
+                        <i class="fa fa-user fa-lg"></i> Profile
+                    </a>
+                </li>
+                <li>
+                    <a href="#">
+                        <i class="fa fa-users fa-lg"></i> Users
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+    @*<div class="container" id="main">
+        <div class="row">
+            <div class="col-md-12">
+                <h4>This is suppose to be in the main content</h4>
+            </div>
+        </div>
+    </div>*@
+    @*<div class="navbar navbar-inverse navbar-fixed-top">
         <div class="container">
             <div class="navbar-header">
                 <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
@@ -25,20 +89,22 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li>@Html.ActionLink("IFRS9", "Index", "IFRS9")</li>
-                    @*<li>@Html.ActionLink("關於", "About", "Home")</li>
-                    <li>@Html.ActionLink("連絡方式", "Contact", "Home")</li>*@
+                    <li>@Html.ActionLink("關於", "About", "Home")</li>
+                    <li>@Html.ActionLink("連絡方式", "Contact", "Home")</li>
                 </ul>
             </div>
         </div>
-    </div>
-    <div class="container body-content">
-        @RenderBody()
+    </div>*@
+    @RenderBody()
+    @*<div class="container body-content">
+       
         <hr />
         <footer>
             <p>&copy; IFRS9 應用程式</p>
         </footer>
-    </div>
+    </div>*@
     @Scripts.Render("~/bundles/bootstrap")
+    @Scripts.Render("~/bundles/Sidebar")
     @RenderSection("scripts", required: false)
 </body>
 </html>
