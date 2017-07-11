@@ -40,7 +40,6 @@
         //#region 註冊URL
         var url = {};
         url.transfer = '@Url.Action("Transfer", "A7")';
-        @*url.getData = '@Url.Action("GetData", "A8")';*@
         //#endregion 註冊URL
 
         //#region 註冊click事件
@@ -98,12 +97,17 @@
                     $.unblockUI();
                     if (result.RETURN_FLAG) {
                         var colNameArray =
-                            ['Trailing', 'Actual_Allcorp', 'Baseline_forecast_Allcorp',
-                             'Pessimistic_Forecast_Allcorp', 'Actual_SG',
-                             'Baseline_forecast_SG', 'Pessimistic_Forecast_SG'];
-                        var widthArray = ['M', 'M', 'L', 'L', 'M', 'L', 'L'];
+                            ['From_To','Aaa', 'Aa1', 'Aa2',
+                             'Aa3', 'A1','A2','A3',
+                             'Baa1', 'Baa2', 'Baa3',
+                             'Ba1', 'Ba2', 'Ba3',
+                             'B1', 'B2', 'B3',
+                             'Caa1', 'Caa2', 'Caa3',
+                             'Ca_C', 'WR', 'Default'];
+                        //var widthArray = ['M', 'M', 'M', 'M',
+                        //                  'M', 'M', 'M',];
                         var data = result.Datas.Data;
-                        createJqgrid("list1", "pager1", colNameArray, widthArray, data);
+                        createJqgrid("list1", "pager1", colNameArray, data);
                     }
                     else {
                         alert(result.DESCRIPTION);
@@ -131,22 +135,27 @@
         //widthArray (寬度設定 L=> 210 M=>120)
         //data (要秀的資料Json型別Data)
         //title (標題)
-        function createJqgrid(listId, pagerId, colNameArray, widthArray,data,title)
+        function createJqgrid(listId, pagerId, colNameArray,data,title)
         {
             var colModelArray = [];
-            var jagridLWidth = 210;
-            var jagridMWidth = 120;
-            if (colNameArray.length > 0 && colNameArray.length === widthArray.length)
+            //var jagridLWidth = 210;
+            var jagridMWidth = 80;
+            if (colNameArray.length > 0)
             {
                 for (let i = 0; i < colNameArray.length; i++)
                 {
                     var obj = {
                         name: colNameArray[i],
                         index: colNameArray[i],
-                        width: widthArray[i] === 'L' ? jagridLWidth : jagridMWidth
+                        width: jagridMWidth
                     }
                     colModelArray.push(obj);
+                    if (colNameArray[i].indexOf("From_To") > -1)
+                        colNameArray[i] = colNameArray[i].replace("_", "&#8260") + ':'; // _ => /
+                    if(colNameArray[i].indexOf("Ca_C") > -1)
+                        colNameArray[i] = colNameArray[i].replace("_", "&#8211"); // _ => -
                 }
+                
                 $('#jqgridDiv').append('<table id="' + listId + '"></table>');
                 $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');
                 $("#" + listId).jqGrid({

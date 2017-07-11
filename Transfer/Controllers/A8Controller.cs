@@ -17,6 +17,10 @@ namespace Transfer.Controllers
     {
         private IFRS9Entities db = new IFRS9Entities();
 
+        /// <summary>
+        /// A8(上傳檔案)
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Index()
         {
             ViewBag.Manu = "A8Main";
@@ -24,6 +28,10 @@ namespace Transfer.Controllers
             return View();
         }
 
+        /// <summary>
+        /// A8(查詢(A81.A82.A83))
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Detail()
         {
             ViewBag.Manu = "A8Main";
@@ -72,16 +80,12 @@ namespace Transfer.Controllers
 
                 //呼叫上傳檔案 function
                 result = FileUpLoad.FileUpLoadinPath(path, FileModel.File);
+
                 if (!result.RETURN_FLAG)
                     return Json(result);
-                //using (var fileStream = new FileStream(path,
-                //    FileMode.Create, FileAccess.ReadWrite))
-                //{
-                //    FileModel.File.InputStream.CopyTo(fileStream); //資料複製一份到FileUploads,存在就覆寫
-                //}
-                    #endregion
+                #endregion
 
-                    #region 讀取Excel資料 使用ExcelDataReader 並且組成 json
+                #region 讀取Excel資料 使用ExcelDataReader 並且組成 json
                 string pathType =
                     Path.GetExtension(FileModel.File.FileName)
                     .Substring(1); //檔案類型
@@ -124,7 +128,7 @@ namespace Transfer.Controllers
                 DateTime startTime = DateTime.Now;
                 string projectFile = Server.MapPath("~/FileUploads");
                 string fileName = @"Exhibit 10.xlsx"; //預設
-                string configFileName = ConfigurationManager.AppSettings["fileName"];
+                string configFileName = ConfigurationManager.AppSettings["fileA8Name"];
                 if (!string.IsNullOrWhiteSpace(configFileName))
                     fileName = configFileName; //config 設定就取代
                 string path = Path.Combine(projectFile, fileName);
@@ -141,21 +145,21 @@ namespace Transfer.Controllers
                 tableName = "Moody_Monthly_PD_Info";
                 bool flagA81 = saveA81(dataModel); //save to DB
                 bool A81Log = saveLog(tableName, fileName, proName, flagA81, startTime, DateTime.Now); //寫sql Log
-                txtLog(tableName, flagA81, startTime); //寫txt Log
+                TxtLog.txtLog(tableName, flagA81, startTime, txtLocation()); //寫txt Log
                 #endregion
 
                 #region save Moody_Quartly_PD_Info(A82)
                 tableName = "Moody_Quartly_PD_Info";
                 bool flagA82 = saveA82(dataModel); //save to DB
                 bool A82Log = saveLog(tableName, fileName, proName, flagA82, startTime, DateTime.Now); //寫sql Log
-                txtLog(tableName, A82Log, startTime); //寫txt Log
+                TxtLog.txtLog(tableName, A82Log, startTime, txtLocation()); //寫txt Log
                 #endregion
 
                 #region save Moody_Predit_PD_Info(A83)
                 tableName = "Moody_Predit_PD_Info";
                 bool flagA83 = saveA83(dataModel); //save to DB
                 bool A83Log = saveLog(tableName, fileName, proName, flagA83, startTime, DateTime.Now); //寫sql Log
-                txtLog(tableName, A82Log, startTime); //寫txt Log
+                TxtLog.txtLog(tableName, A82Log, startTime, txtLocation()); //寫txt Log
                 #endregion
 
                 result.RETURN_FLAG = flagA81 && flagA82 && flagA83;
@@ -204,12 +208,12 @@ namespace Transfer.Controllers
                                      Trailing_12m_Ending =
                                     item.Trailing_12m_Ending.HasValue ?
                                     item.Trailing_12m_Ending.Value.ToString("yyyy/MM/dd") : string.Empty,
-                                    Actual_Allcorp = doubleToString(item.Actual_Allcorp),
-                                    Actual_SG = doubleToString(item.Actual_SG),
-                                    Baseline_forecast_Allcorp = doubleToString(item.Baseline_forecast_Allcorp),
-                                    Baseline_forecast_SG = doubleToString(item.Baseline_forecast_SG),
-                                    Pessimistic_Forecast_Allcorp = doubleToString(item.Pessimistic_Forecast_Allcorp),
-                                    Pessimistic_Forecast_SG = doubleToString(item.Pessimistic_Forecast_SG),
+                                    Actual_Allcorp = TypeTransfer.doubleToString(item.Actual_Allcorp),
+                                    Actual_SG = TypeTransfer.doubleToString(item.Actual_SG),
+                                    Baseline_forecast_Allcorp = TypeTransfer.doubleToString(item.Baseline_forecast_Allcorp),
+                                    Baseline_forecast_SG = TypeTransfer.doubleToString(item.Baseline_forecast_SG),
+                                    Pessimistic_Forecast_Allcorp = TypeTransfer.doubleToString(item.Pessimistic_Forecast_Allcorp),
+                                    Pessimistic_Forecast_SG = TypeTransfer.doubleToString(item.Pessimistic_Forecast_SG),
                                     Data_Year = item.Data_Year
                                 }).ToList());
                         }
@@ -446,60 +450,9 @@ namespace Transfer.Controllers
         }
         #endregion
 
-        #region save txtlog
+        #region save sqllog(IFRS9_Log)
         /// <summary>
-        /// 寫入 Txt Log
-        /// </summary>
-        /// <param name="tableName">table名</param>
-        /// <param name="falg">成功或失敗</param>
-        /// <param name="start">開始時間</param>
-        private void txtLog(string tableName, bool falg, DateTime start)
-        {
-            try
-            {
-                string projectFile = Server.MapPath("~/FileUploads"); //預設txt位置
-                string configTxtLocation = ConfigurationManager.AppSettings["txtLogLocation"];
-                if (!string.IsNullOrWhiteSpace(configTxtLocation))
-                    projectFile = configTxtLocation; //有設定webConfig且不為空就取代
-                FileUpLoad.createFile(projectFile);
-                string path = "ExhibitTransfer.txt"; //預設txt名稱
-                string configTxtName = ConfigurationManager.AppSettings["txtLogName"];
-                if (!string.IsNullOrWhiteSpace(configTxtName))
-                    path = configTxtName; //有設定webConfig且不為空就取代
-                string folderPath = Path.Combine(projectFile, path); //合併路徑&檔名
-                string txtData = string.Empty;
-                try //試著抓取舊資料
-                {
-                    txtData = System.IO.File.ReadAllText(folderPath);
-                }
-                catch { }
-                string txt = string.Format("{0}_{1}_{2}",
-                             tableName,
-                             start.ToString("yyyyMMddHHmmss"),
-                             falg ? "Y" : "N");
-                if (!string.IsNullOrWhiteSpace(txtData)) //有舊資料就換行寫入下一筆
-                {
-                    txtData += string.Format("\r\n{0}", txt);
-                }
-                else //沒有就直接寫入
-                {
-                    txtData = txt;
-                }
-                FileStream fs = new FileStream(folderPath, FileMode.Create, FileAccess.Write);
-                StreamWriter sw = new StreamWriter(fs, System.Text.Encoding.Default);
-                sw.Write(txtData); //存檔
-                sw.Close(); 
-            }
-            catch (Exception ex)
-            {
-                string a = ex.Message;
-            }
-        }
-        #endregion
-
-        #region save sqllog
-        /// <summary>
-        /// Log資料存到Sql
+        /// Log資料存到Sql(IFRS9_Log)
         /// </summary>
         /// <param name="tableName">table名</param>
         /// <param name="fileName">檔案名</param>
@@ -561,18 +514,12 @@ namespace Transfer.Controllers
             {
                 Trailing = (item[0] != null) && (minDate != DateTime.MinValue) ?
                 minDate.ToString("yyyy/MM/dd") : string.Empty,
-                Actual_Allcorp = (item[1] != null) ?
-                item[1].ToString() : string.Empty,
-                Baseline_forecast_Allcorp = (item[2] != null) ?
-                item[2].ToString() : string.Empty,
-                Pessimistic_Forecast_Allcorp = (item[3] != null) ?
-                item[3].ToString() : string.Empty,
-                Actual_SG = (item[4] != null) ?
-                item[4].ToString() : string.Empty,
-                Baseline_forecast_SG = (item[5] != null) ?
-                item[5].ToString() : string.Empty,
-                Pessimistic_Forecast_SG = (item[6] != null) ?
-                item[6].ToString() : string.Empty
+                Actual_Allcorp = TypeTransfer.objToString(item[1]) ,
+                Baseline_forecast_Allcorp = TypeTransfer.objToString(item[2]),
+                Pessimistic_Forecast_Allcorp = TypeTransfer.objToString(item[3]) ,
+                Actual_SG = TypeTransfer.objToString(item[4]) ,
+                Baseline_forecast_SG = TypeTransfer.objToString(item[5]),
+                Pessimistic_Forecast_SG = TypeTransfer.objToString(item[6])
             };
         }
         #endregion
@@ -617,17 +564,27 @@ namespace Transfer.Controllers
         }
         #endregion
 
-        #region Double? To String
-        /// <summary>
-        /// Double? 轉string (null 回傳 string.Empty)
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        private string doubleToString(double? value)
+        #region txtlog 設定位置
+        private string txtLocation()
         {
-            if (value.HasValue)
-                return value.Value.ToString();
-            return string.Empty;
+            try
+            {
+                string projectFile = Server.MapPath("~/FileUploads"); //預設txt位置
+                string configTxtLocation = ConfigurationManager.AppSettings["txtLogLocation"];
+                if (!string.IsNullOrWhiteSpace(configTxtLocation))
+                    projectFile = configTxtLocation; //有設定webConfig且不為空就取代
+                FileUpLoad.createFile(projectFile);
+                string path = "ExhibitTransfer.txt"; //預設txt名稱
+                string configTxtName = ConfigurationManager.AppSettings["txtLogName"];
+                if (!string.IsNullOrWhiteSpace(configTxtName))
+                    path = configTxtName; //有設定webConfig且不為空就取代
+                string folderPath = Path.Combine(projectFile, path); //合併路徑&檔名
+                return folderPath;
+            }
+            catch
+            {
+                return string.Empty;
+            }
         }
         #endregion
 

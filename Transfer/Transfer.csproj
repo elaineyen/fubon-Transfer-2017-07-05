@@ -176,9 +176,12 @@
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility\TxtLog.cs" />
+    <Compile Include="Utility\TypeTransfer.cs" />
     <Compile Include="Utility\FileUpLoad.cs" />
     <Compile Include="Utility\Utility.cs" />
     <Compile Include="ViewModels\A81ViewModel.cs" />
+    <Compile Include="ViewModels\Exhibit29Model.cs" />
     <Compile Include="ViewModels\Exhibit10Model.cs" />
     <Compile Include="ViewModels\ValidateFiles.cs" />
   </ItemGroup>

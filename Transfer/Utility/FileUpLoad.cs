@@ -1,13 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Web;
 
 namespace Transfer.Utility
 {
     public static class FileUpLoad
     {
+        #region 上傳檔案到指定路徑
+        /// <summary>
+        /// 檔案上傳
+        /// </summary>
+        /// <param name="path">檔案放置位置</param>
+        /// <param name="file">檔案</param>
+        /// <returns></returns>
         public static MSGReturnModel FileUpLoadinPath(string path, HttpPostedFileBase file)
         {
             MSGReturnModel result = new MSGReturnModel();
@@ -27,6 +32,7 @@ namespace Transfer.Utility
             }
             return result;
         }
+        #endregion
 
         #region Create 資料夾
         /// <summary>
