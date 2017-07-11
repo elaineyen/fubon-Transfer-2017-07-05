@@ -6,6 +6,16 @@ namespace Transfer.Utility
 {
     public static class TypeTransfer
     {
+        #region
+        public static double? stringToDoubleN(string value)
+        {
+            double d = 0d;
+            if (double.TryParse(value, out d))
+                return d;
+            return null;
+        }
+        #endregion
+
         #region Double? To String
         /// <summary>
         /// Double? 轉string (null 回傳 string.Empty)

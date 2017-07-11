@@ -13,7 +13,7 @@ using System.Configuration;
 
 namespace Transfer.Controllers
 {
-    public class A8Controller : Controller
+    public class A8Controller : CommonController
     {
         private IFRS9Entities db = new IFRS9Entities();
 
@@ -141,25 +141,32 @@ namespace Transfer.Controllers
                 string tableName = string.Empty;
                 #endregion
 
+                #region txtlog 檔案名稱
+                string txtpath = "Exhibit10Transfer.txt"; //預設txt名稱
+                string configTxtName = ConfigurationManager.AppSettings["txtLogA8Name"];
+                if (!string.IsNullOrWhiteSpace(configTxtName))
+                    txtpath = configTxtName; //有設定webConfig且不為空就取代
+                #endregion
+
                 #region save Moody_Monthly_PD_Info(A81)
                 tableName = "Moody_Monthly_PD_Info";
                 bool flagA81 = saveA81(dataModel); //save to DB
                 bool A81Log = saveLog(tableName, fileName, proName, flagA81, startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, flagA81, startTime, txtLocation()); //寫txt Log
+                TxtLog.txtLog(tableName, flagA81, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
                 #region save Moody_Quartly_PD_Info(A82)
                 tableName = "Moody_Quartly_PD_Info";
                 bool flagA82 = saveA82(dataModel); //save to DB
                 bool A82Log = saveLog(tableName, fileName, proName, flagA82, startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, A82Log, startTime, txtLocation()); //寫txt Log
+                TxtLog.txtLog(tableName, A82Log, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
                 #region save Moody_Predit_PD_Info(A83)
                 tableName = "Moody_Predit_PD_Info";
                 bool flagA83 = saveA83(dataModel); //save to DB
                 bool A83Log = saveLog(tableName, fileName, proName, flagA83, startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, A82Log, startTime, txtLocation()); //寫txt Log
+                TxtLog.txtLog(tableName, A82Log, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
                 result.RETURN_FLAG = flagA81 && flagA82 && flagA83;
@@ -450,55 +457,6 @@ namespace Transfer.Controllers
         }
         #endregion
 
-        #region save sqllog(IFRS9_Log)
-        /// <summary>
-        /// Log資料存到Sql(IFRS9_Log)
-        /// </summary>
-        /// <param name="tableName">table名</param>
-        /// <param name="fileName">檔案名</param>
-        /// <param name="programName">專案名</param>
-        /// <param name="falg">成功失敗</param>
-        /// <param name="start">開始時間</param>
-        /// <param name="end">結束時間</param>
-        /// <returns>回傳成功或失敗</returns>
-        private bool saveLog(
-            string tableName,
-            string fileName,
-            string programName,
-            bool falg,
-            DateTime start,
-            DateTime end)
-        {
-            bool flag = true;
-            try
-            {
-                int id = 1;
-                if (db.IFRS9_Log.Count() > 0) //判斷有無舊的Log
-                {
-                    id += db.IFRS9_Log.Max(x => x.Id); //Id(Pk) 加一
-                }
-                db.IFRS9_Log.Add(new IFRS9_Log() //寫入DB
-                {
-                    Id = id,
-                    Table_name = tableName.Substring(0, 20),
-                    File_name = fileName,
-                    Program_name = programName,
-                    Create_date = start.ToString("yyyyMMdd"),
-                    Create_time = start.ToString("HHmmss"),
-                    End_date = end.ToString("yyyyMMdd"),
-                    End_time = end.ToString("HHmmss"),
-                    TYPE = falg ? "Y" : "N"
-                });
-                db.SaveChanges(); //DB SAVE
-            }
-            catch (Exception ex)
-            {
-                flag = false;
-            }
-            return flag;
-        }
-        #endregion
-
         #region datarow 組成 Exhibit10Model
         /// <summary>
         /// datarow 組成 Exhibit10Model
@@ -561,30 +519,6 @@ namespace Transfer.Controllers
             catch
             { }
             return dataModel;
-        }
-        #endregion
-
-        #region txtlog 設定位置
-        private string txtLocation()
-        {
-            try
-            {
-                string projectFile = Server.MapPath("~/FileUploads"); //預設txt位置
-                string configTxtLocation = ConfigurationManager.AppSettings["txtLogLocation"];
-                if (!string.IsNullOrWhiteSpace(configTxtLocation))
-                    projectFile = configTxtLocation; //有設定webConfig且不為空就取代
-                FileUpLoad.createFile(projectFile);
-                string path = "ExhibitTransfer.txt"; //預設txt名稱
-                string configTxtName = ConfigurationManager.AppSettings["txtLogName"];
-                if (!string.IsNullOrWhiteSpace(configTxtName))
-                    path = configTxtName; //有設定webConfig且不為空就取代
-                string folderPath = Path.Combine(projectFile, path); //合併路徑&檔名
-                return folderPath;
-            }
-            catch
-            {
-                return string.Empty;
-            }
         }
         #endregion
 

@@ -57,8 +57,8 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" Nullable="false" />
-          <Property Name="From_To" Type="varchar" MaxLength="4" />
-          <Property Name="Aaa" Type="decimal" Precision="18" Scale="0" />
+          <Property Name="From_To" Type="varchar" MaxLength="9" />
+          <Property Name="Aaa" Type="float" />
           <Property Name="Aa1" Type="float" />
           <Property Name="Aa2" Type="float" />
           <Property Name="Aa3" Type="float" />
@@ -151,8 +151,8 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" />
-          <Property Name="From_To" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
-          <Property Name="Aaa" Type="Decimal" Precision="18" Scale="0" />
+          <Property Name="From_To" Type="String" MaxLength="9" FixedLength="false" Unicode="false" />
+          <Property Name="Aaa" Type="Double" />
           <Property Name="Aa1" Type="Double" />
           <Property Name="Aa2" Type="Double" />
           <Property Name="Aa3" Type="Double" />

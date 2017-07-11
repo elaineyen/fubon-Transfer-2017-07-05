@@ -16,7 +16,7 @@ namespace Transfer.Models
     {
         public int Id { get; set; }
         public string From_To { get; set; }
-        public Nullable<decimal> Aaa { get; set; }
+        public Nullable<double> Aaa { get; set; }
         public Nullable<double> Aa1 { get; set; }
         public Nullable<double> Aa2 { get; set; }
         public Nullable<double> Aa3 { get; set; }

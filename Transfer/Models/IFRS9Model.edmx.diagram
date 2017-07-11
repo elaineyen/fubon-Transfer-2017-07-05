@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="54f7a7fcf94d4a65a6e3add9113726b1" Name="Diagram1">
+      <Diagram DiagramId="54f7a7fcf94d4a65a6e3add9113726b1" Name="Diagram1" ZoomLevel="70">
         <EntityTypeShape EntityType="IFRS9Model.IFRS9_Log" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="IFRS9Model.Moody_Monthly_PD_Info" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="IFRS9Model.Moody_Predit_PD_Info" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />

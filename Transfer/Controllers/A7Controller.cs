@@ -13,7 +13,7 @@ using Transfer.ViewModels;
 
 namespace Transfer.Controllers
 {
-    public class A7Controller : Controller
+    public class A7Controller : CommonController
     {
         private IFRS9Entities db = new IFRS9Entities();
 
@@ -125,19 +125,24 @@ namespace Transfer.Controllers
                 string tableName = string.Empty;
                 #endregion
 
-                #region save Moody_Tm_YYYY(A71)
-                tableName = "Moody_Tm_YYYY";
-                bool flagA81 = saveA71(dataModel); //save to DB
-                //bool A81Log = saveLog(tableName, fileName, proName, flagA71, startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, flagA81, startTime, txtLocation()); //寫txt L7g
+                #region txtlog 檔案名稱
+                string txtpath = "Exhibit29Transfer.txt"; //預設txt名稱
+                string configTxtName = ConfigurationManager.AppSettings["txtLogA7Name"];
+                if (!string.IsNullOrWhiteSpace(configTxtName))
+                    txtpath = configTxtName; //有設定webConfig且不為空就取代
                 #endregion
 
-                result.RETURN_FLAG = flagA81 && flagA82 && flagA83;
+                #region save Moody_Tm_YYYY(A71)
+                tableName = "Moody_Tm_YYYY";
+                bool flagA71 = saveA71(dataModel); //save to DB
+                bool A81Log = saveLog(tableName, fileName, proName, flagA71, startTime, DateTime.Now); //寫sql Log
+                TxtLog.txtLog(tableName, flagA71, startTime, txtLocation(txtpath)); //寫txt L7g
+                #endregion
+
+                result.RETURN_FLAG = flagA71;
                 if (!result.RETURN_FLAG)
                 {
-                    result.DESCRIPTION = (flagA81 ? string.Empty : "A81 Error! ") +
-                                         (flagA82 ? string.Empty : "A82 Error! ") +
-                                         (flagA83 ? string.Empty : "A83 Error! ");
+                    result.DESCRIPTION = (flagA71 ? string.Empty : "A71 Error! ");
                 }
                 else
                 {
@@ -152,6 +157,71 @@ namespace Transfer.Controllers
             return Json(result);
         }
 
+        #region private function
+
+        #region save Moody_Monthly_PD_Info(A71)
+        /// <summary>
+        /// Save  Moody_Monthly_PD_Info(A81)
+        /// </summary>
+        /// <param name="dataModel"></param>
+        /// <returns></returns>
+        private bool saveA71(List<Exhibit29Model> dataModel)
+        {
+            bool flag = true;
+            try
+            {
+                foreach (var item in db.Moody_Tm_YYYY)
+                {
+                    db.Moody_Tm_YYYY.Remove(item); //資料全刪除
+                }
+                int id = 1;
+                foreach (var item in dataModel)
+                {
+                    db.Moody_Tm_YYYY.Add(
+                        new Moody_Tm_YYYY()
+                        {
+                            Id = id,
+                            From_To = item.From_To,
+                            Aaa = TypeTransfer.stringToDoubleN(item.Aaa),
+                            Aa1 = TypeTransfer.stringToDoubleN(item.Aa1),
+                            Aa2 = TypeTransfer.stringToDoubleN(item.Aa2),
+                            Aa3 = TypeTransfer.stringToDoubleN(item.Aa3),
+                            A1 = TypeTransfer.stringToDoubleN(item.A1),
+                            A2 = TypeTransfer.stringToDoubleN(item.A2),
+                            A3 = TypeTransfer.stringToDoubleN(item.A3),
+                            Baa1 = TypeTransfer.stringToDoubleN(item.Baa1),
+                            Baa2 = TypeTransfer.stringToDoubleN(item.Baa2),
+                            Baa3 = TypeTransfer.stringToDoubleN(item.Baa3),
+                            Ba1 = TypeTransfer.stringToDoubleN(item.Ba1),
+                            Ba2 = TypeTransfer.stringToDoubleN(item.Ba2),
+                            Ba3 = TypeTransfer.stringToDoubleN(item.Ba3),
+                            B1 = TypeTransfer.stringToDoubleN(item.B1),
+                            B2 = TypeTransfer.stringToDoubleN(item.B2),
+                            B3 = TypeTransfer.stringToDoubleN(item.B3),
+                            Caa1 = TypeTransfer.stringToDoubleN(item.Caa1),
+                            Caa2 = TypeTransfer.stringToDoubleN(item.Caa2),
+                            Caa3 = TypeTransfer.stringToDoubleN(item.Caa3),
+                            Ca_C = TypeTransfer.stringToDoubleN(item.Ca_C),
+                            WR = TypeTransfer.stringToDoubleN(item.WR),
+                            Default_Value = TypeTransfer.stringToDoubleN(item.Default),
+                        });
+                    id += 1;
+                }
+
+                db.SaveChanges(); //Save
+            }
+            catch (Exception ex)
+            {
+                foreach (var item in db.Moody_Monthly_PD_Info)
+                {
+                    db.Moody_Monthly_PD_Info.Remove(item); //失敗先刪除
+                }
+                flag = false;
+            }
+            return flag;
+        }
+        #endregion
+
         #region datarow 組成 Exhibit10Model
         /// <summary>
         /// datarow 組成 Exhibit10Model
@@ -162,7 +232,7 @@ namespace Transfer.Controllers
         {
             return new Exhibit29Model()
             {
-               From_To = TypeTransfer.objToString(item[0]),
+                From_To = TypeTransfer.objToString(item[0]),
                 Aaa = TypeTransfer.objToString(item[1]),
                 Aa1 = TypeTransfer.objToString(item[2]),
                 Aa2 = TypeTransfer.objToString(item[3]),
@@ -230,5 +300,9 @@ namespace Transfer.Controllers
             return dataModel;
         }
         #endregion
+
+        #endregion private function
+
+
     }
 }
