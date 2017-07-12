@@ -1,4 +1,6 @@
 ﻿using Excel;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -7,6 +9,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Transfer.Enum;
 using Transfer.Models;
 using Transfer.Utility;
 using Transfer.ViewModels;
@@ -21,7 +24,21 @@ namespace Transfer.Controllers
         public ActionResult Index()
         {
             ViewBag.Manu = "A7Main";
-            ViewBag.SubManu = "A70SubMain";          
+            ViewBag.SubManu = "A70SubMain";
+            return View();
+        }
+
+        public ActionResult A71Detail()
+        {
+            ViewBag.Manu = "A7Main";
+            ViewBag.SubManu = "A71SubMain";
+            return View();
+        }
+
+        public ActionResult A72Detail()
+        {
+            ViewBag.Manu = "A7Main";
+            ViewBag.SubManu = "A72SubMain";
             return View();
         }
 
@@ -157,6 +174,76 @@ namespace Transfer.Controllers
             return Json(result);
         }
 
+        /// <summary>
+        /// 前端抓資料時呼叫
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult GetData(string type)
+        {
+            MSGReturnModel result = new MSGReturnModel();
+            result.RETURN_FLAG = false;
+            result.DESCRIPTION = "No Data!";
+            try
+            {
+                switch (type)
+                {
+                    case "A71": //Moody_Tm_YYYY(A71)資料
+                        if (db.Moody_Tm_YYYY.Count() > 0)
+                        {
+                            result.RETURN_FLAG = true;
+                            result.Datas = Json(db.Moody_Tm_YYYY.ToList());
+                        }
+                        break;
+                    case "A72"://抓Tm_Adjust_YYYY(A72)資料
+                        if (db.Moody_Tm_YYYY.Count() > 0)
+                        {
+                            result.RETURN_FLAG = true;
+                            List<object> odatas = new List<object>();
+                            var datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());
+                            odatas.Add(datas.Columns.Cast<DataColumn>()
+                                 .Select(x => x.ColumnName)
+                                 .ToArray());
+                            for (var i = 0; i < datas.Rows.Count; i++)
+                            {
+                                List<string> str = new List<string>();
+                                for (int j = 0; j < datas.Rows[i].ItemArray.Count();j ++)
+                                {
+                                    if (datas.Columns[j].ToString().IndexOf("From_To") > -1)
+                                    {
+                                        str.Add("\"" + datas.Columns[j] + "\":\"" + datas.Rows[i].ItemArray[j].ToString()+ "\"");
+                                    }
+                                    else
+                                    {
+                                        str.Add("\"" + datas.Columns[j] + "\":" + datas.Rows[i].ItemArray[j].ToString());
+                                    }
+
+                                }
+                                odatas.Add(JsonConvert.DeserializeObject<IDictionary<string, object>>("{" +string.Join(",",str)+"}"));
+                            }
+                            result.Datas = Json(odatas);
+                        }
+                        break;
+                    case "A73"://抓GM_YYYY(A73)資料
+                        if (db.Moody_Tm_YYYY.Count() > 0)
+                        {
+                            //result.RETURN_FLAG = true;
+                            //result.Datas = Json(db.Moody_Predit_PD_Info.ToList());
+                        }
+                        break;
+                }
+                if (result.RETURN_FLAG)
+                    result.DESCRIPTION = "Success!";
+            }
+            catch (Exception ex)
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = ex.Message;
+            }
+            return Json(result);
+        }
+
         #region private function
 
         #region save Moody_Monthly_PD_Info(A71)
@@ -222,12 +309,255 @@ namespace Transfer.Controllers
         }
         #endregion
 
-        #region datarow 組成 Exhibit10Model
+        #region DB Moody_Tm_YYYY 組成 DataTable
+        private DataTable getExhibit29ModelFromDb(List<Moody_Tm_YYYY> dbDatas)
+        {
+            DataTable dt = new DataTable();
+            try
+            {
+                #region 找出錯誤的參數
+                //超過的筆對紀錄 => string 開始的參數,List<string>要相加的參數
+                Dictionary<string, List<string>> overData =
+                    new Dictionary<string, List<string>>();
+                string errorKey = string.Empty; //錯誤起始欄位
+                string last_FromTo = string.Empty; //上一個 From_To
+                double last_value = 0d; //上一個default的參數(#)
+                foreach (Moody_Tm_YYYY item in dbDatas) //第一次迴圈先抓出不符合的項目
+                {
+                    double now_default_value =  //目前的default 參數
+                        TypeTransfer.doubleNToDouble(item.Default_Value);
+                    if (now_default_value >= last_value) //下一筆比上一筆大(正常情況)
+                    {
+                        if (!string.IsNullOrWhiteSpace(errorKey)) //假如上一筆是超過的參數
+                        {
+                            errorKey = string.Empty; //把錯誤Flag 取消掉(到上一筆為止)
+                        }
+                        #region 把現在的參數寄到最後一個裡面
+                        last_FromTo = item.From_To;
+                        last_value = now_default_value;
+                        #endregion
+                    }
+                    else //現在的參數比上一個還要小
+                    {
+
+                        if (!string.IsNullOrWhiteSpace(errorKey)) //上一個是錯誤的,修改錯誤記錄資料
+                        {
+                            var hestory = overData[errorKey];
+                            hestory.Add(item.From_To);
+                            overData[errorKey] = hestory;
+                        }
+                        else //上一個是對的(這次錯誤需新增錯誤資料)
+                        {
+                            overData.Add(last_FromTo,
+                                new List<string>() { last_FromTo, item.From_To }); //加入一筆歷史錯誤 
+                            errorKey = last_FromTo;//紀錄上一筆的FromTo為超過起始欄位
+                        }
+                        last_value = (last_value + now_default_value) / 2; //default 相加除以2
+                    }
+                }
+                #endregion
+
+                #region 組出DataTable 的欄位
+                dt.Columns.Add("From_To", typeof(object)); //第一欄固定為From_To
+                List<string> errorData = new List<string>(); //錯誤資料
+                List<string> rowData = new List<string>(); //左邊行數欄位
+                foreach (Moody_Tm_YYYY item in dbDatas) //第二次迴圈組 DataTable 欄位
+                {
+                    if (overData.ContainsKey(item.From_To)) //為起始錯誤
+                    {
+                        errorData = overData[item.From_To]; //把錯誤資料找出來
+                    }
+                    else if (errorData.Contains(item.From_To)) //為中間錯誤
+                    {
+                        //不錯任何動作
+                    }
+                    else //無錯誤 (columns 加入原本 參數)
+                    {
+                        if(errorData.Count > 0) //上一筆是錯誤情形
+                        {
+                            string key =
+                                string.Format("{0}_{1}",
+                                errorData.First(),
+                                errorData.Last()
+                                );
+                            dt.Columns.Add(key, typeof(object));
+                            errorData = new List<string>();
+                            rowData.Add(key);
+                        }
+                        dt.Columns.Add(item.From_To, typeof(object));
+                        rowData.Add(item.From_To);
+                    }
+                }
+                if (errorData.Count > 0) //此為最後一筆為錯誤時觸發
+                {
+                    string key =
+                        string.Format("{0}_{1}",
+                        errorData.First(),
+                        errorData.Last()
+                        );
+                    dt.Columns.Add(key, typeof(double));
+                    rowData.Add(key);
+                }
+                //最後兩欄固定為 WR & Default
+                dt.Columns.Add("WR", typeof(string));
+                dt.Columns.Add("Default", typeof(string));
+                #endregion
+
+                #region 組出資料
+                List<string> columnsName = (from q in rowData select q).ToList();
+                columnsName.AddRange(new List<string>() { "WR", "Default" });
+                foreach (var item in rowData) //by 每一行
+                {
+                    if (item.IndexOf('_') > -1) //合併行需特別處理
+                    {
+                        List<string> err = overData[item.Split('_')[0]];
+                        List<Moody_Tm_YYYY> dbs = dbDatas.Where(x => err.Contains(x.From_To)).ToList();
+                        List<double> datas = new List<double>();
+                        foreach (string cname in columnsName) //by 每一欄
+                        {
+                            if (cname.IndexOf('_') > -1) //合併欄
+                            {
+                                List<string> err2 = overData[cname.Split('_')[0]];
+                                datas.Add((from y in dbs
+                                           select(
+                                           (from z in err2
+                                           select getDbValueINColume(y, z))
+                                           .Sum() )).Sum() / (err2.Count * err.Count));
+                            }
+                            else 
+                            {
+                                datas.Add((from x in dbs
+                                           select getDbValueINColume(x, cname)).Sum()
+                                            / err.Count);
+                            }
+                        }
+                        //List<string> d = new List<string>();
+                        //d.Add("'From_To':'" + item + "'");
+                        //for (int i = 0; i < datas.Count; i++)
+                        //{
+                        //    d.Add("'" + columnsName[i] + "':" + datas[i].ToString());
+                        //}
+                        //dt.Rows.Add("{" + string.Join(",", d) + "}");
+                        //object[] o = new object[datas.Count+1];
+                        //o[0] = (object)("{'From_To':'" + item + "'}");
+                        //for (int i = 0; i < datas.Count; i++)
+                        //{
+                        //    o[i+1] = (object)("{'" + columnsName[i] + "':" + datas[i].ToString() + "}");
+                        //}
+                        List<object> o = new List<object>();
+                        o.Add(item);
+                        o.AddRange((from q in datas select q as object).ToList());
+                        var row = dt.NewRow();
+                        row.ItemArray = (o.ToArray());
+                        dt.Rows.Add(row);
+                    }
+                    else //其他無行並行的只要單獨處理某特例欄位(合併)
+                    {
+                        string from_to = item;
+                        List<double> datas = new List<double>();
+                        Moody_Tm_YYYY db = dbDatas.Where(x => x.From_To == item).First();
+                        foreach (string cname in columnsName) //by 每一欄
+                        {
+                            if (cname.IndexOf('_') > -1) //合併欄
+                            {
+                                List<string> err = overData[cname.Split('_')[0]];
+                                double avg = err.Select(x => getDbValueINColume(db, x)).Sum() / err.Count;
+                                datas.Add(avg);
+                            }
+                            else //正常的
+                            {
+                                datas.Add(getDbValueINColume(db, cname));
+                            }                           
+                        }
+                        //object[] o = new object[datas.Count+1];
+                        //o[0] = (object)("{'From_To':'" + item + "'}");
+                        //for (int i = 0; i < datas.Count; i++)
+                        //{
+                        //    o[i+1] = (object)("{'" + columnsName[i] + "':" + datas[i].ToString() + "}");
+                        //}
+                        //List<string> d = new List<string>();
+                        //d.Add("'From_To':'" + item + "'");
+                        //for (int i = 0; i < datas.Count; i++)
+                        //{
+                        //    d.Add("'" + columnsName[i] + "':" + datas[i].ToString());
+                        //}
+                        //dt.Rows.Add("{"+string.Join(",", d)+"}");
+                        List<object> o = new List<object>();
+                        o.Add(item);
+                        o.AddRange((from q in datas select q as object).ToList());
+                        var row = dt.NewRow();
+                        row.ItemArray = (o.ToArray());
+                        dt.Rows.Add(row);
+                    }
+                }
+
+                #endregion
+            }
+            catch (Exception ex)
+            {
+                
+            }
+            return dt;
+        }
+        #endregion
+
+        #region 
+        private double getDbValueINColume(Moody_Tm_YYYY db,string cname)
+        {
+            if (cname == Ref.A7_Type.Aaa.ToString())
+                 return TypeTransfer.doubleNToDouble(db.Aaa);
+            if (cname == Ref.A7_Type.Aa1.ToString())
+                return TypeTransfer.doubleNToDouble(db.Aa1);
+            if (cname == Ref.A7_Type.Aa2.ToString())
+                return TypeTransfer.doubleNToDouble(db.Aa2);
+            if (cname == Ref.A7_Type.Aa3.ToString())
+                return TypeTransfer.doubleNToDouble(db.Aa3);
+            if (cname == Ref.A7_Type.A1.ToString())
+                return TypeTransfer.doubleNToDouble(db.A1);
+            if (cname == Ref.A7_Type.A2.ToString())
+                return TypeTransfer.doubleNToDouble(db.A2);
+            if (cname == Ref.A7_Type.A3.ToString())
+                return TypeTransfer.doubleNToDouble(db.A3);
+            if (cname == Ref.A7_Type.Baa1.ToString())
+                return TypeTransfer.doubleNToDouble(db.Baa1);
+            if (cname == Ref.A7_Type.Baa2.ToString())
+                return TypeTransfer.doubleNToDouble(db.Baa2);
+            if (cname == Ref.A7_Type.Baa3.ToString())
+                return TypeTransfer.doubleNToDouble(db.Baa3);
+            if (cname == Ref.A7_Type.Ba1.ToString())
+                return TypeTransfer.doubleNToDouble(db.Ba1);
+            if (cname == Ref.A7_Type.Ba2.ToString())
+                return TypeTransfer.doubleNToDouble(db.Ba2);
+            if (cname == Ref.A7_Type.Ba3.ToString())
+                return TypeTransfer.doubleNToDouble(db.Ba3);
+            if (cname == Ref.A7_Type.B1.ToString())
+                return TypeTransfer.doubleNToDouble(db.B1);
+            if (cname == Ref.A7_Type.B2.ToString())
+                return TypeTransfer.doubleNToDouble(db.B2);
+            if (cname == Ref.A7_Type.B3.ToString())
+                return TypeTransfer.doubleNToDouble(db.B3);
+            if (cname == Ref.A7_Type.Caa1.ToString())
+                return TypeTransfer.doubleNToDouble(db.Caa1);
+            if (cname == Ref.A7_Type.Caa2.ToString())
+                return TypeTransfer.doubleNToDouble(db.Caa2);
+            if (cname == Ref.A7_Type.Caa3.ToString())
+                return TypeTransfer.doubleNToDouble(db.Caa3);
+            if (cname == Ref.A7_Type.Ca_C.ToString())
+                return TypeTransfer.doubleNToDouble(db.Ca_C);
+            if (cname == Ref.A7_Type.WR.ToString())
+                return TypeTransfer.doubleNToDouble(db.WR);
+            if (cname == Ref.A7_Type.Default.ToString())
+                return TypeTransfer.doubleNToDouble(db.Default_Value);
+            return 0d;
+        }
+        #endregion
+
+        #region datarow 組成 Exhibit29Model
         /// <summary>
-        /// datarow 組成 Exhibit10Model
+        /// datarow 組成 Exhibit29Model
         /// </summary>
         /// <param name="item">DataRow</param>
-        /// <returns>Exhibit10Model</returns>
+        /// <returns>Exhibit29Model</returns>
         private Exhibit29Model getExhibit29Model(DataRow item)
         {
             return new Exhibit29Model()
@@ -302,7 +632,6 @@ namespace Transfer.Controllers
         #endregion
 
         #endregion private function
-
 
     }
 }

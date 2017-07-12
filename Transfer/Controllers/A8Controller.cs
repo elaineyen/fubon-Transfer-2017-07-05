@@ -215,12 +215,12 @@ namespace Transfer.Controllers
                                      Trailing_12m_Ending =
                                     item.Trailing_12m_Ending.HasValue ?
                                     item.Trailing_12m_Ending.Value.ToString("yyyy/MM/dd") : string.Empty,
-                                    Actual_Allcorp = TypeTransfer.doubleToString(item.Actual_Allcorp),
-                                    Actual_SG = TypeTransfer.doubleToString(item.Actual_SG),
-                                    Baseline_forecast_Allcorp = TypeTransfer.doubleToString(item.Baseline_forecast_Allcorp),
-                                    Baseline_forecast_SG = TypeTransfer.doubleToString(item.Baseline_forecast_SG),
-                                    Pessimistic_Forecast_Allcorp = TypeTransfer.doubleToString(item.Pessimistic_Forecast_Allcorp),
-                                    Pessimistic_Forecast_SG = TypeTransfer.doubleToString(item.Pessimistic_Forecast_SG),
+                                    Actual_Allcorp = TypeTransfer.doubleNToString(item.Actual_Allcorp),
+                                    Actual_SG = TypeTransfer.doubleNToString(item.Actual_SG),
+                                    Baseline_forecast_Allcorp = TypeTransfer.doubleNToString(item.Baseline_forecast_Allcorp),
+                                    Baseline_forecast_SG = TypeTransfer.doubleNToString(item.Baseline_forecast_SG),
+                                    Pessimistic_Forecast_Allcorp = TypeTransfer.doubleNToString(item.Pessimistic_Forecast_Allcorp),
+                                    Pessimistic_Forecast_SG = TypeTransfer.doubleNToString(item.Pessimistic_Forecast_SG),
                                     Data_Year = item.Data_Year
                                 }).ToList());
                         }
@@ -271,38 +271,22 @@ namespace Transfer.Controllers
                 int id = 1;
                 foreach (var item in dataModel)
                 {
-                    DateTime? dt = null;
-                    if (!string.IsNullOrWhiteSpace(item.Trailing))
-                        dt = DateTime.Parse(item.Trailing);
-                    double? actualAllcorp = null;
-                    if (!string.IsNullOrWhiteSpace(item.Actual_Allcorp))
-                        actualAllcorp = double.Parse(item.Actual_Allcorp);
-                    double? baselineForecastAllcorp = null;
-                    if (!string.IsNullOrWhiteSpace(item.Baseline_forecast_Allcorp))
-                        baselineForecastAllcorp = double.Parse(item.Baseline_forecast_Allcorp);
-                    double? pessimisticForecastAllcorp = null;
-                    if (!string.IsNullOrWhiteSpace(item.Pessimistic_Forecast_Allcorp))
-                        pessimisticForecastAllcorp = double.Parse(item.Pessimistic_Forecast_Allcorp);
-                    double? actualSG = null;
-                    if (!string.IsNullOrWhiteSpace(item.Actual_SG))
-                        actualSG = double.Parse(item.Actual_SG);
-                    double? baselineForecastSG = null;
-                    if (!string.IsNullOrWhiteSpace(item.Baseline_forecast_SG))
-                        baselineForecastSG = double.Parse(item.Baseline_forecast_SG);
-                    double? pessimisticForecastSG = null;
-                    if (!string.IsNullOrWhiteSpace(item.Pessimistic_Forecast_SG))
-                        pessimisticForecastSG = double.Parse(item.Pessimistic_Forecast_SG);
+                    DateTime? dt = TypeTransfer.stringToDateTimeN(item.Trailing);
                     db.Moody_Monthly_PD_Info.Add(
                         new Moody_Monthly_PD_Info()
                         {
                             Id = id,
                             Trailing_12m_Ending = dt,
-                            Actual_Allcorp = actualAllcorp,
-                            Baseline_forecast_Allcorp = baselineForecastAllcorp,
-                            Pessimistic_Forecast_Allcorp = pessimisticForecastAllcorp,
-                            Actual_SG = actualSG,
-                            Baseline_forecast_SG = baselineForecastSG,
-                            Pessimistic_Forecast_SG = pessimisticForecastSG,
+                            Actual_Allcorp = 
+                            TypeTransfer.stringToDoubleN(item.Actual_Allcorp),
+                            Baseline_forecast_Allcorp = 
+                            TypeTransfer.stringToDoubleN(item.Baseline_forecast_Allcorp),
+                            Pessimistic_Forecast_Allcorp = 
+                            TypeTransfer.stringToDoubleN(item.Pessimistic_Forecast_Allcorp),
+                            Actual_SG = TypeTransfer.stringToDoubleN(item.Actual_SG),
+                            Baseline_forecast_SG = TypeTransfer.stringToDoubleN(item.Baseline_forecast_SG),
+                            Pessimistic_Forecast_SG =
+                            TypeTransfer.stringToDoubleN(item.Pessimistic_Forecast_SG),
                             Data_Year = (dt == null) ? string.Empty : ((DateTime)dt).Year.ToString()
                         });
                     id += 1;
