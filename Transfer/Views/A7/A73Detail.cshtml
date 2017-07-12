@@ -1,12 +1,12 @@
 ﻿@{
-    ViewBag.Title = "A72";
+    ViewBag.Title = "A73";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div class="container" id="main" >
     <div class="row main_hand">
         <div class="col-md-12 main_hand_div">
-                <input type="button" class="btn btn-primary" value="A72查詢" id="btnA72Search" />
-                <input type="button" class="btn btn-primary" value="下載Excel" id="btnA72Dl" disabled/>
+                <input type="button" class="btn btn-primary" value="A73查詢" id="btnA73Search" />
+                <input type="button" class="btn btn-primary" value="下載Excel" id="btnA73Dl" disabled/>
         </div>
     </div>
     <div class="row main_body" style="overflow:auto;height:100%">
@@ -32,11 +32,11 @@
         $('input:button').each(function () {
             var id = $(this).attr('id');
             switch (id) {
-                case 'btnA72Search':
-                    $("#" + id).on('click', function () { showJqgrid('A72') });
+                case 'btnA73Search':
+                    $("#" + id).on('click', function () { showJqgrid('A73') });
                     break;
-                case 'btnA72Dl':
-                    $("#" + id).on('click', function () { dlExcel('A72') });
+                case 'btnA73Dl':
+                    $("#" + id).on('click', function () { dlExcel('A73') });
             }
         })
         //#endregion 註冊click事件
@@ -71,8 +71,8 @@
             var data ; // json Data 由Ajax 拿到
             switch (type)
             {
-                case "A72":
-                    title = 'Tm_Adjust_YYYY(A72)';
+                case "A73":
+                    title = 'GM_YYYY(A73)';
                     break;
             }
             $.ajax({
@@ -87,7 +87,7 @@
             .done(function (result) {               
                 if (result.RETURN_FLAG) {
                     data = result.Datas.Data;
-                    $('#btnA72Dl').prop('disabled', false);
+                    $('#btnA73Dl').prop('disabled', false);
                     createJqgrid("list1", "pager1", data, title);
                 }
                 else {
@@ -123,10 +123,6 @@
                         index: colNameArray[i],
                         width: jagridMWidth
                     }
-                    if (colNameArray[i].indexOf("TM") > -1)
-                    {
-                        $.extend(obj, { frozen: true }, { sortable: false });
-                    }
                     colModelArray.push(obj);
                 }
                 $('#jqgridDiv').append('<table id="' + listId + '"></table>');
@@ -141,7 +137,7 @@
                     rowList: [10, 20, 30], //設定一頁幾筆
                     pager: '#' + pagerId,
                     height: '237',
-                    width: '1030',
+                    width: '300',
                     //sortname: 'id',
                     //viewrecords: true,
                     sortorder: "desc",
@@ -156,8 +152,6 @@
                     },
                 });
                 $("#" + listId).jqGrid('navGrid', '#' + pagerId, { edit: false, add: false, del: false });
-                $("#" + listId).jqGrid('setFrozenColumns');
-                $('#' + listId).trigger("reloadGrid");
             }
         }
         //#endregion createJqgrid

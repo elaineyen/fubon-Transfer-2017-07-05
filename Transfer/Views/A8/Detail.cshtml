@@ -57,7 +57,8 @@
             var title = ''; //標頭
             var colNameArray = []; //每個欄位名稱要對應傳入資料屬性
             var widthArray = []; //每個欄位大小 L,M
-            var data ; // json Data 由Ajax 拿到
+            var data; // json Data 由Ajax 拿到
+            var width;
             switch (type)
             {
                 case "A81":
@@ -67,16 +68,19 @@
                     'Actual_SG', 'Baseline_forecast_SG', 'Pessimistic_Forecast_SG	',
                     'Data_Year'];
                     widthArray = ['L', 'M', 'L', 'L', 'M', 'L', 'L', 'M'];
+                    width = '1030';
                     break;
                 case "A82": 
                     title = 'Moody_Quartly_PD_Info(A82)';
                     colNameArray = ['Data_Year', 'Year_Quartly', 'PD'];
-                    widthArray = ['M','M','M'];
+                    widthArray = ['M', 'M', 'M'];
+                    width = 'auto';
                     break;
                 case "A83":
                     title = 'Moody_Predit_PD_Info(A83)';
                     colNameArray = ['Data_Year', 'Period', 'PD_TYPE', 'PD'];
-                    widthArray = ['M', 'M', 'M','M'];
+                    widthArray = ['M', 'M', 'M', 'M'];
+                    width = 'auto';
                     break;
             }
             $.ajax({
@@ -91,7 +95,7 @@
             .done(function (result) {
                 if (result.RETURN_FLAG) {
                     data = result.Datas.Data;
-                    createJqgrid("list1", "pager1", colNameArray, widthArray, data, title);
+                    createJqgrid("list1", "pager1", colNameArray, widthArray, data, title,width,'1030');
                 }
                 else {
                     alert(result.DESCRIPTION);
@@ -114,11 +118,12 @@
         //widthArray (寬度設定 L=> 210 M=>120)
         //data (要秀的資料Json型別Data)
         //title (標題)
-        function createJqgrid(listId, pagerId, colNameArray, widthArray,data,title)
+        //width 寬度
+        function createJqgrid(listId, pagerId, colNameArray, widthArray,data,title,width)
         {
             var colModelArray = [];
             var jagridLWidth = 210;
-            var jagridMWidth = 120;
+            var jagridMWidth = 120;            
             if (colNameArray.length > 0 && colNameArray.length === widthArray.length)
             {
                 for (let i = 0; i < colNameArray.length; i++)
@@ -142,7 +147,7 @@
                     rowList: [10, 20, 30], //設定一頁幾筆
                     pager: '#' + pagerId,
                     height: '237',
-                    width: '1030',
+                    width: width,
                     //sortname: 'id',
                     //viewrecords: true,
                     sortorder: "desc",

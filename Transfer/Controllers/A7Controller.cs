@@ -17,6 +17,7 @@ namespace Transfer.Controllers
     public class A7Controller : CommonController
     {
         private IFRS9Entities db = new IFRS9Entities();
+        private List<string> A73Array = new List<string>() { "TM", "Default" };
 
         // GET: A7
         public ActionResult Index()
@@ -37,6 +38,13 @@ namespace Transfer.Controllers
         {
             ViewBag.Manu = "A7Main";
             ViewBag.SubManu = "A72SubMain";
+            return View();
+        }
+
+        public ActionResult A73Detail()
+        {
+            ViewBag.Manu = "A7Main";
+            ViewBag.SubManu = "A73SubMain";
             return View();
         }
 
@@ -198,7 +206,7 @@ namespace Transfer.Controllers
                         if (db.Moody_Tm_YYYY.Count() > 0)
                         {                         
                             List<object> odatas = new List<object>();
-                            var datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());
+                            DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());
                             odatas.Add(datas.Columns.Cast<DataColumn>()
                                  .Select(x => x.ColumnName)
                                  .ToArray()); //第一列 由Columns 組成Title 
@@ -207,7 +215,7 @@ namespace Transfer.Controllers
                                 List<string> str = new List<string>();
                                 for (int j = 0; j < datas.Rows[i].ItemArray.Count();j ++)
                                 {
-                                    if (datas.Columns[j].ToString().IndexOf("From_To") > -1)
+                                    if (datas.Columns[j].ToString().IndexOf("TM") > -1)
                                     {
                                         str.Add("\"" + datas.Columns[j] + "\":\"" + datas.Rows[i].ItemArray[j].ToString()+ "\"");
                                     }
@@ -228,8 +236,36 @@ namespace Transfer.Controllers
                     case "A73"://抓GM_YYYY(A73)資料
                         if (db.Moody_Tm_YYYY.Count() > 0)
                         {
-                            //result.RETURN_FLAG = true;
-                            //result.Datas = Json(db.Moody_Predit_PD_Info.ToList());
+                            List<object> odatas = new List<object>();
+                            DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());
+                            odatas.Add(datas.Columns.Cast<DataColumn>()
+                                 .Where(x=> A73Array.Contains(x.ColumnName))
+                                 .Select(x =>  x.ColumnName)
+                                 .ToArray()); //第一列 由Columns 組成Title 
+                            for (var i = 0; i < datas.Rows.Count; i++)
+                            {
+                                List<string> str = new List<string>();
+                                for (int j = 0; j < datas.Rows[i].ItemArray.Count(); j++)
+                                {
+                                    if (A73Array.Contains(datas.Columns[j].ToString()))
+                                    {
+                                        if (datas.Columns[j].ToString().IndexOf("TM") > -1)
+                                        {
+                                            str.Add("\"" + datas.Columns[j] + "\":\"" + datas.Rows[i].ItemArray[j].ToString() + "\"");
+                                        }
+                                        else
+                                        {
+                                            str.Add("\"" + datas.Columns[j] + "\":" + datas.Rows[i].ItemArray[j].ToString());
+                                        }
+                                    }
+                                    //object 格式為 'column' : Rows.Data 
+                                }
+                                odatas.Add(JsonConvert.DeserializeObject<IDictionary<string, object>>
+                                    ("{" + string.Join(",", str) + "}")); //第二列以後組成 object
+                            }
+                            result.Datas = Json(odatas);
+                            if (odatas.Count > 2)
+                                result.RETURN_FLAG = true;
                         }
                         break;
                 }
@@ -263,7 +299,41 @@ namespace Transfer.Controllers
                         }
                         break;
                     case "A73":
-
+                        if (db.Moody_Tm_YYYY.Count() > 0)
+                        {
+                            string path = @"A73.xlsx"; //預設
+                            DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList()); 
+                            DataTable newData = new DataTable(); //要組新的 Table                           
+                            foreach (var itme in A73Array)
+                            {
+                                newData.Columns.Add(itme, typeof(string)); //組 column
+                            }
+                            List<string>[] A73datas = new List<string>[A73Array.Count]; //需求的欄位資料
+                            for (int i = 0; i < A73Array.Count; i++)
+                            {
+                                //取得需求的欄位資料
+                                A73datas[i] = datas.AsEnumerable().Select(x => x.Field<string>(A73Array[i])).ToList();
+                            }
+                            if (A73datas.Count() > 0 && A73datas[0].Count > 0) //有資料
+                            {
+                                for (int j = 0; j < A73datas[0].Count; j++) //原本datatable 的行數
+                                {
+                                    List<string> o = new List<string>();
+                                    for (int k = 0; k < A73Array.Count; k++)
+                                    {
+                                        o.Add(A73datas[k][j]);
+                                    }
+                                    var row = newData.NewRow();
+                                    row.ItemArray = (o.ToArray());
+                                    newData.Rows.Add(row);
+                                }
+                                result.RETURN_FLAG = FileRelated.DataTableToExcel(newData, ExcelLocation(path), string.Empty);
+                            }
+                            else
+                            {
+                                result.DESCRIPTION = "No Data!";
+                            }
+                        }
                         break;
                 }
                 if (result.RETURN_FLAG)
@@ -391,7 +461,7 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region 組出DataTable 的欄位
-                dt.Columns.Add("From_To", typeof(object)); //第一欄固定為From_To
+                dt.Columns.Add("TM", typeof(object)); //第一欄固定為TM
                 List<string> errorData = new List<string>(); //錯誤資料
                 List<string> rowData = new List<string>(); //左邊行數欄位
                 foreach (Moody_Tm_YYYY item in dbDatas) //第二次迴圈組 DataTable 欄位

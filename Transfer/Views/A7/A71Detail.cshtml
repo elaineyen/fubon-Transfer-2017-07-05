@@ -103,18 +103,21 @@
                         index: colNameArray[i],
                         width: jagridMWidth
                     }
-                    colModelArray.push(obj);
+                    
                     if (colNameArray[i].indexOf("From_To") > -1)
+                    {
+                        $.extend(obj, { frozen: true }, { sortable: false });
                         colNameArray[i] = colNameArray[i].replace("_", "&#8260") + ':'; // _ => /
+                    }
                     if (colNameArray[i].indexOf("Ca_C") > -1)
                         colNameArray[i] = colNameArray[i].replace("_", "&#8211"); // _ => -
                     if (colNameArray[i].indexOf("Default_Value") > -1)
                         colNameArray[i] = colNameArray[i].split('_')[0];
+                    colModelArray.push(obj);
                 }
 
                 $('#jqgridDiv').append('<table id="' + listId + '"></table>');
-                $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');
-                debugger
+                $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');                
                 $("#" + listId).jqGrid({
                     data: data,
                     datatype: "local",
@@ -140,6 +143,8 @@
                     },
                 });
                 $("#" + listId).jqGrid('navGrid', '#' + pagerId, { edit: false, add: false, del: false });
+                $("#" + listId).jqGrid('setFrozenColumns');
+                $('#' + listId).trigger("reloadGrid");
             }
         }
         //#endregion createJqgrid

@@ -372,6 +372,7 @@
     <Content Include="Views\A7\Index.cshtml" />
     <Content Include="Views\A7\A71Detail.cshtml" />
     <Content Include="Views\A7\A72Detail.cshtml" />
+    <Content Include="Views\A7\A73Detail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Common\" />
