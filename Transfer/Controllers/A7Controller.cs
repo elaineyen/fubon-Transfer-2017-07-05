@@ -158,8 +158,8 @@ namespace Transfer.Controllers
                 #region save Moody_Tm_YYYY(A71)
                 tableName = "Moody_Tm_YYYY";
                 bool flagA71 = saveA71(dataModel); //save to DB
-                bool A81Log = saveLog(tableName, fileName, proName, flagA71, startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, flagA71, startTime, txtLocation(txtpath)); //寫txt L7g
+                bool A71Log = saveLog(tableName, fileName, proName, flagA71, startTime, DateTime.Now); //寫sql Log
+                TxtLog.txtLog(tableName, flagA71, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
                 result.RETURN_FLAG = flagA71;
@@ -525,7 +525,7 @@ namespace Transfer.Controllers
                                            select(
                                            (from z in err2
                                            select getDbValueINColume(y, z))
-                                           .Sum() )).Sum() / (err2.Count * err.Count));
+                                           .Sum() )).Sum() / ( err.Count));
                             }
                             else 
                             {
@@ -541,7 +541,7 @@ namespace Transfer.Controllers
                         row.ItemArray = (o.ToArray());
                         dt.Rows.Add(row);
                     }
-                    else //其他無行並行的只要單獨處理某特例欄位(合併)
+                    else //其他無合併行的只要單獨處理某特例欄位(合併)
                     {
                         string from_to = item;
                         List<double> datas = new List<double>();
@@ -578,7 +578,7 @@ namespace Transfer.Controllers
         }
         #endregion
 
-        #region 
+        #region 抓DB的資料
         private double getDbValueINColume(Moody_Tm_YYYY db,string cname)
         {
             if (cname == Ref.A7_Type.Aaa.ToString())
