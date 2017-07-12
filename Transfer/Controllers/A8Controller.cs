@@ -76,10 +76,10 @@ namespace Transfer.Controllers
                 string projectFile = Server.MapPath("~/FileUploads"); //專案資料夾
                 string path = Path.Combine(projectFile, fileName);
 
-                FileUpLoad.createFile(projectFile); //檢查是否有FileUploads資料夾,如果沒有就新增
+                FileRelated.createFile(projectFile); //檢查是否有FileUploads資料夾,如果沒有就新增
 
                 //呼叫上傳檔案 function
-                result = FileUpLoad.FileUpLoadinPath(path, FileModel.File);
+                result = FileRelated.FileUpLoadinPath(path, FileModel.File);
 
                 if (!result.RETURN_FLAG)
                     return Json(result);

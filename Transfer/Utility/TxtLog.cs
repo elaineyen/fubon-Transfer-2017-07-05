@@ -20,7 +20,7 @@ namespace Transfer.Utility
                 string txtData = string.Empty;
                 try //試著抓取舊資料
                 {
-                    txtData = System.IO.File.ReadAllText(folderPath);
+                    txtData = File.ReadAllText(folderPath);
                 }
                 catch { }
                 string txt = string.Format("{0}_{1}_{2}",

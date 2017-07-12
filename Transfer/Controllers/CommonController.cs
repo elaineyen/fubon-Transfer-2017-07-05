@@ -74,7 +74,27 @@ namespace Transfer.Controllers
                 string configTxtLocation = ConfigurationManager.AppSettings["txtLogLocation"];
                 if (!string.IsNullOrWhiteSpace(configTxtLocation))
                     projectFile = configTxtLocation; //有設定webConfig且不為空就取代
-                FileUpLoad.createFile(projectFile);
+                FileRelated.createFile(projectFile);
+                string folderPath = Path.Combine(projectFile, path); //合併路徑&檔名
+                return folderPath;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }
+        #endregion
+
+        #region Excel 設定下載位置
+        public string ExcelLocation(string path)
+        {
+            try
+            {
+                string projectFile = Server.MapPath("~/FileDownloads"); //預設Excel下載位置
+                string configExcelLocation = ConfigurationManager.AppSettings["ExcelDlLocation"];
+                if (!string.IsNullOrWhiteSpace(configExcelLocation))
+                    projectFile = configExcelLocation; //有設定webConfig且不為空就取代
+                FileRelated.createFile(projectFile);
                 string folderPath = Path.Combine(projectFile, path); //合併路徑&檔名
                 return folderPath;
             }

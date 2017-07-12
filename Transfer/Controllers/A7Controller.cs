@@ -1,13 +1,11 @@
 ﻿using Excel;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using Transfer.Enum;
 using Transfer.Models;
@@ -78,10 +76,10 @@ namespace Transfer.Controllers
 
                 string projectFile = Server.MapPath("~/FileUploads"); //專案資料夾
                 string path = Path.Combine(projectFile, fileName);
-                FileUpLoad.createFile(projectFile); //檢查是否有FileUploads資料夾,如果沒有就新增
+                FileRelated.createFile(projectFile); //檢查是否有FileUploads資料夾,如果沒有就新增
 
                 //呼叫上傳檔案 function
-                result = FileUpLoad.FileUpLoadinPath(path, FileModel.File);
+                result = FileRelated.FileUpLoadinPath(path, FileModel.File);
                 if (!result.RETURN_FLAG)
                     return Json(result);
                 #endregion
@@ -198,13 +196,12 @@ namespace Transfer.Controllers
                         break;
                     case "A72"://抓Tm_Adjust_YYYY(A72)資料
                         if (db.Moody_Tm_YYYY.Count() > 0)
-                        {
-                            result.RETURN_FLAG = true;
+                        {                         
                             List<object> odatas = new List<object>();
                             var datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());
                             odatas.Add(datas.Columns.Cast<DataColumn>()
                                  .Select(x => x.ColumnName)
-                                 .ToArray());
+                                 .ToArray()); //第一列 由Columns 組成Title 
                             for (var i = 0; i < datas.Rows.Count; i++)
                             {
                                 List<string> str = new List<string>();
@@ -218,11 +215,14 @@ namespace Transfer.Controllers
                                     {
                                         str.Add("\"" + datas.Columns[j] + "\":" + datas.Rows[i].ItemArray[j].ToString());
                                     }
-
+                                    //object 格式為 'column' : Rows.Data
                                 }
-                                odatas.Add(JsonConvert.DeserializeObject<IDictionary<string, object>>("{" +string.Join(",",str)+"}"));
+                                odatas.Add(JsonConvert.DeserializeObject<IDictionary<string, object>>
+                                    ("{" +string.Join(",",str)+"}")); //第二列以後組成 object
                             }
                             result.Datas = Json(odatas);
+                            if(odatas.Count > 2)
+                            result.RETURN_FLAG = true;
                         }
                         break;
                     case "A73"://抓GM_YYYY(A73)資料
@@ -235,6 +235,39 @@ namespace Transfer.Controllers
                 }
                 if (result.RETURN_FLAG)
                     result.DESCRIPTION = "Success!";
+            }
+            catch (Exception ex)
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = ex.Message;
+            }
+            return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult GetExcel(string type)
+        {
+            MSGReturnModel result = new MSGReturnModel();
+            result.RETURN_FLAG = false;
+            result.DESCRIPTION = "請確認檔案是否開啟!";
+            try
+            {
+                switch (type)
+                {
+                    case "A72":
+                        if (db.Moody_Tm_YYYY.Count() > 0)
+                        {
+                            string path = @"A72.xlsx"; //預設
+                            DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());
+                            result.RETURN_FLAG = FileRelated.DataTableToExcel(datas, ExcelLocation(path), string.Empty);
+                        }
+                        break;
+                    case "A73":
+
+                        break;
+                }
+                if (result.RETURN_FLAG)
+                    result.DESCRIPTION = "Success !";
             }
             catch (Exception ex)
             {
@@ -431,19 +464,6 @@ namespace Transfer.Controllers
                                             / err.Count);
                             }
                         }
-                        //List<string> d = new List<string>();
-                        //d.Add("'From_To':'" + item + "'");
-                        //for (int i = 0; i < datas.Count; i++)
-                        //{
-                        //    d.Add("'" + columnsName[i] + "':" + datas[i].ToString());
-                        //}
-                        //dt.Rows.Add("{" + string.Join(",", d) + "}");
-                        //object[] o = new object[datas.Count+1];
-                        //o[0] = (object)("{'From_To':'" + item + "'}");
-                        //for (int i = 0; i < datas.Count; i++)
-                        //{
-                        //    o[i+1] = (object)("{'" + columnsName[i] + "':" + datas[i].ToString() + "}");
-                        //}
                         List<object> o = new List<object>();
                         o.Add(item);
                         o.AddRange((from q in datas select q as object).ToList());
@@ -469,19 +489,6 @@ namespace Transfer.Controllers
                                 datas.Add(getDbValueINColume(db, cname));
                             }                           
                         }
-                        //object[] o = new object[datas.Count+1];
-                        //o[0] = (object)("{'From_To':'" + item + "'}");
-                        //for (int i = 0; i < datas.Count; i++)
-                        //{
-                        //    o[i+1] = (object)("{'" + columnsName[i] + "':" + datas[i].ToString() + "}");
-                        //}
-                        //List<string> d = new List<string>();
-                        //d.Add("'From_To':'" + item + "'");
-                        //for (int i = 0; i < datas.Count; i++)
-                        //{
-                        //    d.Add("'" + columnsName[i] + "':" + datas[i].ToString());
-                        //}
-                        //dt.Rows.Add("{"+string.Join(",", d)+"}");
                         List<object> o = new List<object>();
                         o.Add(item);
                         o.AddRange((from q in datas select q as object).ToList());
