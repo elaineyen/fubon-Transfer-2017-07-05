@@ -139,6 +139,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\A7Controller.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\A8Controller.cs" />
@@ -146,6 +147,9 @@
     <Compile Include="Enum\PDType.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Grade_Moody_Info.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\IFRS9Model.Context.cs">
       <AutoGen>True</AutoGen>
@@ -165,6 +169,11 @@
     <Compile Include="Models\IFRS9_Log.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Interface\IA5Repository.cs" />
+    <Compile Include="Models\Interface\IA7Repository.cs" />
+    <Compile Include="Models\Interface\IA8Repository.cs" />
+    <Compile Include="Models\Interface\ICommon.cs" />
+    <Compile Include="Models\Interface\IDispose.cs" />
     <Compile Include="Models\Moody_Monthly_PD_Info.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
@@ -177,6 +186,9 @@
     <Compile Include="Models\Moody_Tm_YYYY.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Repositiry\A5Repositiry.cs" />
+    <Compile Include="Models\Repositiry\A7Repository.cs" />
+    <Compile Include="Models\Repositiry\Common.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\TxtLog.cs" />
     <Compile Include="Utility\TypeTransfer.cs" />
@@ -373,6 +385,7 @@
     <Content Include="Views\A7\A71Detail.cshtml" />
     <Content Include="Views\A7\A72Detail.cshtml" />
     <Content Include="Views\A7\A73Detail.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Common\" />

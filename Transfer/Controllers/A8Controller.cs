@@ -10,12 +10,24 @@ using Transfer.Utility;
 using Transfer.ViewModels;
 using static Transfer.Enum.Ref;
 using System.Configuration;
+using System.Web.Routing;
+using Transfer.Models.Interface;
+using Transfer.Models.Repositiry;
 
 namespace Transfer.Controllers
 {
     public class A8Controller : CommonController
     {
+
+        private ICommon CommonFunction;
+
         private IFRS9Entities db = new IFRS9Entities();
+
+        public A8Controller()
+        {
+            this.CommonFunction = new Common();
+        }
+
 
         /// <summary>
         /// A8(上傳檔案)
@@ -151,21 +163,21 @@ namespace Transfer.Controllers
                 #region save Moody_Monthly_PD_Info(A81)
                 tableName = "Moody_Monthly_PD_Info";
                 bool flagA81 = saveA81(dataModel); //save to DB
-                bool A81Log = saveLog(tableName, fileName, proName, flagA81, startTime, DateTime.Now); //寫sql Log
+                bool A81Log = CommonFunction.saveLog(tableName, fileName, proName, flagA81, startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, flagA81, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
                 #region save Moody_Quartly_PD_Info(A82)
                 tableName = "Moody_Quartly_PD_Info";
                 bool flagA82 = saveA82(dataModel); //save to DB
-                bool A82Log = saveLog(tableName, fileName, proName, flagA82, startTime, DateTime.Now); //寫sql Log
+                bool A82Log = CommonFunction.saveLog(tableName, fileName, proName, flagA82, startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, A82Log, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
                 #region save Moody_Predit_PD_Info(A83)
                 tableName = "Moody_Predit_PD_Info";
                 bool flagA83 = saveA83(dataModel); //save to DB
-                bool A83Log = saveLog(tableName, fileName, proName, flagA83, startTime, DateTime.Now); //寫sql Log
+                bool A83Log = CommonFunction.saveLog(tableName, fileName, proName, flagA83, startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, A82Log, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
@@ -505,6 +517,12 @@ namespace Transfer.Controllers
             return dataModel;
         }
         #endregion
+
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);         
+        }
 
         #endregion
 

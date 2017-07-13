@@ -5,6 +5,18 @@
     <!-- SSDL content -->
     <edmx:StorageModels>
     <Schema Namespace="IFRS9Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Grade_Moody_Info">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Data_Year" Type="varchar" MaxLength="4" />
+          <Property Name="Rating" Type="varchar" MaxLength="10" />
+          <Property Name="PD_Grade" Type="int" />
+          <Property Name="Rating_Adjust" Type="varchar" MaxLength="10" />
+          <Property Name="Grade_Adjust" Type="int" />
+          <Property Name="Moodys_PD" Type="float" />
+        </EntityType>
         <EntityType Name="IFRS9_Log">
           <Key>
             <PropertyRef Name="Id" />
@@ -82,6 +94,7 @@
           <Property Name="Default_Value" Type="float" />
         </EntityType>
         <EntityContainer Name="IFRS9ModelStoreContainer">
+          <EntitySet Name="Grade_Moody_Info" EntityType="Self.Grade_Moody_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IFRS9_Log" EntityType="Self.IFRS9_Log" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Monthly_PD_Info" EntityType="Self.Moody_Monthly_PD_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Predit_PD_Info" EntityType="Self.Moody_Predit_PD_Info" Schema="dbo" store:Type="Tables" />
@@ -145,6 +158,7 @@
           <EntitySet Name="Moody_Predit_PD_Info" EntityType="Self.Moody_Predit_PD_Info" />
           <EntitySet Name="Moody_Quartly_PD_Info" EntityType="Self.Moody_Quartly_PD_Info" />
           <EntitySet Name="Moody_Tm_YYYY" EntityType="IFRS9Model.Moody_Tm_YYYY" />
+          <EntitySet Name="Grade_Moody_Info" EntityType="IFRS9Model.Grade_Moody_Info" />
         </EntityContainer>
         <EntityType Name="Moody_Tm_YYYY">
           <Key>
@@ -174,6 +188,18 @@
           <Property Name="Ca_C" Type="Double" />
           <Property Name="WR" Type="Double" />
           <Property Name="Default_Value" Type="Double" />
+        </EntityType>
+        <EntityType Name="Grade_Moody_Info">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Data_Year" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
+          <Property Name="Rating" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="PD_Grade" Type="Int32" />
+          <Property Name="Rating_Adjust" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Grade_Adjust" Type="Int32" />
+          <Property Name="Moodys_PD" Type="Double" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -258,6 +284,19 @@
                 <ScalarProperty Name="Aa1" ColumnName="Aa1" />
                 <ScalarProperty Name="Aaa" ColumnName="Aaa" />
                 <ScalarProperty Name="From_To" ColumnName="From_To" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Grade_Moody_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Grade_Moody_Info">
+              <MappingFragment StoreEntitySet="Grade_Moody_Info">
+                <ScalarProperty Name="Moodys_PD" ColumnName="Moodys_PD" />
+                <ScalarProperty Name="Grade_Adjust" ColumnName="Grade_Adjust" />
+                <ScalarProperty Name="Rating_Adjust" ColumnName="Rating_Adjust" />
+                <ScalarProperty Name="PD_Grade" ColumnName="PD_Grade" />
+                <ScalarProperty Name="Rating" ColumnName="Rating" />
+                <ScalarProperty Name="Data_Year" ColumnName="Data_Year" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
