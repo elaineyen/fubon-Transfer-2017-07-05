@@ -183,67 +183,17 @@ namespace Transfer.Models.Repositiry
 
         #region save Moody_Monthly_PD_Info(A71)
         /// <summary>
-        /// Save  Moody_Monthly_PD_Info(A81)
+        /// Save  Moody_Monthly_PD_Info(A71)
         /// </summary>
         /// <param name="dataModel"></param>
         /// <returns></returns>
         public bool saveA7(List<Exhibit29Model> dataModel)
         {
             bool flag = true;
-            
-            try
-            {
 
+            bool flagA71 = saveA71(dataModel);
 
-                foreach (var item in db.Moody_Tm_YYYY)
-                    {
-                        db.Moody_Tm_YYYY.Remove(item); //資料全刪除
-                    }
-                int id = 1;
-                foreach (var item in dataModel)
-                {
-                    db.Moody_Tm_YYYY.Add(
-                        new Moody_Tm_YYYY()
-                        {
-                            Id = id,
-                            From_To = item.From_To,
-                            Aaa = TypeTransfer.stringToDoubleN(item.Aaa),
-                            Aa1 = TypeTransfer.stringToDoubleN(item.Aa1),
-                            Aa2 = TypeTransfer.stringToDoubleN(item.Aa2),
-                            Aa3 = TypeTransfer.stringToDoubleN(item.Aa3),
-                            A1 = TypeTransfer.stringToDoubleN(item.A1),
-                            A2 = TypeTransfer.stringToDoubleN(item.A2),
-                            A3 = TypeTransfer.stringToDoubleN(item.A3),
-                            Baa1 = TypeTransfer.stringToDoubleN(item.Baa1),
-                            Baa2 = TypeTransfer.stringToDoubleN(item.Baa2),
-                            Baa3 = TypeTransfer.stringToDoubleN(item.Baa3),
-                            Ba1 = TypeTransfer.stringToDoubleN(item.Ba1),
-                            Ba2 = TypeTransfer.stringToDoubleN(item.Ba2),
-                            Ba3 = TypeTransfer.stringToDoubleN(item.Ba3),
-                            B1 = TypeTransfer.stringToDoubleN(item.B1),
-                            B2 = TypeTransfer.stringToDoubleN(item.B2),
-                            B3 = TypeTransfer.stringToDoubleN(item.B3),
-                            Caa1 = TypeTransfer.stringToDoubleN(item.Caa1),
-                            Caa2 = TypeTransfer.stringToDoubleN(item.Caa2),
-                            Caa3 = TypeTransfer.stringToDoubleN(item.Caa3),
-                            Ca_C = TypeTransfer.stringToDoubleN(item.Ca_C),
-                            WR = TypeTransfer.stringToDoubleN(item.WR),
-                            Default_Value = TypeTransfer.stringToDoubleN(item.Default),
-                        });
-                    id += 1;
-                }
-
-                db.SaveChanges(); //Save
-            }
-            catch (Exception ex)
-            {
-                foreach (var item in db.Moody_Monthly_PD_Info)
-                {
-                    db.Moody_Monthly_PD_Info.Remove(item); //失敗先刪除
-                }
-                flag = false;
-            }
-            return flag;
+            return flagA71;
         }
         #endregion
 
@@ -303,6 +253,66 @@ namespace Transfer.Models.Repositiry
         }
 
         #region Private Function
+
+        private bool saveA71(List<Exhibit29Model> dataModel)
+        {
+            bool flag = true;
+            try
+            {
+                foreach (var item in db.Moody_Tm_YYYY)
+                {
+                    db.Moody_Tm_YYYY.Remove(item); //資料全刪除
+                }
+                int id = 1;
+                foreach (var item in dataModel)
+                {
+                    db.Moody_Tm_YYYY.Add(
+                        new Moody_Tm_YYYY()
+                        {
+                            Id = id,
+                            From_To = item.From_To,
+                            Aaa = TypeTransfer.stringToDoubleN(item.Aaa),
+                            Aa1 = TypeTransfer.stringToDoubleN(item.Aa1),
+                            Aa2 = TypeTransfer.stringToDoubleN(item.Aa2),
+                            Aa3 = TypeTransfer.stringToDoubleN(item.Aa3),
+                            A1 = TypeTransfer.stringToDoubleN(item.A1),
+                            A2 = TypeTransfer.stringToDoubleN(item.A2),
+                            A3 = TypeTransfer.stringToDoubleN(item.A3),
+                            Baa1 = TypeTransfer.stringToDoubleN(item.Baa1),
+                            Baa2 = TypeTransfer.stringToDoubleN(item.Baa2),
+                            Baa3 = TypeTransfer.stringToDoubleN(item.Baa3),
+                            Ba1 = TypeTransfer.stringToDoubleN(item.Ba1),
+                            Ba2 = TypeTransfer.stringToDoubleN(item.Ba2),
+                            Ba3 = TypeTransfer.stringToDoubleN(item.Ba3),
+                            B1 = TypeTransfer.stringToDoubleN(item.B1),
+                            B2 = TypeTransfer.stringToDoubleN(item.B2),
+                            B3 = TypeTransfer.stringToDoubleN(item.B3),
+                            Caa1 = TypeTransfer.stringToDoubleN(item.Caa1),
+                            Caa2 = TypeTransfer.stringToDoubleN(item.Caa2),
+                            Caa3 = TypeTransfer.stringToDoubleN(item.Caa3),
+                            Ca_C = TypeTransfer.stringToDoubleN(item.Ca_C),
+                            WR = TypeTransfer.stringToDoubleN(item.WR),
+                            Default_Value = TypeTransfer.stringToDoubleN(item.Default),
+                        });
+                    id += 1;
+                }
+                db.SaveChanges(); //Save
+            }
+            catch (Exception ex)
+            {
+                foreach (var item in db.Moody_Monthly_PD_Info)
+                {
+                    db.Moody_Monthly_PD_Info.Remove(item); //失敗先刪除
+                }
+                flag = false;
+            }
+            return flag;
+        }
+
+        //private bool saveA72(List<Exhibit29Model> dataModel)
+        //{
+
+        //}
 
         #region datarow 組成 Exhibit29Model
         /// <summary>
@@ -502,6 +512,49 @@ namespace Transfer.Models.Repositiry
                     }
                 }
 
+                //加入 WT & Default 行
+                List<string> WTArray = new List<string>() { "Baa1", "Baa2", "Baa3", "Ba1", "Ba2", "Ba3" };
+                List<string> WTRow = new List<string>(); //WT要尋找的行的From/To
+                foreach (var item in overData) //合併的資料紀錄
+                {
+                    if (WTArray.Intersect(item.Value).Count() > 0) //找合併裡面符合的
+                    {
+                        WTRow.Add(item.Key);
+                    }
+                }
+                WTRow.AddRange(rowData.Where(x => WTArray.Contains(x)));
+                List<object> WTData = new List<object>();
+                List<object> DefaultData = new List<object>();
+                WTData.Add("WT");
+                DefaultData.Add("Default");
+                for (var i = 1; i < dt.Rows[0].ItemArray.Count(); i++) //i從1開始 from/to 那欄不用看
+                {
+                    double d = 0d;
+                    for (var j = 0; j < dt.Rows.Count; j++)
+                    {
+                        if (WTRow.Contains(dt.Rows[j].ItemArray[0].ToString())) //符合排
+                        {
+                            d += Convert.ToDouble(dt.Rows[j][i]);
+                        }
+                    }
+                    WTData.Add(d * (dt.Columns[i].ToString().IndexOf("_") > -1 ?
+                        overData[dt.Columns[i].ToString().Split('_')[0]].Count: 1)  
+                        / WTRow.Count); //多筆需*合併數
+                    if (i == (dt.Rows[0].ItemArray.Count() - 1))
+                    {
+                        DefaultData.Add(100d);
+                    }
+                    else
+                    {
+                        DefaultData.Add(0d);
+                    }
+                }
+                var nrow = dt.NewRow();
+                nrow.ItemArray = (WTData.ToArray());
+                dt.Rows.Add(nrow);
+                nrow = dt.NewRow();
+                nrow.ItemArray = (DefaultData.ToArray());
+                dt.Rows.Add(nrow);
                 #endregion
             }
             catch (Exception ex)
