@@ -31,7 +31,7 @@ namespace Transfer.Models.Interface
         /// </summary>
         /// <param name="dataModel"></param>
         /// <returns></returns>
-        bool saveA7(List<Exhibit29Model> dataModel);
+        MSGReturnModel saveA7(List<Exhibit29Model> dataModel);
 
         /// <summary>
         /// 

@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
+using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
 using System.Web;
@@ -187,13 +188,31 @@ namespace Transfer.Models.Repositiry
         /// </summary>
         /// <param name="dataModel"></param>
         /// <returns></returns>
-        public bool saveA7(List<Exhibit29Model> dataModel)
+        public MSGReturnModel saveA7(List<Exhibit29Model> dataModel)
         {
-            bool flag = true;
+            MSGReturnModel result = new MSGReturnModel();
 
             bool flagA71 = saveA71(dataModel);
-
-            return flagA71;
+            bool flagA72 = false;
+            bool flagA73 = false;
+            bool flagA51 = false;
+            if (flagA71)
+            {
+                flagA72 = saveA72();
+                flagA73 = saveA73();
+            }
+            result.RETURN_FLAG = flagA71 && flagA72 && flagA73;
+            if (result.RETURN_FLAG)
+            {
+                result.DESCRIPTION = "Success!";
+            }
+            else
+            {
+                result.DESCRIPTION = ((flagA71 ? string.Empty : "A71 Error ! \n" )+
+                                      (flagA72 ? string.Empty : "A72 Error ! \n" )+
+                                      (flagA73 ? string.Empty : "A73 Error ! \n" ));
+            }
+            return result;
         }
         #endregion
 
@@ -215,30 +234,9 @@ namespace Transfer.Models.Repositiry
                     if (db.Moody_Tm_YYYY.Count() > 0)
                     {
                         DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());
-                        DataTable newData = new DataTable(); //要組新的 Table                           
-                        foreach (var itme in A73Array)
+                        DataTable newData = FromA72GetA73(datas); //要組新的 Table                           
+                        if (newData != null) //有資料
                         {
-                            newData.Columns.Add(itme, typeof(string)); //組 column
-                        }
-                        List<string>[] A73datas = new List<string>[A73Array.Count]; //需求的欄位資料
-                        for (int i = 0; i < A73Array.Count; i++)
-                        {
-                            //取得需求的欄位資料
-                            A73datas[i] = datas.AsEnumerable().Select(x => x.Field<string>(A73Array[i])).ToList();
-                        }
-                        if (A73datas.Count() > 0 && A73datas[0].Count > 0) //有資料
-                        {
-                            for (int j = 0; j < A73datas[0].Count; j++) //原本datatable 的行數
-                            {
-                                List<string> o = new List<string>();
-                                for (int k = 0; k < A73Array.Count; k++)
-                                {
-                                    o.Add(A73datas[k][j]);
-                                }
-                                var row = newData.NewRow();
-                                row.ItemArray = (o.ToArray());
-                                newData.Rows.Add(row);
-                            }
                             result.RETURN_FLAG = FileRelated.DataTableToExcel(newData, path, string.Empty);
                         }
                         else
@@ -248,7 +246,6 @@ namespace Transfer.Models.Repositiry
                     }
                     break;
             }
-
             return result;
         }
 
@@ -309,10 +306,74 @@ namespace Transfer.Models.Repositiry
             return flag;
         }
 
-        //private bool saveA72(List<Exhibit29Model> dataModel)
-        //{
+        private bool saveA72()
+        {
+            bool flag = false;
+            try
+            {
+                if (db.Moody_Tm_YYYY.Count() > 0)
+                {
+                    DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());
+                    string cs = common.RemoveEntityFrameworkMetadata(string.Empty);
+                    using (var conn = new SqlConnection(cs))
+                    {                       
+                        using (var cmd = new SqlCommand(CreateA7Table("Tm_Adjust_YYYY", datas), conn))
+                        {
+                            conn.Open();
+                            //SqlDataReader reader = cmd.ExecuteReader();
+                            //while (reader.Read())
+                            //{
+                            //    flag = true;
+                            //}
+                            //reader.Close();
+                            int count = cmd.ExecuteNonQuery();
+                            if (count > 0)
+                                flag = true;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                
+            }
+            return flag;
+        }
 
-        //}
+        private bool saveA73()
+        {
+            bool flag = false;
+            try
+            {
+                if (db.Moody_Tm_YYYY.Count() > 0)
+                {
+                    DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());
+                    DataTable A73Datas = FromA72GetA73(datas);
+                    string cs = common.RemoveEntityFrameworkMetadata(string.Empty);
+                    using (var conn = new SqlConnection(cs))
+                    {
+                        using (var cmd = new SqlCommand(CreateA7Table("GM_YYYY", A73Datas), conn))
+                        {
+                            conn.Open();
+                            int count = cmd.ExecuteNonQuery();
+                            if (A73Datas.Rows.Count > 0 && A73Datas.Rows.Count.Equals(count))
+                                flag = true;
+                            //SqlDataReader reader = cmd.ExecuteReader();
+                            //while (reader.Read())
+                            //{
+                            //    flag = true;
+                            //}
+                            //reader.Close();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return flag;
+        }
 
         #region datarow 組成 Exhibit29Model
         /// <summary>
@@ -621,6 +682,103 @@ namespace Transfer.Models.Repositiry
             return 0d;
         }
         #endregion
+
+        private DataTable FromA72GetA73(DataTable dt)
+        {
+            DataTable newData = new DataTable(); //要組新的 Table     
+            try
+            {
+                foreach (var itme in A73Array)
+                {
+                    newData.Columns.Add(itme, typeof(string)); //組 column
+                }
+                List<string>[] A73datas = new List<string>[A73Array.Count]; //需求的欄位資料
+                for (int i = 0; i < A73Array.Count; i++)
+                {
+                    //取得需求的欄位資料
+                    A73datas[i] = dt.AsEnumerable().Select(x => x.Field<string>(A73Array[i])).ToList();
+                }
+                if (A73datas.Count() > 0 && A73datas[0].Count > 0) //有資料
+                {
+                    for (int j = 0; j < A73datas[0].Count; j++) //原本datatable 的行數
+                    {
+                        List<string> o = new List<string>();
+                        for (int k = 0; k < A73Array.Count; k++)
+                        {
+                            o.Add(A73datas[k][j]);
+                        }
+                        var row = newData.NewRow();
+                        row.ItemArray = (o.ToArray());
+                        newData.Rows.Add(row);
+                    }
+                }
+            }
+            catch
+            {
+
+            }                              
+            return newData;
+        }
+
+        private string CreateA7Table(string tableName, DataTable dt)
+        {
+            string sqlsc = string.Empty; //create table sql
+            sqlsc += string.Format("{0} {1} {2}",
+                @" Begin Try drop table ",
+                tableName,
+                @" End Try Begin Catch End Catch "
+                ); //有舊的table 刪除
+
+            sqlsc += " CREATE TABLE " + tableName + "(";
+            sqlsc += @" Id INT not null PRIMARY KEY , ";
+
+            for (int i = 0; i < dt.Columns.Count; i++)
+            {
+                sqlsc += "\n [" + dt.Columns[i].ColumnName.Replace('-','_')
+                    .Replace("Default", "Default_Value") + "] ";
+                if (0.Equals(i))
+                {
+                    sqlsc += " varchar(10) ";
+                }
+                else
+                {
+                    sqlsc += " float ";
+                }
+                sqlsc += " ,";
+            }
+            sqlsc = sqlsc.Substring(0, sqlsc.Length - 1) + "\n) ";
+
+            string sqlInsert = string.Empty; //insert sql
+            int id = 1;
+            for (var i = 0; i < dt.Rows.Count; i++) //每一行資料
+            {
+                string columnArray = string.Format(" {0} ,","Id");
+                string valueArray = string.Format(" {0} ,", id.ToString()); ;
+                for (int j = 0; j < dt.Rows[i].ItemArray.Count(); j++)
+                {
+                    columnArray += string.Format(" {0} ,", dt.Columns[j].ToString()
+                        .Replace('-', '_').Replace("Default", "Default_Value"));
+                    if (0.Equals(j)) //第一筆是文字
+                    {
+                        valueArray += string.Format(" '{0}' ,", dt.Rows[i].ItemArray[j].ToString());
+                    }
+                    else
+                    {
+                         valueArray += string.Format(" {0} ,", dt.Rows[i].ItemArray[j].ToString());
+                    }
+                }
+                sqlInsert += string.Format(" \n {0} {1} ({2}) {3} ({4}) ",
+                             @" insert into ",
+                             tableName,
+                             columnArray.Substring(0, columnArray.Length - 1),
+                             "values",
+                             valueArray.Substring(0, valueArray.Length -1)
+                             );
+                id += 1;
+            }
+
+            return sqlsc + sqlInsert;
+        }
 
         #endregion
 

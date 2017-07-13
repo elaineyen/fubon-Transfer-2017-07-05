@@ -58,6 +58,27 @@ namespace Transfer.Models.Repositiry
         }
         #endregion
 
+        public string RemoveEntityFrameworkMetadata(string efConnection)
+        {
+            string efstr = string.Empty;
+            if (string.IsNullOrWhiteSpace(efConnection))
+            {
+                efstr = System.Configuration.ConfigurationManager.
+                         ConnectionStrings["IFRS9Entities"].ConnectionString;
+            }
+            else
+            {
+                efstr = efConnection;
+            }
+            int start = efstr.IndexOf("\"", StringComparison.OrdinalIgnoreCase);
+            int end = efstr.LastIndexOf("\"", StringComparison.OrdinalIgnoreCase);
 
+            // We do not want to include the quotation marks
+            start++;
+            int length = end - start;
+
+            string pureSqlConnection = efstr.Substring(start, length);
+            return pureSqlConnection;
+        }
     }
 }

@@ -159,20 +159,10 @@ namespace Transfer.Controllers
 
                 #region save Moody_Tm_YYYY(A71)
                 tableName = "Moody_Tm_YYYY";
-                bool flagA7 = A7Repository.saveA7(dataModel); //save to DB
-                bool A71Log = CommonFunction.saveLog(tableName, fileName, proName, flagA7, startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, flagA7, startTime, txtLocation(txtpath)); //寫txt Log
+                result = A7Repository.saveA7(dataModel); //save to DB
+                bool A71Log = CommonFunction.saveLog(tableName, fileName, proName, result.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                TxtLog.txtLog(tableName, result.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
-
-                result.RETURN_FLAG = flagA7;
-                if (!result.RETURN_FLAG)
-                {
-                    result.DESCRIPTION = "Save Error!";
-                }
-                else
-                {
-                    result.DESCRIPTION = "Success!";
-                }
             }
             catch (Exception ex)
             {
