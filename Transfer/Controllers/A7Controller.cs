@@ -180,9 +180,9 @@ namespace Transfer.Controllers
                 TxtLog.txtLog(tableName, resultA51.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
-                result.RETURN_FLAG = resultA71.RETURN_FLAG && 
-                                     resultA72.RETURN_FLAG && 
-                                     resultA73.RETURN_FLAG && 
+                result.RETURN_FLAG = resultA71.RETURN_FLAG &&
+                                     resultA72.RETURN_FLAG &&
+                                     resultA73.RETURN_FLAG &&
                                      resultA51.RETURN_FLAG;
 
                 result.DESCRIPTION = "Success!";
@@ -275,11 +275,13 @@ namespace Transfer.Controllers
                 switch (type)
                 {
                     case "A72":
-                        path = @"A72.xlsx"; //預設
-                        result = A7Repository.DownLoadExcel(type, ExcelLocation(path));                     
+                        //path = @"A72.xlsx"; //預設 (2007)
+                        path = @"A72.xls"; //預設 (2003)
+                        result = A7Repository.DownLoadExcel(type, ExcelLocation(path));
                         break;
                     case "A73":
-                        path = @"A73.xlsx"; //預設
+                        //path = @"A73.xlsx"; //預設 (2007)
+                        path = @"A73.xls"; //預設  (2003)
                         result = A7Repository.DownLoadExcel(type, ExcelLocation(path));
                         break;
                 }

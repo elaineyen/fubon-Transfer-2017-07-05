@@ -45,7 +45,7 @@ namespace Transfer.Models.Repositiry
                     Create_date = start.ToString("yyyyMMdd"),
                     Create_time = start.ToString("HHmmss"),
                     End_date = end.ToString("yyyyMMdd"),
-                    End_time = end.ToString("HHmmss"),
+                    End_time = end.ToString("HH:mm:ss"),
                     TYPE = falg ? "Y" : "N"
                 });
                 db.SaveChanges(); //DB SAVE

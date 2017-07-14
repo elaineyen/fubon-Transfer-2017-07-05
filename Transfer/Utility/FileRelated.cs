@@ -2,7 +2,11 @@
 using System.Data;
 using System.IO;
 using System.Web;
-using MExcel = Microsoft.Office.Interop.Excel;
+using NPOI;
+using NPOI.HSSF.UserModel;
+using NPOI.XSSF.UserModel;
+using NPOI.SS.UserModel;
+//using MExcel = Microsoft.Office.Interop.Excel;
 namespace Transfer.Utility
 {
     public static class FileRelated
@@ -59,56 +63,68 @@ namespace Transfer.Utility
         /// <param name="thisTable">欲轉換之DataTable</param>
         /// <param name="path">檔案放置位置</param>
         /// <param name="sheetName">寫入之sheet名稱</param>
-        public static bool DataTableToExcel(DataTable table, string path, string sheetName)
+        public static string DataTableToExcel(DataTable dt, string path, string sheetName)
         {
-            bool flag = true;
-            //需加入參考
-            //References右鍵AddReferences => COM => Microsoft Excel 10.0 Object Library
-            //在References會多Excel及Microsoft.Office.Core
-            MExcel.Application oXL = null; //引用EXCEL Application類別
-            MExcel._Worksheet oSheet = null; //引用工作表類別
+            string result = string.Empty;
 
             try
             {
 
-                oXL = new MExcel.Application(); // load excel
+                //建立Excel 2003檔案
+                IWorkbook wb = new HSSFWorkbook();
+                ISheet ws;
 
-                oXL.Workbooks.Add(); //create a new workbook(活頁簿)
+                ////建立Excel 2007檔案
+                //IWorkbook wb = new XSSFWorkbook();
+                //ISheet ws;
 
-                oSheet = oXL.ActiveSheet; //single worksheet    
 
-                //int sheetRowsCount = oSheet.UsedRange.Rows.Count;
+                ws = wb.CreateSheet(sheetName);
 
-                // column headings
-                for (var i = 0; i < table.Columns.Count; i++)
+                ws.CreateRow(0);//第一行為欄位名稱
+                for (int i = 0; i < dt.Columns.Count; i++)
                 {
-                    oSheet.Cells[1, i + 1] = table.Columns[i].ColumnName;
+                    ws.GetRow(0).CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
                 }
 
-                // rows
-                for (var i = 0; i < table.Rows.Count; i++)
+                for (int i = 0; i < dt.Rows.Count; i++)
                 {
-                    // to do: format datetime values before printing
-                    for (var j = 0; j < table.Columns.Count; j++)
+                    ws.CreateRow(i + 1);
+                    for (int j = 0; j < dt.Columns.Count; j++)
                     {
-                        oSheet.Cells[i + 2, j + 1] = table.Rows[i][j];
+                        if (sheetName.IndexOf("A7") > -1) //A7 系列
+                        {
+                            if (0.Equals(j))
+                            {
+                                ws.GetRow(i + 1).CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
+                            }
+                            else
+                            {
+                                ws.GetRow(i + 1).CreateCell(j).SetCellValue(Convert.ToDouble(dt.Rows[i][j]));
+                            }
+                        }
+                        else
+                        {
+                            ws.GetRow(i + 1).CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
+                        }                            
                     }
                 }
 
-                oSheet.SaveAs(path);
-                oXL.Quit();
-           
+                FileStream file = new FileStream(path, FileMode.Create);//產生檔案
+                wb.Write(file);
+                file.Close();
+  
             }
             catch (Exception ex)
             {
-                flag = false;
+                result = ex.Message;
             }
             finally
             {
                 //關閉文件
-                oXL.Quit();
+                //oXL.Quit();
             }
-            return flag;
+            return result;
         }
         #endregion
     }

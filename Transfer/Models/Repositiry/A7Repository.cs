@@ -205,8 +205,8 @@ namespace Transfer.Models.Repositiry
             MSGReturnModel result = new MSGReturnModel();
             try
             {
-                if(db.Moody_Tm_YYYY.Count()  > 0) 
-                db.Moody_Tm_YYYY.RemoveRange(db.Moody_Tm_YYYY.ToList()); //資料全刪除
+                if (db.Moody_Tm_YYYY.Count() > 0)
+                    db.Moody_Tm_YYYY.RemoveRange(db.Moody_Tm_YYYY.ToList()); //資料全刪除
                 int id = 1;
                 foreach (var item in dataModel)
                 {
@@ -357,13 +357,13 @@ namespace Transfer.Models.Repositiry
             {
                 if (db.Moody_Tm_YYYY.Count() > 0)
                 {
-                    if(db.Grade_Moody_Info.Count() > 0)
-                    db.Grade_Moody_Info.RemoveRange(
-                       db.Grade_Moody_Info.ToList()); //資料全刪除  
-                     var A51Data = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());                  
+                    if (db.Grade_Moody_Info.Count() > 0)
+                        db.Grade_Moody_Info.RemoveRange(
+                           db.Grade_Moody_Info.ToList()); //資料全刪除  
+                    var A51Data = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());
                     string year = (DateTime.Now.Year - 1).ToString();
                     List<Grade_Moody_Info> A51s = (db.Moody_Tm_YYYY.ToList().
-                        Select((x,y) => new Grade_Moody_Info
+                        Select((x, y) => new Grade_Moody_Info
                         {
                             Rating = x.From_To,
                             Data_Year = year,
@@ -380,7 +380,7 @@ namespace Transfer.Models.Repositiry
                         {
                             if (col.Value.Contains(item.Rating))
                             {
-                                rating_Adjust = col.Key+"_"+ col.Value.Last();
+                                rating_Adjust = col.Key + "_" + col.Value.Last();
                             }
                         }
                         if (!string.IsNullOrWhiteSpace(rating_Adjust)) //合併欄位情況
@@ -397,11 +397,11 @@ namespace Transfer.Models.Repositiry
                         item.Grade_Adjust = grade_Adjust;
                         item.Moodys_PD = string.IsNullOrWhiteSpace(rating_Adjust) ?
                             A51Data.Item1.AsEnumerable().Where(x => x.Field<string>("TM") == item.Rating)
-                            .Select(x => Convert.ToDouble(x.Field<string>("Default"))).FirstOrDefault():
+                            .Select(x => Convert.ToDouble(x.Field<string>("Default"))).FirstOrDefault() :
                             A51Data.Item1.AsEnumerable().Where(x => x.Field<string>("TM") == rating_Adjust)
                             .Select(x => Convert.ToDouble(x.Field<string>("Default"))).FirstOrDefault();
                         item.PD_Grade = PDGrade;
-                        item.Rating_Adjust = rating_Adjust.Replace("_","~");
+                        item.Rating_Adjust = rating_Adjust.Replace("_", "~");
                         grade_Adjust += 1;
                         PDGrade += 1;
                     }
@@ -476,14 +476,15 @@ namespace Transfer.Models.Repositiry
         {
             MSGReturnModel result = new MSGReturnModel();
             result.RETURN_FLAG = false;
-            result.DESCRIPTION = "請確認檔案是否開啟!";
+            result.DESCRIPTION = "請確認檔案是否開啟or不選擇覆蓋!";
             switch (type)
             {
                 case "A72":
                     if (db.Moody_Tm_YYYY.Count() > 0)
                     {
                         DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList()).Item1;
-                        result.RETURN_FLAG = FileRelated.DataTableToExcel(datas, path, string.Empty);
+                        result.DESCRIPTION = FileRelated.DataTableToExcel(datas, path, "A72");
+                        result.RETURN_FLAG = string.IsNullOrWhiteSpace(result.DESCRIPTION);
                     }
                     break;
                 case "A73":
@@ -493,7 +494,8 @@ namespace Transfer.Models.Repositiry
                         DataTable newData = FromA72GetA73(datas); //要組新的 Table                           
                         if (newData != null) //有資料
                         {
-                            result.RETURN_FLAG = FileRelated.DataTableToExcel(newData, path, string.Empty);
+                            result.DESCRIPTION = FileRelated.DataTableToExcel(newData, path, "A73");
+                            result.RETURN_FLAG = string.IsNullOrWhiteSpace(result.DESCRIPTION);
                         }
                         else
                         {
@@ -553,7 +555,7 @@ namespace Transfer.Models.Repositiry
         /// </summary>
         /// <param name="dbDatas"></param>
         /// <returns></returns>
-        private Tuple<DataTable, Dictionary<string,List<string>>> getExhibit29ModelFromDb(List<Moody_Tm_YYYY> dbDatas)
+        private Tuple<DataTable, Dictionary<string, List<string>>> getExhibit29ModelFromDb(List<Moody_Tm_YYYY> dbDatas)
         {
             DataTable dt = new DataTable();
             //超過的筆對紀錄 => string 開始的參數,List<string>要相加的參數
@@ -734,7 +736,7 @@ namespace Transfer.Models.Repositiry
                         }
                     }
                     WTData.Add(d * (dt.Columns[i].ToString().IndexOf("_") > -1 ?
-                        overData[dt.Columns[i].ToString().Split('_')[0]].Count: 1)  
+                        overData[dt.Columns[i].ToString().Split('_')[0]].Count : 1)
                         / WTRow.Count); //多筆需*合併數
                     if (i == (dt.Rows[0].ItemArray.Count() - 1))
                     {
@@ -757,7 +759,7 @@ namespace Transfer.Models.Repositiry
             {
 
             }
-            return new Tuple<DataTable, Dictionary<string, List<string>>> (dt, overData);
+            return new Tuple<DataTable, Dictionary<string, List<string>>>(dt, overData);
         }
         #endregion
 
@@ -857,7 +859,7 @@ namespace Transfer.Models.Repositiry
             catch
             {
 
-            }                              
+            }
             return newData;
         }
         #endregion
@@ -883,7 +885,7 @@ namespace Transfer.Models.Repositiry
 
             for (int i = 0; i < dt.Columns.Count; i++)
             {
-                sqlsc += "\n [" + dt.Columns[i].ColumnName.Replace('-','_')
+                sqlsc += "\n [" + dt.Columns[i].ColumnName.Replace('-', '_')
                     .Replace("Default", "Default_Value") + "] ";
                 if (0.Equals(i))
                 {
@@ -901,7 +903,7 @@ namespace Transfer.Models.Repositiry
             int id = 1;
             for (var i = 0; i < dt.Rows.Count; i++) //每一行資料
             {
-                string columnArray = string.Format(" {0} ,","Id");
+                string columnArray = string.Format(" {0} ,", "Id");
                 string valueArray = string.Format(" {0} ,", id.ToString()); ;
                 for (int j = 0; j < dt.Rows[i].ItemArray.Count(); j++)
                 {
@@ -913,7 +915,7 @@ namespace Transfer.Models.Repositiry
                     }
                     else
                     {
-                         valueArray += string.Format(" {0} ,", dt.Rows[i].ItemArray[j].ToString());
+                        valueArray += string.Format(" {0} ,", dt.Rows[i].ItemArray[j].ToString());
                     }
                 }
                 sqlInsert += string.Format(" \n {0} {1} ({2}) {3} ({4}) ",
@@ -921,7 +923,7 @@ namespace Transfer.Models.Repositiry
                              tableName,
                              columnArray.Substring(0, columnArray.Length - 1),
                              "values",
-                             valueArray.Substring(0, valueArray.Length -1)
+                             valueArray.Substring(0, valueArray.Length - 1)
                              );
                 id += 1;
             }
