@@ -1,33 +1,28 @@
-﻿using Excel;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Data;
+using System.Configuration;
 using System.IO;
-using System.Linq;
 using System.Web.Mvc;
 using Transfer.Models;
-using Transfer.Utility;
-using Transfer.ViewModels;
-using static Transfer.Enum.Ref;
-using System.Configuration;
-using System.Web.Routing;
 using Transfer.Models.Interface;
 using Transfer.Models.Repositiry;
+using Transfer.Utility;
+using Transfer.ViewModels;
 
 namespace Transfer.Controllers
 {
     public class A8Controller : CommonController
     {
-
+        private IA8Repository A8Repository;
         private ICommon CommonFunction;
 
         private IFRS9Entities db = new IFRS9Entities();
 
         public A8Controller()
         {
+            this.A8Repository = new A8Repository();
             this.CommonFunction = new Common();
         }
-
 
         /// <summary>
         /// A8(上傳檔案)
@@ -35,8 +30,6 @@ namespace Transfer.Controllers
         /// <returns></returns>
         public ActionResult Index()
         {
-            ViewBag.Manu = "A8Main";
-            ViewBag.SubManu = "A80SubMain";
             return View();
         }
 
@@ -46,8 +39,6 @@ namespace Transfer.Controllers
         /// <returns></returns>
         public ActionResult Detail()
         {
-            ViewBag.Manu = "A8Main";
-            ViewBag.SubManu = "A81SubMain";
             return View();
         }
 
@@ -102,7 +93,7 @@ namespace Transfer.Controllers
                     Path.GetExtension(FileModel.File.FileName)
                     .Substring(1); //檔案類型
                 var stream = FileModel.File.InputStream;
-                List<Exhibit10Model> dataModel = getExcel(pathType, stream);
+                List<Exhibit10Model> dataModel = A8Repository.getExcel(pathType, stream);
                 if (dataModel.Count > 0)
                 {
                     result.RETURN_FLAG = true;
@@ -147,7 +138,7 @@ namespace Transfer.Controllers
                 FileStream stream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read);
 
                 string pathType = path.Split('.')[1]; //抓副檔名
-                List<Exhibit10Model> dataModel = getExcel(pathType, stream); //Excel轉成 Exhibit10Model
+                List<Exhibit10Model> dataModel = A8Repository.getExcel(pathType, stream); //Excel轉成 Exhibit10Model
 
                 string proName = "Transfer";
                 string tableName = string.Empty;
@@ -162,36 +153,43 @@ namespace Transfer.Controllers
 
                 #region save Moody_Monthly_PD_Info(A81)
                 tableName = "Moody_Monthly_PD_Info";
-                bool flagA81 = saveA81(dataModel); //save to DB
-                bool A81Log = CommonFunction.saveLog(tableName, fileName, proName, flagA81, startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, flagA81, startTime, txtLocation(txtpath)); //寫txt Log
+                MSGReturnModel resultA81 = A8Repository.SaveA8("A81",dataModel); //save to DB
+                bool A81Log = CommonFunction.saveLog(tableName, fileName, proName, resultA81.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                TxtLog.txtLog(tableName, resultA81.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
                 #region save Moody_Quartly_PD_Info(A82)
                 tableName = "Moody_Quartly_PD_Info";
-                bool flagA82 = saveA82(dataModel); //save to DB
-                bool A82Log = CommonFunction.saveLog(tableName, fileName, proName, flagA82, startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, A82Log, startTime, txtLocation(txtpath)); //寫txt Log
+                MSGReturnModel resultA82 = A8Repository.SaveA8("A82",dataModel); //save to DB
+                bool A82Log = CommonFunction.saveLog(tableName, fileName, proName, resultA82.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                TxtLog.txtLog(tableName, resultA82.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
                 #region save Moody_Predit_PD_Info(A83)
                 tableName = "Moody_Predit_PD_Info";
-                bool flagA83 = saveA83(dataModel); //save to DB
-                bool A83Log = CommonFunction.saveLog(tableName, fileName, proName, flagA83, startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, A82Log, startTime, txtLocation(txtpath)); //寫txt Log
+                MSGReturnModel resultA83 = A8Repository.SaveA8("A83",dataModel); //save to DB
+                bool A83Log = CommonFunction.saveLog(tableName, fileName, proName, resultA83.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                TxtLog.txtLog(tableName, resultA83.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
-                result.RETURN_FLAG = flagA81 && flagA82 && flagA83;
+                result.RETURN_FLAG = resultA81.RETURN_FLAG &&
+                                     resultA82.RETURN_FLAG &&
+                                     resultA83.RETURN_FLAG;
+                result.DESCRIPTION = "Success!";
+
                 if (!result.RETURN_FLAG)
                 {
-                    result.DESCRIPTION = (flagA81 ? string.Empty : "A81 Error! ") +
-                                         (flagA82 ? string.Empty : "A82 Error! ") +
-                                         (flagA83 ? string.Empty : "A83 Error! ");
+                    List<string> errs = new List<string>();
+                    if (!resultA81.RETURN_FLAG)
+                        errs.Add("SaveA81 Error: " + resultA81.DESCRIPTION);
+                    if (!resultA82.RETURN_FLAG)
+                        errs.Add("SaveA82 Error: " + resultA82.DESCRIPTION);
+                    if (!resultA83.RETURN_FLAG)
+                        errs.Add("SaveA83 Error: " + resultA83.DESCRIPTION);
+
+                    result.DESCRIPTION = string.Join("\n", errs);
                 }
-                else
-                {
-                    result.DESCRIPTION = "Success!";
-                }
+
             }
             catch (Exception ex)
             {
@@ -217,39 +215,19 @@ namespace Transfer.Controllers
                 switch (type)
                 {
                     case "A81": //抓Moody_Monthly_PD_Info(A81)資料
-                        if (db.Moody_Monthly_PD_Info.Count() > 0)
-                        {
-                            result.RETURN_FLAG = true;
-                            result.Datas = Json(
-                                (from item in db.Moody_Monthly_PD_Info.AsEnumerable()
-                                 select new A81ViewModel() //轉型 Datetime
-                                {
-                                     Trailing_12m_Ending =
-                                    item.Trailing_12m_Ending.HasValue ?
-                                    item.Trailing_12m_Ending.Value.ToString("yyyy/MM/dd") : string.Empty,
-                                    Actual_Allcorp = TypeTransfer.doubleNToString(item.Actual_Allcorp),
-                                    Actual_SG = TypeTransfer.doubleNToString(item.Actual_SG),
-                                    Baseline_forecast_Allcorp = TypeTransfer.doubleNToString(item.Baseline_forecast_Allcorp),
-                                    Baseline_forecast_SG = TypeTransfer.doubleNToString(item.Baseline_forecast_SG),
-                                    Pessimistic_Forecast_Allcorp = TypeTransfer.doubleNToString(item.Pessimistic_Forecast_Allcorp),
-                                    Pessimistic_Forecast_SG = TypeTransfer.doubleNToString(item.Pessimistic_Forecast_SG),
-                                    Data_Year = item.Data_Year
-                                }).ToList());
-                        }
+                        var A81Data = A8Repository.GetA81();
+                        result.RETURN_FLAG = A81Data.Item1;
+                        result.Datas = Json(A81Data.Item2);
                         break;
                     case "A82"://抓Moody_Quartly_PD_Info(A82)資料
-                        if (db.Moody_Quartly_PD_Info.Count() > 0)
-                        {
-                            result.RETURN_FLAG = true;
-                            result.Datas = Json(db.Moody_Quartly_PD_Info.ToList());
-                        }
+                        var A82Data = A8Repository.GetA82();
+                        result.RETURN_FLAG = A82Data.Item1;
+                        result.Datas = Json(A82Data.Item2);
                         break;
                     case "A83"://抓Moody_Predit_PD_Info(A83)資料
-                        if (db.Moody_Predit_PD_Info.Count() > 0)
-                        {
-                            result.RETURN_FLAG = true;
-                            result.Datas = Json(db.Moody_Predit_PD_Info.ToList());
-                        }
+                        var A83Data = A8Repository.GetA83();
+                        result.RETURN_FLAG = A83Data.Item1;
+                        result.Datas = Json(A83Data.Item2);
                         break;
                 }
                 if (result.RETURN_FLAG)
@@ -262,269 +240,6 @@ namespace Transfer.Controllers
             }
             return Json(result);
         }
-
-        #region private function
-
-        #region save Moody_Monthly_PD_Info(A81)
-        /// <summary>
-        /// Save  Moody_Monthly_PD_Info(A81)
-        /// </summary>
-        /// <param name="dataModel"></param>
-        /// <returns></returns>
-        private bool saveA81(List<Exhibit10Model> dataModel)
-        {
-            bool flag = true;
-            try
-            {
-                foreach (var item in db.Moody_Monthly_PD_Info)
-                {
-                    db.Moody_Monthly_PD_Info.Remove(item); //資料全刪除
-                }
-                int id = 1;
-                foreach (var item in dataModel)
-                {
-                    DateTime? dt = TypeTransfer.stringToDateTimeN(item.Trailing);
-                    db.Moody_Monthly_PD_Info.Add(
-                        new Moody_Monthly_PD_Info()
-                        {
-                            Id = id,
-                            Trailing_12m_Ending = dt,
-                            Actual_Allcorp = 
-                            TypeTransfer.stringToDoubleN(item.Actual_Allcorp),
-                            Baseline_forecast_Allcorp = 
-                            TypeTransfer.stringToDoubleN(item.Baseline_forecast_Allcorp),
-                            Pessimistic_Forecast_Allcorp = 
-                            TypeTransfer.stringToDoubleN(item.Pessimistic_Forecast_Allcorp),
-                            Actual_SG = TypeTransfer.stringToDoubleN(item.Actual_SG),
-                            Baseline_forecast_SG = TypeTransfer.stringToDoubleN(item.Baseline_forecast_SG),
-                            Pessimistic_Forecast_SG =
-                            TypeTransfer.stringToDoubleN(item.Pessimistic_Forecast_SG),
-                            Data_Year = (dt == null) ? string.Empty : ((DateTime)dt).Year.ToString()
-                        });
-                    id += 1;
-                }
-
-                db.SaveChanges(); //Save
-            }
-            catch (Exception ex)
-            {
-                foreach (var item in db.Moody_Monthly_PD_Info)
-                {
-                    db.Moody_Monthly_PD_Info.Remove(item); //失敗先刪除
-                }
-                flag = false;
-            }
-            return flag;
-        }
-        #endregion
-
-        #region save Moody_Quartly_PD_Info(A82)
-        /// <summary>
-        /// save Moody_Quartly_PD_Info(A82)
-        /// </summary>
-        /// <param name="dataModel"></param>
-        /// <returns></returns>
-        private bool saveA82(List<Exhibit10Model> dataModel)
-        {
-            bool flag = true;
-            try
-            {
-                foreach (var item in db.Moody_Quartly_PD_Info)
-                {
-                    db.Moody_Quartly_PD_Info.Remove(item);
-                }
-                int id = 1;
-                List<Moody_Quartly_PD_Info> allData = new List<Moody_Quartly_PD_Info>();
-                List<int> months = new List<int>() { 3, 6, 9, 12 }; //只搜尋3.6.9.12 月份
-                foreach (var item in dataModel
-                    .Where(x => !string.IsNullOrWhiteSpace(x.Actual_Allcorp) //要有Actual_Allcorp (排除今年)
-                    && months.Contains(DateTime.Parse(x.Trailing).Month)) //只搜尋3.6.9.12 月份
-                    .OrderByDescending(x => x.Trailing)) //排序=>日期大到小
-                {
-                    DateTime dt = DateTime.Parse(item.Trailing);
-                    string quartly = dt.Year.ToString();
-                    switch (dt.Month) //判斷季別
-                    {
-                        case 3:
-                            quartly += "Q1";
-                            break;
-                        case 6:
-                            quartly += "Q2";
-                            break;
-                        case 9:
-                            quartly += "Q3";
-                            break;
-                        case 12:
-                            quartly += "Q4";
-                            break;
-                    }
-                    double? actualAllcorp = null;
-                    if (!string.IsNullOrWhiteSpace(item.Actual_Allcorp))
-                        actualAllcorp = double.Parse(item.Actual_Allcorp);
-                    db.Moody_Quartly_PD_Info.Add(new Moody_Quartly_PD_Info()
-                    {
-                        Id = id,
-                        Data_Year = dt.Year.ToString(),
-                        Year_Quartly = quartly,
-                        PD = actualAllcorp
-                    });
-                    id += 1;
-                }
-                db.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                foreach (var item in db.Moody_Quartly_PD_Info)
-                {
-                    db.Moody_Quartly_PD_Info.Remove(item);
-                }
-                flag = false;
-            }
-            return flag;
-        }
-        #endregion
-
-        #region save Moody_Predit_PD_Info(A83)
-        /// <summary>
-        /// save Moody_Predit_PD_Info(A83)
-        /// </summary>
-        /// <param name="dataModel"></param>
-        /// <returns></returns>
-        private bool saveA83(List<Exhibit10Model> dataModel)
-        {
-            bool flag = true;
-            try
-            {
-                foreach (var item in db.Moody_Predit_PD_Info)
-                {
-                    db.Moody_Predit_PD_Info.Remove(item);
-                }
-                List<Exhibit10Model> models = (from q in dataModel
-                                             where !string.IsNullOrWhiteSpace(q.Actual_Allcorp) && //排除掉今年
-                                             12.Equals(DateTime.Parse(q.Trailing).Month) //只取12月
-                                             select q).ToList();
-                string maxYear = models.Max(x => DateTime.Parse(x.Trailing)).Year.ToString(); //抓取最大年
-                string minYear = models.Min(x => DateTime.Parse(x.Trailing)).Year.ToString(); //抓取最小年
-
-                double? PD = null;
-                double PDValue = models.Sum(x => double.Parse(x.Actual_Allcorp)) / models.Count; //計算 PD
-                if (PDValue > 0)
-                    PD = PDValue;
-
-                //int id = 1;
-                db.Moody_Predit_PD_Info.Add(new Moody_Predit_PD_Info()
-                {
-                    Id = 1,
-                    Data_Year = maxYear,
-                    Period = minYear + "-" + maxYear,
-                    PD_TYPE = PD_Type.Past_Year_AVG.ToString(),
-                    PD = PD
-                });
-                var dtn = DateTime.Now.Year;
-                Exhibit10Model model =
-                    dataModel.Where(x => dtn.Equals(DateTime.Parse(x.Trailing).Year)
-                    && 12.Equals(DateTime.Parse(x.Trailing).Month)).FirstOrDefault(); //抓今年又是12月的資料
-                string baselineForecastAllcorp = string.Empty;
-                if (model != null)
-                    baselineForecastAllcorp = model.Baseline_forecast_Allcorp;
-                PD = null;
-                if (!string.IsNullOrWhiteSpace(baselineForecastAllcorp))
-                    PD = double.Parse(baselineForecastAllcorp);
-
-                db.Moody_Predit_PD_Info.Add(new Moody_Predit_PD_Info()
-                {
-                    Id = 2,
-                    Data_Year = maxYear,
-                    Period = dtn.ToString(),
-                    PD_TYPE = PD_Type.Forcast.ToString(),
-                    PD = PD
-                });
-                db.SaveChanges();
-            }
-            catch (Exception ex)
-            {
-                foreach (var item in db.Moody_Predit_PD_Info)
-                {
-                    db.Moody_Predit_PD_Info.Remove(item);
-                }
-                flag = false;
-            }
-            return flag;
-        }
-        #endregion
-
-        #region datarow 組成 Exhibit10Model
-        /// <summary>
-        /// datarow 組成 Exhibit10Model
-        /// </summary>
-        /// <param name="item">DataRow</param>
-        /// <returns>Exhibit10Model</returns>
-        private Exhibit10Model getExhibit10Models(DataRow item)
-        {
-            DateTime minDate = DateTime.MinValue;
-            if (item[0] != null)
-                DateTime.TryParse(item[0].ToString(), out minDate);
-            return new Exhibit10Model()
-            {
-                Trailing = (item[0] != null) && (minDate != DateTime.MinValue) ?
-                minDate.ToString("yyyy/MM/dd") : string.Empty,
-                Actual_Allcorp = TypeTransfer.objToString(item[1]) ,
-                Baseline_forecast_Allcorp = TypeTransfer.objToString(item[2]),
-                Pessimistic_Forecast_Allcorp = TypeTransfer.objToString(item[3]) ,
-                Actual_SG = TypeTransfer.objToString(item[4]) ,
-                Baseline_forecast_SG = TypeTransfer.objToString(item[5]),
-                Pessimistic_Forecast_SG = TypeTransfer.objToString(item[6])
-            };
-        }
-        #endregion
-
-        #region get Excel to List<Exhibit10Model>
-        /// <summary>
-        /// 把Excel 資料轉換成 Exhibit10Model
-        /// </summary>
-        /// <param name="pathType">string</param>
-        /// <param name="stream">Stream</param>
-        /// <returns>Exhibit10Models</returns>
-        private List<Exhibit10Model> getExcel(string pathType, Stream stream)
-        {
-            DataSet resultData = new DataSet();
-            List<Exhibit10Model> dataModel = new List<Exhibit10Model>();
-            try
-            {
-                IExcelDataReader reader = null;
-                switch (pathType) //判斷型別
-                {
-                    case "xls":
-                        reader = ExcelReaderFactory.CreateBinaryReader(stream);
-                        break;
-                    case "xlsx":
-                        reader = ExcelReaderFactory.CreateOpenXmlReader(stream);
-                        break;
-                }
-                reader.IsFirstRowAsColumnNames = true;
-                resultData = reader.AsDataSet();
-                reader.Close();
-
-                if (resultData.Tables[0].Rows.Count > 2) //判斷有無資料
-                {
-                    dataModel = (from q in resultData.Tables[0].AsEnumerable()
-                                 select getExhibit10Models(q)).Skip(1).ToList();
-                    //skip(1) 為排除Excel Title列那行(參數可調)
-                }
-            }
-            catch
-            { }
-            return dataModel;
-        }
-        #endregion
-
-        protected override void Dispose(bool disposing)
-        {
-            db.Dispose();
-            base.Dispose(disposing);         
-        }
-
-        #endregion
 
     }
 }

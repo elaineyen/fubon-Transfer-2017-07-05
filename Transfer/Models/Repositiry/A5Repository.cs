@@ -7,7 +7,7 @@ using Transfer.ViewModels;
 
 namespace Transfer.Models.Repositiry
 {
-    public class A5Repositiry : IA5Repository , IDispose
+    public class A5Repository : IA5Repository , IDbEvent
     {
         protected IFRS9Entities db
         {
@@ -15,10 +15,10 @@ namespace Transfer.Models.Repositiry
             private set;
         }
 
-        //public A5Repository()
-        //{
-        //    this.db = new IFRS9Entities();
-        //}
+        public A5Repository()
+        {
+            this.db = new IFRS9Entities();
+        }
 
         public bool CreateA51(List<Exhibit29Model> model)
         {

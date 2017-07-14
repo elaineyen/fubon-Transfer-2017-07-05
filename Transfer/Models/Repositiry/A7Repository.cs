@@ -11,10 +11,9 @@ using Transfer.Models.Interface;
 using Transfer.Utility;
 using Transfer.ViewModels;
 
-
 namespace Transfer.Models.Repositiry
 {
-    public class A7Repository : IA7Repository, IDispose
+    public class A7Repository : IA7Repository, IDbEvent
     {
         #region 其他
         private Common common = new Common();
@@ -30,6 +29,11 @@ namespace Transfer.Models.Repositiry
         public A7Repository()
         {
             this.db = new IFRS9Entities();
+        }
+
+        public void SaveChange()
+        {
+            db.SaveChanges();
         }
 
         public void Dispose()
@@ -188,7 +192,7 @@ namespace Transfer.Models.Repositiry
 
         #endregion
 
-        #region save Db 部分
+        #region save Db 
 
         #region save Moody_Monthly_PD_Info(A71)
         /// <summary>

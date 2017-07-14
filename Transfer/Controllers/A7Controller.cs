@@ -24,29 +24,21 @@ namespace Transfer.Controllers
         // GET: A7
         public ActionResult Index()
         {
-            ViewBag.Manu = "A7Main";
-            ViewBag.SubManu = "A70SubMain";
             return View();
         }
 
         public ActionResult A71Detail()
         {
-            ViewBag.Manu = "A7Main";
-            ViewBag.SubManu = "A71SubMain";
             return View();
         }
 
         public ActionResult A72Detail()
         {
-            ViewBag.Manu = "A7Main";
-            ViewBag.SubManu = "A72SubMain";
             return View();
         }
 
         public ActionResult A73Detail()
         {
-            ViewBag.Manu = "A7Main";
-            ViewBag.SubManu = "A73SubMain";
             return View();
         }
 

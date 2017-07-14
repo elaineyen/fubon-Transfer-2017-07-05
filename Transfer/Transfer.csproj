@@ -173,7 +173,7 @@
     <Compile Include="Models\Interface\IA7Repository.cs" />
     <Compile Include="Models\Interface\IA8Repository.cs" />
     <Compile Include="Models\Interface\ICommon.cs" />
-    <Compile Include="Models\Interface\IDispose.cs" />
+    <Compile Include="Models\Interface\IDbEvent.cs" />
     <Compile Include="Models\Moody_Monthly_PD_Info.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
@@ -186,7 +186,8 @@
     <Compile Include="Models\Moody_Tm_YYYY.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\Repositiry\A5Repositiry.cs" />
+    <Compile Include="Models\Repositiry\A8Repository.cs" />
+    <Compile Include="Models\Repositiry\A5Repository.cs" />
     <Compile Include="Models\Repositiry\A7Repository.cs" />
     <Compile Include="Models\Repositiry\Common.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -6,8 +6,10 @@ using System.Threading.Tasks;
 
 namespace Transfer.Models.Interface
 {
-    public interface IDispose
+    public interface IDbEvent
     {
         void Dispose();
+
+        void SaveChange();
     }
 }
