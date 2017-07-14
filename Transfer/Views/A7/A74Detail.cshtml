@@ -1,24 +1,19 @@
 ﻿@{
-    ViewBag.Title = "A8";
+    ViewBag.Title = "A51";
+    ViewBag.Manu = "A7Main";
+    ViewBag.SubManu = "A74SubMain";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <div class="container" id="main" >
     <div class="row main_hand">
         <div class="col-md-12 main_hand_div">
-            @*<h4>This is suppose to be in the main content</h4>*@
-            @*<div style="padding-top:10px;padding-bottom:10px">*@
-                <input type="button" class="btn btn-primary" value="A81查詢" id="btnA81Search" />
-                <input type="button" class="btn btn-primary" value="A82查詢" id="btnA82Search" />
-                <input type="button" class="btn btn-primary" value="A83查詢" id="btnA83Search" />
-            @*</div>*@
+                <input type="button" class="btn btn-primary" value="A51查詢" id="btnA51Search" />
         </div>
     </div>
     <div class="row main_body" style="overflow:auto;height:100%">
         <div class="col-md-12">
             <div class="viewDetail">
                 <div id="jqgridDiv" class="jqd">
-                    @*<table id="list1"></table>*@
-                    @*<div id="pager1"></div>*@
                 </div>
             </div>
         </div>
@@ -30,21 +25,15 @@
 
         //#region 註冊URL
         var url = {};
-        url.getData = '@Url.Action("GetData", "A8")';
+        url.getData = '@Url.Action("GetData", "A7")';
         //#endregion 註冊URL
 
         //#region 註冊click事件
         $('input:button').each(function () {
             var id = $(this).attr('id');
             switch (id) {
-                case 'btnA81Search':
-                    $("#" + id).on('click', function () { showJqgrid('A81') });
-                    break;
-                case 'btnA82Search':
-                    $("#" + id).on('click', function () { showJqgrid('A82') });
-                    break;
-                case 'btnA83Search':
-                    $("#" + id).on('click', function () { showJqgrid('A83') });
+                case 'btnA51Search':
+                    $("#" + id).on('click', function () { showJqgrid('A51') });
                     break;
             }
         })
@@ -56,31 +45,15 @@
             clearJqgrid();
             var title = ''; //標頭
             var colNameArray = []; //每個欄位名稱要對應傳入資料屬性
-            var widthArray = []; //每個欄位大小 L,M
-            var data; // json Data 由Ajax 拿到
-            var width;
+            var data ; // json Data 由Ajax 拿到
             switch (type)
             {
-                case "A81":
-                    title = 'Moody_Monthly_PD_Info(A81)';
-                    colNameArray = ['Trailing_12m_Ending', 'Actual_Allcorp',
-                    'Baseline_forecast_Allcorp', 'Pessimistic_Forecast_Allcorp',
-                    'Actual_SG', 'Baseline_forecast_SG', 'Pessimistic_Forecast_SG	',
-                    'Data_Year'];
-                    widthArray = ['L', 'M', 'L', 'L', 'M', 'L', 'L', 'M'];
-                    width = '1030';
-                    break;
-                case "A82": 
-                    title = 'Moody_Quartly_PD_Info(A82)';
-                    colNameArray = ['Data_Year', 'Year_Quartly', 'PD'];
-                    widthArray = ['M', 'M', 'M'];
-                    width = 'auto';
-                    break;
-                case "A83":
-                    title = 'Moody_Predit_PD_Info(A83)';
-                    colNameArray = ['Data_Year', 'Period', 'PD_TYPE', 'PD'];
-                    widthArray = ['M', 'M', 'M', 'M'];
-                    width = 'auto';
+                case "A51":
+                    title = 'Grade_Moody_Info(A51)';
+                    colNameArray = ['Data_Year', 'Rating',
+                        'PD_Grade', 'Rating_Adjust',
+                        'Grade_Adjust', 'Moodys_PD'
+                    ];
                     break;
             }
             $.ajax({
@@ -95,7 +68,7 @@
             .done(function (result) {
                 if (result.RETURN_FLAG) {
                     data = result.Datas.Data;
-                    createJqgrid("list1", "pager1", colNameArray, widthArray, data, title, width);
+                    createJqgrid("list1", "pager1", colNameArray, data, title);
                 }
                 else {
                     alert(result.DESCRIPTION);
@@ -115,28 +88,24 @@
         //listId (Jqgrid產生table的ID)
         //pagerId (下方產生筆數的ID)
         //colNameArray (設定上方Title *要與Data 傳入Json 屬性相對應)
-        //widthArray (寬度設定 L=> 210 M=>120)
         //data (要秀的資料Json型別Data)
         //title (標題)
-        //width 寬度
-        function createJqgrid(listId, pagerId, colNameArray, widthArray,data,title,width)
-        {
+        function createJqgrid(listId, pagerId, colNameArray, data, title) {
             var colModelArray = [];
-            var jagridLWidth = 210;
-            var jagridMWidth = 120;            
-            if (colNameArray.length > 0 && colNameArray.length === widthArray.length)
-            {
-                for (let i = 0; i < colNameArray.length; i++)
-                {
+            //var jagridLWidth = 210;
+            var jagridMWidth = 100;
+            if (colNameArray.length > 0) {
+                for (let i = 0; i < colNameArray.length; i++) {
                     var obj = {
                         name: colNameArray[i],
                         index: colNameArray[i],
-                        width: widthArray[i] === 'L' ? jagridLWidth : jagridMWidth
+                        width:  jagridMWidth
                     }
                     colModelArray.push(obj);
                 }
+
                 $('#jqgridDiv').append('<table id="' + listId + '"></table>');
-                $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');
+                $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');                
                 $("#" + listId).jqGrid({
                     data: data,
                     datatype: "local",
@@ -147,7 +116,7 @@
                     rowList: [10, 20, 30], //設定一頁幾筆
                     pager: '#' + pagerId,
                     height: '237',
-                    width: width,
+                    width: 'auto',
                     //sortname: 'id',
                     //viewrecords: true,
                     sortorder: "desc",

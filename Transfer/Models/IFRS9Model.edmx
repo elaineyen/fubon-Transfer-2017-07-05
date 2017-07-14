@@ -7,13 +7,12 @@
     <Schema Namespace="IFRS9Model.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Grade_Moody_Info">
           <Key>
-            <PropertyRef Name="Id" />
+            <PropertyRef Name="Rating" />
           </Key>
-          <Property Name="Id" Type="int" Nullable="false" />
-          <Property Name="Data_Year" Type="varchar" MaxLength="4" />
-          <Property Name="Rating" Type="varchar" MaxLength="10" />
+          <Property Name="Data_Year" Type="varchar" MaxLength="4" Nullable="false" />
+          <Property Name="Rating" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="PD_Grade" Type="int" />
-          <Property Name="Rating_Adjust" Type="varchar" MaxLength="10" />
+          <Property Name="Rating_Adjust" Type="varchar" MaxLength="20" />
           <Property Name="Grade_Adjust" Type="int" />
           <Property Name="Moodys_PD" Type="float" />
         </EntityType>
@@ -191,13 +190,12 @@
         </EntityType>
         <EntityType Name="Grade_Moody_Info">
           <Key>
-            <PropertyRef Name="Id" />
+            <PropertyRef Name="Rating" />
           </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" />
-          <Property Name="Data_Year" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
-          <Property Name="Rating" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Data_Year" Type="String" Nullable="false" MaxLength="4" FixedLength="false" Unicode="false" />
+          <Property Name="Rating" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="PD_Grade" Type="Int32" />
-          <Property Name="Rating_Adjust" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Rating_Adjust" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="Grade_Adjust" Type="Int32" />
           <Property Name="Moodys_PD" Type="Double" />
         </EntityType>
@@ -297,7 +295,6 @@
                 <ScalarProperty Name="PD_Grade" ColumnName="PD_Grade" />
                 <ScalarProperty Name="Rating" ColumnName="Rating" />
                 <ScalarProperty Name="Data_Year" ColumnName="Data_Year" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

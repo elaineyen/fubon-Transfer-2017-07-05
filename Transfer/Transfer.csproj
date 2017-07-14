@@ -200,10 +200,6 @@
     <Compile Include="ViewModels\ValidateFiles.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\IFRS9Second.mdf" />
-    <Content Include="App_Data\IFRS9Second_log.ldf">
-      <DependentUpon>IFRS9Second.mdf</DependentUpon>
-    </Content>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\font-awesome.min.css" />
@@ -386,8 +382,10 @@
     <Content Include="Views\A7\A72Detail.cshtml" />
     <Content Include="Views\A7\A73Detail.cshtml" />
     <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\A7\A74Detail.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="App_Data\" />
     <Folder Include="Views\Common\" />
   </ItemGroup>
   <ItemGroup>

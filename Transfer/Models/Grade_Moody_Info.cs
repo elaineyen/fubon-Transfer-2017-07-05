@@ -14,7 +14,6 @@ namespace Transfer.Models
     
     public partial class Grade_Moody_Info
     {
-        public int Id { get; set; }
         public string Data_Year { get; set; }
         public string Rating { get; set; }
         public Nullable<int> PD_Grade { get; set; }

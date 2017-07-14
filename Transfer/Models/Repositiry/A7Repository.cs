@@ -2,12 +2,10 @@
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Web;
 using Transfer.Enum;
 using Transfer.Models.Interface;
 using Transfer.Utility;
@@ -16,8 +14,9 @@ using Transfer.ViewModels;
 
 namespace Transfer.Models.Repositiry
 {
-    public class A7Repository : IA7Repository
+    public class A7Repository : IA7Repository, IDispose
     {
+        #region 其他
         private Common common = new Common();
 
         private List<string> A73Array = new List<string>() { "TM", "Default" }; //設定 A73要抓的欄位
@@ -33,8 +32,30 @@ namespace Transfer.Models.Repositiry
             this.db = new IFRS9Entities();
         }
 
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (this.db != null)
+                {
+                    this.db.Dispose();
+                    this.db = null;
+                }
+            }
+        }
+        #endregion
+
+        #region Get Data
+
+        #region Get Moody_Monthly_PD_Info(A71)
         /// <summary>
-        /// 
+        /// Get A71 Data
         /// </summary>
         /// <returns></returns>
         public Tuple<bool, List<Moody_Tm_YYYY>> GetA71()
@@ -45,9 +66,11 @@ namespace Transfer.Models.Repositiry
             }
             return new Tuple<bool, List<Moody_Tm_YYYY>>(false, new List<Moody_Tm_YYYY>());
         }
+        #endregion
 
+        #region Get Tm_Adjust_YYYY(A72)
         /// <summary>
-        /// 
+        /// Get A72 Data
         /// </summary>
         /// <returns></returns>
         public Tuple<bool, List<object>> GetA72()
@@ -55,7 +78,7 @@ namespace Transfer.Models.Repositiry
             if (db.Moody_Tm_YYYY.Count() > 0)
             {
                 List<object> odatas = new List<object>();
-                DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());
+                DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList()).Item1;
                 odatas.Add(datas.Columns.Cast<DataColumn>()
                      .Select(x => x.ColumnName)
                      .ToArray()); //第一列 由Columns 組成Title 
@@ -91,9 +114,11 @@ namespace Transfer.Models.Repositiry
                 return new Tuple<bool, List<object>>(false, new List<object>());
             }
         }
+        #endregion
 
+        #region Get GM_YYYY(A73)
         /// <summary>
-        /// 
+        /// Get A73 Data
         /// </summary>
         /// <returns></returns>
         public Tuple<bool, List<object>> GetA73()
@@ -101,7 +126,7 @@ namespace Transfer.Models.Repositiry
             if (db.Moody_Tm_YYYY.Count() > 0)
             {
                 List<object> odatas = new List<object>();
-                DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());
+                DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList()).Item1;
                 odatas.Add(datas.Columns.Cast<DataColumn>()
                      .Where(x => A73Array.Contains(x.ColumnName))
                      .Select(x => x.ColumnName)
@@ -141,11 +166,264 @@ namespace Transfer.Models.Repositiry
                 return new Tuple<bool, List<object>>(false, new List<object>());
             }
         }
+        #endregion
 
+        #region Get Grade_Moody_Info(A51) 
         /// <summary>
-        /// 
+        /// Get A51 Data
         /// </summary>
-        /// <param name="pathType"></param>
+        /// <returns></returns>
+        public Tuple<bool, List<Grade_Moody_Info>> GetA51()
+        {
+            if (db.Grade_Moody_Info.Count() > 0)
+            {
+                return new Tuple<bool, List<Grade_Moody_Info>>(true, db.Grade_Moody_Info.OrderBy(x => x.PD_Grade).ToList());
+            }
+            else
+            {
+                return new Tuple<bool, List<Grade_Moody_Info>>(false, new List<Grade_Moody_Info>());
+            }
+        }
+        #endregion
+
+        #endregion
+
+        #region save Db 部分
+
+        #region save Moody_Monthly_PD_Info(A71)
+        /// <summary>
+        /// Save  Moody_Monthly_PD_Info(A71)
+        /// </summary>
+        /// <param name="dataModel"></param>
+        /// <returns></returns>
+        public MSGReturnModel saveA71(List<Exhibit29Model> dataModel)
+        {
+            MSGReturnModel result = new MSGReturnModel();
+            try
+            {
+                if(db.Moody_Tm_YYYY.Count()  > 0) 
+                db.Moody_Tm_YYYY.RemoveRange(db.Moody_Tm_YYYY.ToList()); //資料全刪除
+                int id = 1;
+                foreach (var item in dataModel)
+                {
+                    db.Moody_Tm_YYYY.Add(
+                        new Moody_Tm_YYYY()
+                        {
+                            Id = id,
+                            From_To = item.From_To,
+                            Aaa = TypeTransfer.stringToDoubleN(item.Aaa),
+                            Aa1 = TypeTransfer.stringToDoubleN(item.Aa1),
+                            Aa2 = TypeTransfer.stringToDoubleN(item.Aa2),
+                            Aa3 = TypeTransfer.stringToDoubleN(item.Aa3),
+                            A1 = TypeTransfer.stringToDoubleN(item.A1),
+                            A2 = TypeTransfer.stringToDoubleN(item.A2),
+                            A3 = TypeTransfer.stringToDoubleN(item.A3),
+                            Baa1 = TypeTransfer.stringToDoubleN(item.Baa1),
+                            Baa2 = TypeTransfer.stringToDoubleN(item.Baa2),
+                            Baa3 = TypeTransfer.stringToDoubleN(item.Baa3),
+                            Ba1 = TypeTransfer.stringToDoubleN(item.Ba1),
+                            Ba2 = TypeTransfer.stringToDoubleN(item.Ba2),
+                            Ba3 = TypeTransfer.stringToDoubleN(item.Ba3),
+                            B1 = TypeTransfer.stringToDoubleN(item.B1),
+                            B2 = TypeTransfer.stringToDoubleN(item.B2),
+                            B3 = TypeTransfer.stringToDoubleN(item.B3),
+                            Caa1 = TypeTransfer.stringToDoubleN(item.Caa1),
+                            Caa2 = TypeTransfer.stringToDoubleN(item.Caa2),
+                            Caa3 = TypeTransfer.stringToDoubleN(item.Caa3),
+                            Ca_C = TypeTransfer.stringToDoubleN(item.Ca_C),
+                            WR = TypeTransfer.stringToDoubleN(item.WR),
+                            Default_Value = TypeTransfer.stringToDoubleN(item.Default),
+                        });
+                    id += 1;
+                }
+                db.SaveChanges(); //Save
+                result.RETURN_FLAG = true;
+            }
+            catch (Exception ex)
+            {
+                foreach (var item in db.Moody_Monthly_PD_Info)
+                {
+                    db.Moody_Monthly_PD_Info.Remove(item); //失敗先刪除
+                }
+                result.RETURN_FLAG = false;
+            }
+            return result;
+        }
+        #endregion
+
+        #region Save Tm_Adjust_YYYY(A72)
+        /// <summary>
+        /// Save  Tm_Adjust_YYYY(A72)
+        /// </summary>
+        /// <returns></returns>
+        public MSGReturnModel saveA72()
+        {
+            MSGReturnModel result = new MSGReturnModel();
+            try
+            {
+                if (db.Moody_Tm_YYYY.Count() > 0)
+                {
+                    DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList()).Item1;
+                    string cs = common.RemoveEntityFrameworkMetadata(string.Empty);
+                    using (var conn = new SqlConnection(cs))
+                    {
+                        using (var cmd = new SqlCommand(CreateA7Table("Tm_Adjust_YYYY", datas), conn))
+                        {
+                            conn.Open();
+                            //SqlDataReader reader = cmd.ExecuteReader();
+                            //while (reader.Read())
+                            //{
+                            //    flag = true;
+                            //}
+                            //reader.Close();
+                            int count = cmd.ExecuteNonQuery();
+                            if (datas.Rows.Count > 0 && datas.Rows.Count.Equals(count))
+                            {
+                                result.RETURN_FLAG = true;
+                            }
+                            else
+                            {
+                                result.RETURN_FLAG = false;
+                                result.DESCRIPTION = "新增筆數有誤!";
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = ex.Message;
+            }
+            return result;
+        }
+        #endregion
+
+        #region Save GM_YYYY(A73) 
+        /// <summary>
+        /// Save  GM_YYYY(A73) 
+        /// </summary>
+        /// <returns></returns>
+        public MSGReturnModel saveA73()
+        {
+            MSGReturnModel result = new MSGReturnModel();
+            try
+            {
+                if (db.Moody_Tm_YYYY.Count() > 0)
+                {
+                    DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList()).Item1;
+                    DataTable A73Datas = FromA72GetA73(datas);
+                    string cs = common.RemoveEntityFrameworkMetadata(string.Empty);
+                    using (var conn = new SqlConnection(cs))
+                    {
+                        using (var cmd = new SqlCommand(CreateA7Table("GM_YYYY", A73Datas), conn))
+                        {
+                            conn.Open();
+                            int count = cmd.ExecuteNonQuery();
+                            if (A73Datas.Rows.Count > 0 && A73Datas.Rows.Count.Equals(count))
+                            {
+                                result.RETURN_FLAG = true;
+                            }
+                            else
+                            {
+                                result.DESCRIPTION = "新增筆數有誤!";
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = ex.Message;
+            }
+            return result;
+        }
+        #endregion
+
+        #region Save Grade_Moody_Info(A51) 
+        /// <summary>
+        /// Save  Grade_Moody_Info(A51) 
+        /// </summary>
+        /// <returns></returns>
+        public MSGReturnModel saveA51()
+        {
+            MSGReturnModel result = new MSGReturnModel();
+            try
+            {
+                if (db.Moody_Tm_YYYY.Count() > 0)
+                {
+                    if(db.Grade_Moody_Info.Count() > 0)
+                    db.Grade_Moody_Info.RemoveRange(
+                       db.Grade_Moody_Info.ToList()); //資料全刪除  
+                     var A51Data = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());                  
+                    string year = (DateTime.Now.Year - 1).ToString();
+                    List<Grade_Moody_Info> A51s = (db.Moody_Tm_YYYY.ToList().
+                        Select((x,y) => new Grade_Moody_Info
+                        {
+                            Rating = x.From_To,
+                            Data_Year = year,
+                        })).ToList();
+                    A51s.Add(new Grade_Moody_Info() { Rating = "WT", Data_Year = year });
+                    A51s.Add(new Grade_Moody_Info() { Rating = "Default", Data_Year = year });
+                    int grade_Adjust = 1;
+                    int PDGrade = 1;
+                    List<string> alreadyNum = new List<string>();
+                    foreach (Grade_Moody_Info item in A51s)
+                    {
+                        string rating_Adjust = string.Empty;
+                        foreach (var col in A51Data.Item2)
+                        {
+                            if (col.Value.Contains(item.Rating))
+                            {
+                                rating_Adjust = col.Key+"_"+ col.Value.Last();
+                            }
+                        }
+                        if (!string.IsNullOrWhiteSpace(rating_Adjust)) //合併欄位情況
+                        {
+                            if (alreadyNum.Contains(rating_Adjust)) //與上一筆一樣是合併欄位
+                            {
+                                grade_Adjust -= 1; //Grade_Adjust 不變
+                            }
+                            else
+                            {
+                                alreadyNum.Add(rating_Adjust); //新的合併欄位 
+                            }
+                        }
+                        item.Grade_Adjust = grade_Adjust;
+                        item.Moodys_PD = string.IsNullOrWhiteSpace(rating_Adjust) ?
+                            A51Data.Item1.AsEnumerable().Where(x => x.Field<string>("TM") == item.Rating)
+                            .Select(x => Convert.ToDouble(x.Field<string>("Default"))).FirstOrDefault():
+                            A51Data.Item1.AsEnumerable().Where(x => x.Field<string>("TM") == rating_Adjust)
+                            .Select(x => Convert.ToDouble(x.Field<string>("Default"))).FirstOrDefault();
+                        item.PD_Grade = PDGrade;
+                        item.Rating_Adjust = rating_Adjust.Replace("_","~");
+                        grade_Adjust += 1;
+                        PDGrade += 1;
+                    }
+                    db.Grade_Moody_Info.AddRange(A51s);
+                    db.SaveChanges(); //Save
+                    result.RETURN_FLAG = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = ex.Message;
+            }
+            return result;
+        }
+        #endregion
+
+        #endregion
+
+        #region Excel 部分
+
+        #region Excel 資料轉成 Exhibit29Model
+        /// <summary>
+        /// Excel 資料轉成 Exhibit29Model
+        /// </summary>
+        /// <param name="pathType">Excel 副檔名</param>
         /// <param name="stream"></param>
         /// <returns></returns>
         public List<Exhibit29Model> getExcel(string pathType, Stream stream)
@@ -181,42 +459,16 @@ namespace Transfer.Models.Repositiry
             { }
             return dataModel;
         }
-
-        #region save Moody_Monthly_PD_Info(A71)
-        /// <summary>
-        /// Save  Moody_Monthly_PD_Info(A71)
-        /// </summary>
-        /// <param name="dataModel"></param>
-        /// <returns></returns>
-        public MSGReturnModel saveA7(List<Exhibit29Model> dataModel)
-        {
-            MSGReturnModel result = new MSGReturnModel();
-
-            bool flagA71 = saveA71(dataModel);
-            bool flagA72 = false;
-            bool flagA73 = false;
-            bool flagA51 = false;
-            if (flagA71)
-            {
-                flagA72 = saveA72();
-                flagA73 = saveA73();
-            }
-            result.RETURN_FLAG = flagA71 && flagA72 && flagA73;
-            if (result.RETURN_FLAG)
-            {
-                result.DESCRIPTION = "Success!";
-            }
-            else
-            {
-                result.DESCRIPTION = ((flagA71 ? string.Empty : "A71 Error ! \n" )+
-                                      (flagA72 ? string.Empty : "A72 Error ! \n" )+
-                                      (flagA73 ? string.Empty : "A73 Error ! \n" ));
-            }
-            return result;
-        }
         #endregion
 
-        public MSGReturnModel DownLoadExcel(string type,string path)
+        #region 下載 Excel
+        /// <summary>
+        /// 下載 Excel
+        /// </summary>
+        /// <param name="type">(A72.A73)</param>
+        /// <param name="path">下載位置</param>
+        /// <returns></returns>
+        public MSGReturnModel DownLoadExcel(string type, string path)
         {
             MSGReturnModel result = new MSGReturnModel();
             result.RETURN_FLAG = false;
@@ -226,14 +478,14 @@ namespace Transfer.Models.Repositiry
                 case "A72":
                     if (db.Moody_Tm_YYYY.Count() > 0)
                     {
-                        DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());
+                        DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList()).Item1;
                         result.RETURN_FLAG = FileRelated.DataTableToExcel(datas, path, string.Empty);
                     }
                     break;
                 case "A73":
                     if (db.Moody_Tm_YYYY.Count() > 0)
                     {
-                        DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());
+                        DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList()).Item1;
                         DataTable newData = FromA72GetA73(datas); //要組新的 Table                           
                         if (newData != null) //有資料
                         {
@@ -248,132 +500,11 @@ namespace Transfer.Models.Repositiry
             }
             return result;
         }
+        #endregion
+
+        #endregion
 
         #region Private Function
-
-        private bool saveA71(List<Exhibit29Model> dataModel)
-        {
-            bool flag = true;
-            try
-            {
-                foreach (var item in db.Moody_Tm_YYYY)
-                {
-                    db.Moody_Tm_YYYY.Remove(item); //資料全刪除
-                }
-                int id = 1;
-                foreach (var item in dataModel)
-                {
-                    db.Moody_Tm_YYYY.Add(
-                        new Moody_Tm_YYYY()
-                        {
-                            Id = id,
-                            From_To = item.From_To,
-                            Aaa = TypeTransfer.stringToDoubleN(item.Aaa),
-                            Aa1 = TypeTransfer.stringToDoubleN(item.Aa1),
-                            Aa2 = TypeTransfer.stringToDoubleN(item.Aa2),
-                            Aa3 = TypeTransfer.stringToDoubleN(item.Aa3),
-                            A1 = TypeTransfer.stringToDoubleN(item.A1),
-                            A2 = TypeTransfer.stringToDoubleN(item.A2),
-                            A3 = TypeTransfer.stringToDoubleN(item.A3),
-                            Baa1 = TypeTransfer.stringToDoubleN(item.Baa1),
-                            Baa2 = TypeTransfer.stringToDoubleN(item.Baa2),
-                            Baa3 = TypeTransfer.stringToDoubleN(item.Baa3),
-                            Ba1 = TypeTransfer.stringToDoubleN(item.Ba1),
-                            Ba2 = TypeTransfer.stringToDoubleN(item.Ba2),
-                            Ba3 = TypeTransfer.stringToDoubleN(item.Ba3),
-                            B1 = TypeTransfer.stringToDoubleN(item.B1),
-                            B2 = TypeTransfer.stringToDoubleN(item.B2),
-                            B3 = TypeTransfer.stringToDoubleN(item.B3),
-                            Caa1 = TypeTransfer.stringToDoubleN(item.Caa1),
-                            Caa2 = TypeTransfer.stringToDoubleN(item.Caa2),
-                            Caa3 = TypeTransfer.stringToDoubleN(item.Caa3),
-                            Ca_C = TypeTransfer.stringToDoubleN(item.Ca_C),
-                            WR = TypeTransfer.stringToDoubleN(item.WR),
-                            Default_Value = TypeTransfer.stringToDoubleN(item.Default),
-                        });
-                    id += 1;
-                }
-                db.SaveChanges(); //Save
-            }
-            catch (Exception ex)
-            {
-                foreach (var item in db.Moody_Monthly_PD_Info)
-                {
-                    db.Moody_Monthly_PD_Info.Remove(item); //失敗先刪除
-                }
-                flag = false;
-            }
-            return flag;
-        }
-
-        private bool saveA72()
-        {
-            bool flag = false;
-            try
-            {
-                if (db.Moody_Tm_YYYY.Count() > 0)
-                {
-                    DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());
-                    string cs = common.RemoveEntityFrameworkMetadata(string.Empty);
-                    using (var conn = new SqlConnection(cs))
-                    {                       
-                        using (var cmd = new SqlCommand(CreateA7Table("Tm_Adjust_YYYY", datas), conn))
-                        {
-                            conn.Open();
-                            //SqlDataReader reader = cmd.ExecuteReader();
-                            //while (reader.Read())
-                            //{
-                            //    flag = true;
-                            //}
-                            //reader.Close();
-                            int count = cmd.ExecuteNonQuery();
-                            if (count > 0)
-                                flag = true;
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                
-            }
-            return flag;
-        }
-
-        private bool saveA73()
-        {
-            bool flag = false;
-            try
-            {
-                if (db.Moody_Tm_YYYY.Count() > 0)
-                {
-                    DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());
-                    DataTable A73Datas = FromA72GetA73(datas);
-                    string cs = common.RemoveEntityFrameworkMetadata(string.Empty);
-                    using (var conn = new SqlConnection(cs))
-                    {
-                        using (var cmd = new SqlCommand(CreateA7Table("GM_YYYY", A73Datas), conn))
-                        {
-                            conn.Open();
-                            int count = cmd.ExecuteNonQuery();
-                            if (A73Datas.Rows.Count > 0 && A73Datas.Rows.Count.Equals(count))
-                                flag = true;
-                            //SqlDataReader reader = cmd.ExecuteReader();
-                            //while (reader.Read())
-                            //{
-                            //    flag = true;
-                            //}
-                            //reader.Close();
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-
-            }
-            return flag;
-        }
 
         #region datarow 組成 Exhibit29Model
         /// <summary>
@@ -418,15 +549,15 @@ namespace Transfer.Models.Repositiry
         /// </summary>
         /// <param name="dbDatas"></param>
         /// <returns></returns>
-        private DataTable getExhibit29ModelFromDb(List<Moody_Tm_YYYY> dbDatas)
+        private Tuple<DataTable, Dictionary<string,List<string>>> getExhibit29ModelFromDb(List<Moody_Tm_YYYY> dbDatas)
         {
             DataTable dt = new DataTable();
+            //超過的筆對紀錄 => string 開始的參數,List<string>要相加的參數
+            Dictionary<string, List<string>> overData =
+                new Dictionary<string, List<string>>();
             try
             {
                 #region 找出錯誤的參數
-                //超過的筆對紀錄 => string 開始的參數,List<string>要相加的參數
-                Dictionary<string, List<string>> overData =
-                    new Dictionary<string, List<string>>();
                 string errorKey = string.Empty; //錯誤起始欄位
                 string last_FromTo = string.Empty; //上一個 From_To
                 double last_value = 0d; //上一個default的參數(#)
@@ -622,7 +753,7 @@ namespace Transfer.Models.Repositiry
             {
 
             }
-            return dt;
+            return new Tuple<DataTable, Dictionary<string, List<string>>> (dt, overData);
         }
         #endregion
 
@@ -683,6 +814,12 @@ namespace Transfer.Models.Repositiry
         }
         #endregion
 
+        #region A72 資料轉 A73
+        /// <summary>
+        /// A72 資料轉 A73
+        /// </summary>
+        /// <param name="dt">DataTable</param>
+        /// <returns></returns>
         private DataTable FromA72GetA73(DataTable dt)
         {
             DataTable newData = new DataTable(); //要組新的 Table     
@@ -719,7 +856,15 @@ namespace Transfer.Models.Repositiry
             }                              
             return newData;
         }
+        #endregion
 
+        #region Create Table(DataTable 組 sql Create Table)
+        /// <summary>
+        /// 動態建Table sql 語法
+        /// </summary>
+        /// <param name="tableName"></param>
+        /// <param name="dt"></param>
+        /// <returns></returns>
         private string CreateA7Table(string tableName, DataTable dt)
         {
             string sqlsc = string.Empty; //create table sql
@@ -779,9 +924,9 @@ namespace Transfer.Models.Repositiry
 
             return sqlsc + sqlInsert;
         }
-
         #endregion
 
+        #endregion
 
     }
 }

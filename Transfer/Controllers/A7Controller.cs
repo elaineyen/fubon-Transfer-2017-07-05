@@ -50,6 +50,11 @@ namespace Transfer.Controllers
             return View();
         }
 
+        public ActionResult A74Detail()
+        {
+            return View();
+        }
+
         /// <summary>
         /// 選擇檔案後點選資料上傳觸發
         /// </summary>
@@ -157,11 +162,53 @@ namespace Transfer.Controllers
                     txtpath = configTxtName; //有設定webConfig且不為空就取代
                 #endregion
 
+                #region save 資料
                 #region save Moody_Tm_YYYY(A71)
                 tableName = "Moody_Tm_YYYY";
-                result = A7Repository.saveA7(dataModel); //save to DB
-                bool A71Log = CommonFunction.saveLog(tableName, fileName, proName, result.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, result.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
+                MSGReturnModel resultA71 = A7Repository.saveA71(dataModel); //save to DB
+                bool A71Log = CommonFunction.saveLog(tableName, fileName, proName, resultA71.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                TxtLog.txtLog(tableName, resultA71.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
+                #endregion
+                #region save Tm_Adjust_YYYY(A72)
+                tableName = "Tm_Adjust_YYYY";
+                MSGReturnModel resultA72 = A7Repository.saveA72(); //save to DB
+                bool A72Log = CommonFunction.saveLog(tableName, fileName, proName, resultA72.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                TxtLog.txtLog(tableName, resultA72.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
+                #endregion
+                #region save GM_YYYY(A73)
+                tableName = "GM_YYYY";
+                MSGReturnModel resultA73 = A7Repository.saveA73(); //save to DB
+                bool A73Log = CommonFunction.saveLog(tableName, fileName, proName, resultA73.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                TxtLog.txtLog(tableName, resultA73.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
+                #endregion
+                #region save Grade_Moody_Info(A51)
+                tableName = "Grade_Moody_Info";
+                MSGReturnModel resultA51 = A7Repository.saveA51(); //save to DB
+                bool A51Log = CommonFunction.saveLog(tableName, fileName, proName, resultA51.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                TxtLog.txtLog(tableName, resultA51.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
+                #endregion
+
+                result.RETURN_FLAG = resultA71.RETURN_FLAG && 
+                                     resultA72.RETURN_FLAG && 
+                                     resultA73.RETURN_FLAG && 
+                                     resultA51.RETURN_FLAG;
+
+                result.DESCRIPTION = "Success!";
+
+                if (!result.RETURN_FLAG)
+                {
+                    List<string> errs = new List<string>();
+                    if (!resultA71.RETURN_FLAG)
+                        errs.Add("SaveA71 Error: " + resultA71.DESCRIPTION);
+                    if (!resultA72.RETURN_FLAG)
+                        errs.Add("SaveA72 Error: " + resultA72.DESCRIPTION);
+                    if (!resultA73.RETURN_FLAG)
+                        errs.Add("SaveA73 Error: " + resultA73.DESCRIPTION);
+                    if (!resultA51.RETURN_FLAG)
+                        errs.Add("SaveA51 Error: " + resultA51.DESCRIPTION);
+
+                    result.DESCRIPTION = string.Join("\n", errs);
+                }
                 #endregion
             }
             catch (Exception ex)
@@ -201,6 +248,11 @@ namespace Transfer.Controllers
                         var A73 = A7Repository.GetA73();
                         result.RETURN_FLAG = A73.Item1;
                         result.Datas = Json(A73.Item2);
+                        break;
+                    case "A51"://抓Grade_Moody_Info(A51)資料
+                        var A51 = A7Repository.GetA51();
+                        result.RETURN_FLAG = A51.Item1;
+                        result.Datas = Json(A51.Item2);
                         break;
                 }
                 if (result.RETURN_FLAG)
