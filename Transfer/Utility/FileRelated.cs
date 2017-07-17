@@ -94,11 +94,11 @@ namespace Transfer.Utility
                     {
                         if (sheetName.IndexOf("A7") > -1) //A7 系列
                         {
-                            if (0.Equals(j))
+                            if (0.Equals(j)) //第一行固定為 string
                             {
                                 ws.GetRow(i + 1).CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
                             }
-                            else
+                            else //後面皆為 double
                             {
                                 ws.GetRow(i + 1).CreateCell(j).SetCellValue(Convert.ToDouble(dt.Rows[i][j]));
                             }

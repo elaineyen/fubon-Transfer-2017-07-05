@@ -573,7 +573,7 @@ namespace Transfer.Models.Repositiry
                         TypeTransfer.doubleNToDouble(item.Default_Value);
                     if (now_default_value >= last_value) //下一筆比上一筆大(正常情況)
                     {
-                        if (!string.IsNullOrWhiteSpace(errorKey)) //假如上一筆是超過的參數
+                        if (!errorKey.IsNullOrWhiteSpace()) //假如上一筆是超過的參數
                         {
                             errorKey = string.Empty; //把錯誤Flag 取消掉(到上一筆為止)
                         }
@@ -585,7 +585,7 @@ namespace Transfer.Models.Repositiry
                     else //現在的參數比上一個還要小
                     {
 
-                        if (!string.IsNullOrWhiteSpace(errorKey)) //上一個是錯誤的,修改錯誤記錄資料
+                        if (!errorKey.IsNullOrWhiteSpace()) //上一個是錯誤的,修改錯誤記錄資料
                         {
                             var hestory = overData[errorKey];
                             hestory.Add(item.From_To);
@@ -772,49 +772,49 @@ namespace Transfer.Models.Repositiry
         /// <returns></returns>
         private double getDbValueINColume(Moody_Tm_YYYY db, string cname)
         {
-            if (cname == Ref.A7_Type.Aaa.ToString())
+            if (cname.Equals(Ref.A7_Type.Aaa.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Aaa);
-            if (cname == Ref.A7_Type.Aa1.ToString())
+            if (cname.Equals(Ref.A7_Type.Aa1.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Aa1);
-            if (cname == Ref.A7_Type.Aa2.ToString())
+            if (cname.Equals(Ref.A7_Type.Aa2.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Aa2);
-            if (cname == Ref.A7_Type.Aa3.ToString())
+            if (cname.Equals(Ref.A7_Type.Aa3.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Aa3);
-            if (cname == Ref.A7_Type.A1.ToString())
+            if (cname.Equals(Ref.A7_Type.A1.ToString()))
                 return TypeTransfer.doubleNToDouble(db.A1);
-            if (cname == Ref.A7_Type.A2.ToString())
+            if (cname.Equals(Ref.A7_Type.A2.ToString()))
                 return TypeTransfer.doubleNToDouble(db.A2);
-            if (cname == Ref.A7_Type.A3.ToString())
+            if (cname.Equals(Ref.A7_Type.A3.ToString()))
                 return TypeTransfer.doubleNToDouble(db.A3);
-            if (cname == Ref.A7_Type.Baa1.ToString())
+            if (cname.Equals(Ref.A7_Type.Baa1.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Baa1);
-            if (cname == Ref.A7_Type.Baa2.ToString())
+            if (cname.Equals(Ref.A7_Type.Baa2.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Baa2);
-            if (cname == Ref.A7_Type.Baa3.ToString())
+            if (cname.Equals(Ref.A7_Type.Baa3.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Baa3);
-            if (cname == Ref.A7_Type.Ba1.ToString())
+            if (cname.Equals(Ref.A7_Type.Ba1.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Ba1);
-            if (cname == Ref.A7_Type.Ba2.ToString())
+            if (cname.Equals(Ref.A7_Type.Ba2.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Ba2);
-            if (cname == Ref.A7_Type.Ba3.ToString())
+            if (cname.Equals(Ref.A7_Type.Ba3.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Ba3);
-            if (cname == Ref.A7_Type.B1.ToString())
+            if (cname.Equals(Ref.A7_Type.B1.ToString()))
                 return TypeTransfer.doubleNToDouble(db.B1);
-            if (cname == Ref.A7_Type.B2.ToString())
+            if (cname.Equals(Ref.A7_Type.B2.ToString()))
                 return TypeTransfer.doubleNToDouble(db.B2);
-            if (cname == Ref.A7_Type.B3.ToString())
+            if (cname.Equals(Ref.A7_Type.B3.ToString()))
                 return TypeTransfer.doubleNToDouble(db.B3);
-            if (cname == Ref.A7_Type.Caa1.ToString())
+            if (cname.Equals(Ref.A7_Type.Caa1.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Caa1);
-            if (cname == Ref.A7_Type.Caa2.ToString())
+            if (cname.Equals(Ref.A7_Type.Caa2.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Caa2);
-            if (cname == Ref.A7_Type.Caa3.ToString())
+            if (cname.Equals(Ref.A7_Type.Caa3.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Caa3);
-            if (cname == Ref.A7_Type.Ca_C.ToString())
+            if (cname.Equals(Ref.A7_Type.Ca_C.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Ca_C);
-            if (cname == Ref.A7_Type.WR.ToString())
+            if (cname.Equals(Ref.A7_Type.WR.ToString()))
                 return TypeTransfer.doubleNToDouble(db.WR);
-            if (cname == Ref.A7_Type.Default.ToString())
+            if (cname.Equals(Ref.A7_Type.Default.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Default_Value);
             return 0d;
         }

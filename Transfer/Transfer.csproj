@@ -199,6 +199,7 @@
     <Compile Include="Models\Repositiry\A7Repository.cs" />
     <Compile Include="Models\Repositiry\Common.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utility\Extension.cs" />
     <Compile Include="Utility\TxtLog.cs" />
     <Compile Include="Utility\TypeTransfer.cs" />
     <Compile Include="Utility\FileRelated.cs" />

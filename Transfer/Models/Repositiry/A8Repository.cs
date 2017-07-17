@@ -139,7 +139,7 @@ namespace Transfer.Models.Repositiry
                 {
                     if (db.Moody_Monthly_PD_Info.Count() > 0)
                     db.Moody_Monthly_PD_Info.RemoveRange(
-                        db.Moody_Monthly_PD_Info.ToList()); //資料全刪除
+                        db.Moody_Monthly_PD_Info); //資料全刪除
                     int id = 1;
                     foreach (var item in dataModel)
                     {
@@ -170,7 +170,7 @@ namespace Transfer.Models.Repositiry
                 {
                     if (db.Moody_Quartly_PD_Info.Count() > 0)
                         db.Moody_Quartly_PD_Info.RemoveRange(
-                             db.Moody_Quartly_PD_Info.ToList());
+                             db.Moody_Quartly_PD_Info);
                     int id = 1;
                     List<Moody_Quartly_PD_Info> allData = new List<Moody_Quartly_PD_Info>();
                     List<int> months = new List<int>() { 3, 6, 9, 12 }; //只搜尋3.6.9.12 月份
@@ -213,10 +213,8 @@ namespace Transfer.Models.Repositiry
                 #region save Moody_Predit_PD_Info(A83)
                 if ("A83".Equals(type))
                 {
-                    foreach (var item in db.Moody_Predit_PD_Info)
-                    {
-                        db.Moody_Predit_PD_Info.Remove(item);
-                    }
+                    if (db.Moody_Predit_PD_Info.Count() > 0)
+                        db.Moody_Predit_PD_Info.RemoveRange(db.Moody_Predit_PD_Info);
                     List<Exhibit10Model> models = (from q in dataModel
                                                    where !string.IsNullOrWhiteSpace(q.Actual_Allcorp) && //排除掉今年
                                                    12.Equals(DateTime.Parse(q.Trailing).Month) //只取12月
