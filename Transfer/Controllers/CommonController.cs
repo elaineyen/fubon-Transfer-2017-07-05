@@ -13,6 +13,7 @@ using Transfer.Utility;
 
 namespace Transfer.Controllers
 {
+    [Authorize]
     public class CommonController : Controller
     {
         #region txtlog 設定位置

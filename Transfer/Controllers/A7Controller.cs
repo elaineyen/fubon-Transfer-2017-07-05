@@ -10,6 +10,7 @@ using Transfer.ViewModels;
 
 namespace Transfer.Controllers
 {
+    [Authorize]
     public class A7Controller : CommonController
     {
         private IA7Repository A7Repository;

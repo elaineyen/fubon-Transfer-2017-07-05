@@ -1,34 +1,60 @@
-﻿
-@{
+﻿@{
     Layout = null;
 }
 
 <!DOCTYPE html>
-
+<link rel="stylesheet" type="text/css" href="~/Content/Login.css" />
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/bootstrap.min.js"></script>
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Login</title>
 </head>
 <body>
-    <div class="container">
-        <div class="row">
-            <div class="col-md-offset-5 col-md-3">
-                <div class="form-login">
-                    <h4>Welcome back.</h4>
-                    <input type="text" id="userName" class="form-control input-sm chat-input" placeholder="username" />
-                    </br>
-                    <input type="text" id="userPassword" class="form-control input-sm chat-input" placeholder="password" />
-                    </br>
-                    <div class="wrapper">
-                        <span class="group-btn">
-                            <a href="#" class="btn btn-primary btn-md">login <i class="fa fa-sign-in"></i></a>
-                        </span>
-                    </div>
-                </div>
-
+    <div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="padding-top: 30px;">
+        <div class="modal-dialog">
+            <div class="loginmodal-container">
+                <h1>Login to Your AD Account</h1><br>
+                @using (Html.BeginForm("Logon", "Account",FormMethod.Post))
+                {
+                    // 跨網站的偽造要求(CSRF)
+                    @Html.AntiForgeryToken()
+                    <input class="form-control" data-toggle="tooltip" title="請輸入帳號"
+                            type="text" name="userId" placeholder="Username">
+                    <input class="form-control" data-toggle="tooltip" title="請輸入密碼"
+                            type="password" name="pwd" placeholder="Password">
+                    <input type="submit" name="login" class="login loginmodal-submit"
+                           value="Login">
+                }
+                @*<div class="login-help">
+                        <a href="#">Register</a> - <a href="#">Forgot Password</a>
+                    </div>*@
             </div>
         </div>
     </div>
 </body>
 </html>
+<script>
+    (function () {
+        // 表單驗證
+        $('form').submit(function () {
+            var isFormValid = true;
+            $(this).find('input').each(function () {
+                var $this = $(this);
+                // 使用 trim 把空白去除
+                if ($.trim($this.val()).length === 0) {
+                    $this.addClass('error');
+                    isFormValid = false;
+                } else {
+                    $this.removeClass('error');
+                }
+            });
+            if (!isFormValid)
+                alert("請輸入帳密!");
+            return isFormValid;
+        });
+    })()
+
+</script>
+

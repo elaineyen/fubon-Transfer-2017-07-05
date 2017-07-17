@@ -23,6 +23,17 @@
                         首頁
                     </a>
                 </li>
+                <li id="A4Main" data-toggle="collapse" data-target="#A4" class="collapsed">
+                    <a href="#">
+                        <i class="fa fa-file-excel-o fa-lg"></i>
+                        債券明細檔
+                        <span class="arrow"></span>
+                    </a>
+                </li>
+                <ul class="sub-menu collapse" id="A4">
+                    <li id="A40SubMain" class=""><a href='@Url.Action("Index","A4",null)'>上傳檔案</a></li>
+                    <li id="A41SubMain" class=""><a href='@Url.Action("A41Detail","A4",null)'>查詢A41 (債券明細檔)</a></li>
+                </ul>
                 <li id="A7Main" data-toggle="collapse" data-target="#A7" class="collapsed active">
                     <a href="#">
                     <i class="fa fa-file-excel-o fa-lg"></i> 
@@ -59,16 +70,21 @@
                     <li>New New 2</li>
                     <li>New New 3</li>
                 </ul>*@
-                <li>
+                <li id="A0Main" data-toggle="collapse" data-target="#A0" class="collapsed">
                     <a href="#">
-                        <i class="fa fa-user fa-lg"></i> Profile
+                        <i class="fa fa-user fa-lg"></i> User
+                        <span class="arrow"></span>
                     </a>
                 </li>
-                <li>
+                <ul class="sub-menu collapse" id="A0">
+                    <li id="A00SubMain" class=""><a href='@Url.Action("Login","Account",null)'>登入</a></li>
+                    <li id="A01SubMain" class=""><a href='@Url.Action("LogOut","Account",null)'>登出</a></li>
+                </ul>
+                @*<li>
                     <a href="#">
                         <i class="fa fa-users fa-lg"></i> Users
                     </a>
-                </li>
+                </li>*@
             </ul>
         </div>
     </div>

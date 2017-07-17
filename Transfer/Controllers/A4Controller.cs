@@ -12,21 +12,21 @@ using Transfer.ViewModels;
 namespace Transfer.Controllers
 {
     [Authorize]
-    public class A8Controller : CommonController
+    public class A4Controller : CommonController
     {
-        private IA8Repository A8Repository;
+        private IA4Repository A4Repository;
         private ICommon CommonFunction;
 
         private IFRS9Entities db = new IFRS9Entities();
 
-        public A8Controller()
+        public A4Controller()
         {
-            this.A8Repository = new A8Repository();
+            this.A4Repository = new A4Repository();
             this.CommonFunction = new Common();
         }
 
         /// <summary>
-        /// A8(上傳檔案)
+        /// A4(上傳檔案)
         /// </summary>
         /// <returns></returns>
         public ActionResult Index()
@@ -34,14 +34,6 @@ namespace Transfer.Controllers
             return View();
         }
 
-        /// <summary>
-        /// A8(查詢(A81.A82.A83))
-        /// </summary>
-        /// <returns></returns>
-        public ActionResult Detail()
-        {
-            return View();
-        }
 
         /// <summary>
         /// 選擇檔案後點選資料上傳觸發
@@ -94,7 +86,8 @@ namespace Transfer.Controllers
                     Path.GetExtension(FileModel.File.FileName)
                     .Substring(1); //檔案類型
                 var stream = FileModel.File.InputStream;
-                List<Exhibit10Model> dataModel = A8Repository.getExcel(pathType, stream);
+                List<A41ViewModel> dataModel = new List<A41ViewModel>();
+                    //A8Repository.getExcel(pathType, stream);
                 if (dataModel.Count > 0)
                 {
                     result.RETURN_FLAG = true;
@@ -139,7 +132,7 @@ namespace Transfer.Controllers
                 FileStream stream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read);
 
                 string pathType = path.Split('.')[1]; //抓副檔名
-                List<Exhibit10Model> dataModel = A8Repository.getExcel(pathType, stream); //Excel轉成 Exhibit10Model
+                List<A41ViewModel> dataModel = A4Repository.getExcel(pathType, stream); //Excel轉成 Exhibit10Model
 
                 string proName = "Transfer";
                 string tableName = string.Empty;
@@ -154,39 +147,21 @@ namespace Transfer.Controllers
 
                 #region save Moody_Monthly_PD_Info(A81)
                 tableName = "Moody_Monthly_PD_Info";
-                MSGReturnModel resultA81 = A8Repository.SaveA8("A81",dataModel); //save to DB
-                bool A81Log = CommonFunction.saveLog(tableName, fileName, proName, resultA81.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, resultA81.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
+                MSGReturnModel resultA41 = new MSGReturnModel();
+                    //A4Repository.SaveA8("A81",dataModel); //save to DB
+                bool A41Log = CommonFunction.saveLog(tableName, fileName, proName, resultA41.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                TxtLog.txtLog(tableName, resultA41.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
-                #region save Moody_Quartly_PD_Info(A82)
-                tableName = "Moody_Quartly_PD_Info";
-                MSGReturnModel resultA82 = A8Repository.SaveA8("A82",dataModel); //save to DB
-                bool A82Log = CommonFunction.saveLog(tableName, fileName, proName, resultA82.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, resultA82.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
-                #endregion
 
-                #region save Moody_Predit_PD_Info(A83)
-                tableName = "Moody_Predit_PD_Info";
-                MSGReturnModel resultA83 = A8Repository.SaveA8("A83",dataModel); //save to DB
-                bool A83Log = CommonFunction.saveLog(tableName, fileName, proName, resultA83.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, resultA83.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
-                #endregion
-
-                result.RETURN_FLAG = resultA81.RETURN_FLAG &&
-                                     resultA82.RETURN_FLAG &&
-                                     resultA83.RETURN_FLAG;
+                result.RETURN_FLAG = resultA41.RETURN_FLAG;
                 result.DESCRIPTION = "Success!";
 
                 if (!result.RETURN_FLAG)
                 {
                     List<string> errs = new List<string>();
-                    if (!resultA81.RETURN_FLAG)
-                        errs.Add("SaveA81 Error: " + resultA81.DESCRIPTION);
-                    if (!resultA82.RETURN_FLAG)
-                        errs.Add("SaveA82 Error: " + resultA82.DESCRIPTION);
-                    if (!resultA83.RETURN_FLAG)
-                        errs.Add("SaveA83 Error: " + resultA83.DESCRIPTION);
+                    if (!resultA41.RETURN_FLAG)
+                        errs.Add("SaveA41 Error: " + resultA41.DESCRIPTION);
 
                     result.DESCRIPTION = string.Join("\n", errs);
                 }
@@ -215,20 +190,10 @@ namespace Transfer.Controllers
             {
                 switch (type)
                 {
-                    case "A81": //抓Moody_Monthly_PD_Info(A81)資料
-                        var A81Data = A8Repository.GetA81();
-                        result.RETURN_FLAG = A81Data.Item1;
-                        result.Datas = Json(A81Data.Item2);
-                        break;
-                    case "A82"://抓Moody_Quartly_PD_Info(A82)資料
-                        var A82Data = A8Repository.GetA82();
-                        result.RETURN_FLAG = A82Data.Item1;
-                        result.Datas = Json(A82Data.Item2);
-                        break;
-                    case "A83"://抓Moody_Predit_PD_Info(A83)資料
-                        var A83Data = A8Repository.GetA83();
-                        result.RETURN_FLAG = A83Data.Item1;
-                        result.Datas = Json(A83Data.Item2);
+                    case "A41": //抓Moody_Monthly_PD_Info(A81)資料
+                        //var A81Data = A8Repository.GetA81();
+                        //result.RETURN_FLAG = A81Data.Item1;
+                        //result.Datas = Json(A81Data.Item2);
                         break;
                 }
                 if (result.RETURN_FLAG)
