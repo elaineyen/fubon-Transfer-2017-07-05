@@ -37,6 +37,11 @@
 </html>
 <script>
     (function () {
+        var msg = '@ViewBag.Login';
+        if(msg !== "")
+        {
+            alert(msg);
+        }
         // 表單驗證
         $('form').submit(function () {
             var isFormValid = true;

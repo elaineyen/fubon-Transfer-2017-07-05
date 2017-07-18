@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 
 namespace Transfer.Utility
 {
@@ -28,5 +26,7 @@ namespace Transfer.Utility
         {
             return string.IsNullOrEmpty(str);
         }
+
+
     }
 }

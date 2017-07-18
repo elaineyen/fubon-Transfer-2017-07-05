@@ -13,6 +13,10 @@ namespace Transfer.Controllers
         // GET: Account
         public ActionResult Login()
         {
+            if (TempData.Count > 0 && TempData["Login"] != null)
+                ViewBag.Login = TempData["Login"].ToString();
+            else
+                ViewBag.Login = string.Empty;
             return View();
         }
 
@@ -36,9 +40,17 @@ namespace Transfer.Controllers
                 flag = false;
             }
             if (flag)
+            {
+                TempData["Login"] = string.Empty;
                 return RedirectToAction("Index", "Home");
+            }
             else
-                return View();
+            {
+                TempData["Login"] = "請輸入正確的帳號或密碼!";
+                return RedirectToAction("Login", "Account");
+            }
+
+
         }
 
         public ActionResult Logout()

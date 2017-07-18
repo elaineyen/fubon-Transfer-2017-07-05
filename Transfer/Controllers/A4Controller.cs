@@ -2,23 +2,40 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using Transfer.Models;
 using Transfer.Models.Interface;
 using Transfer.Models.Repositiry;
 using Transfer.Utility;
 using Transfer.ViewModels;
+using System.Web.Caching;
 
 namespace Transfer.Controllers
 {
+    public class jqGridParam
+    {
+        public int total { get; set; }
+        public int page { get; set; }
+        public int records { get; set; }
+        public test[] rows { get; set; }
+    }
+
+    public class test
+    {
+        public string id { get; set; }
+        public string abc { get; set; }
+        public string bcd { get; set; }
+    }
+
     [Authorize]
     public class A4Controller : CommonController
     {
         private IA4Repository A4Repository;
         private ICommon CommonFunction;
-
         private IFRS9Entities db = new IFRS9Entities();
-
+        
         public A4Controller()
         {
             this.A4Repository = new A4Repository();
@@ -56,14 +73,15 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region 前端檔案大小不服或不為Excel檔案(驗證)
-                if (FileModel.File.ContentLength == 0 || !ModelState.IsValid)
+               
+                if (FileModel.File.ContentLength == 0)
                 {
                     result.RETURN_FLAG = false;
-                    result.DESCRIPTION = "請確認檔案為Excel檔案或超過大小!";
+                    result.DESCRIPTION = "請確認檔案為Excel檔案!";
                     return Json(result);
                 }
                 #endregion
-
+            
                 #region 上傳檔案
                 var fileName = Path.GetFileName(FileModel.File.FileName); //檔案名稱
 
@@ -76,7 +94,6 @@ namespace Transfer.Controllers
 
                 //呼叫上傳檔案 function
                 result = FileRelated.FileUpLoadinPath(path, FileModel.File);
-
                 if (!result.RETURN_FLAG)
                     return Json(result);
                 #endregion
@@ -86,12 +103,16 @@ namespace Transfer.Controllers
                     Path.GetExtension(FileModel.File.FileName)
                     .Substring(1); //檔案類型
                 var stream = FileModel.File.InputStream;
-                List<A41ViewModel> dataModel = new List<A41ViewModel>();
-                    //A8Repository.getExcel(pathType, stream);
+                List<A41ViewModel> dataModel = A4Repository.getExcel(pathType, stream);
                 if (dataModel.Count > 0)
                 {
                     result.RETURN_FLAG = true;
-                    result.Datas = Json(dataModel); //給JqGrid 顯示
+                    TempData["fileData"] = dataModel;
+                    //Cache["A41Data"] = dataModel;
+
+                    //result.Datas = Json(dataModel); 
+                    //會超過序列化或還原序列化期間發生錯誤。
+                    //字串的長度超過在 maxJsonLength 前端使用 
                 }
                 else
                 {
@@ -108,6 +129,37 @@ namespace Transfer.Controllers
                 result.DESCRIPTION = ex.Message;
             }
             return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult getExcelData(string sidx, string sord, int page, int rows,
+                             bool _search)
+        {
+            List<A41ViewModel> data = 
+                TempData["fileData"] as List<A41ViewModel>;
+            var count = data.Count;
+            int pageIndex = page;
+            int pageSize = rows;
+            int startRow = (pageIndex * pageSize) + 1;
+            int totalRecords = count;
+            int totalPages = (int)Math.Ceiling((float)totalRecords / (float)pageSize);
+
+            List<test> aa = new List<test>() {
+                 new test() {id = "1",abc="234",bcd= "345" },
+                new test() {id = "2", abc="345",bcd = "456" }
+            };
+
+            var result = Jqgrid.modelToJqgridResult(totalPages, pageIndex, count, aa);
+            //    new  {
+            //    total = totalPages,
+            //    page = pageIndex,
+            //    records = count,
+            //    rows = TypeTransfer.dataToJson(aa)
+            //};
+
+            //test[] tests =
+            //return Json(data.First());
+            return Json(result, JsonRequestBehavior.AllowGet);
         }
 
         /// <summary>

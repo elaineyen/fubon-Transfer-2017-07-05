@@ -207,6 +207,7 @@
     <Compile Include="Models\Repositiry\Common.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\Extension.cs" />
+    <Compile Include="Utility\Jqgrid.cs" />
     <Compile Include="Utility\LdapAuthentication.cs" />
     <Compile Include="Utility\TxtLog.cs" />
     <Compile Include="Utility\TypeTransfer.cs" />

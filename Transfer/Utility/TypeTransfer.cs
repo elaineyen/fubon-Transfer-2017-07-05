@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Web;
+using System.Web.Script.Serialization;
 
 namespace Transfer.Utility
 {
@@ -77,5 +79,10 @@ namespace Transfer.Utility
             return string.Empty;
         }
         #endregion
+
+        public static string dataToJson<T>(List<T> datas)
+        {
+            return new JavaScriptSerializer().Serialize(datas);
+        }
     }
 }
