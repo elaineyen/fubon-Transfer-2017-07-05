@@ -11,8 +11,10 @@ using Transfer.ViewModels;
 
 namespace Transfer.Models.Repositiry
 {
-    public class A4Repository : IA4Repository , IDbEvent
+    public class A4Repository : IA4Repository, IDbEvent
     {
+        #region 其他
+        public ICacheProvider Cache { get; set; }
         protected IFRS9Entities db
         {
             get;
@@ -22,16 +24,7 @@ namespace Transfer.Models.Repositiry
         public A4Repository()
         {
             this.db = new IFRS9Entities();
-        }
-
-        public bool CreateA41(List<Exhibit29Model> model)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IQueryable<Grade_Moody_Info> GetAll()
-        {
-            throw new NotImplementedException();
+            Cache = new DefaultCacheProvider();
         }
 
         public void SaveChange()
@@ -55,12 +48,136 @@ namespace Transfer.Models.Repositiry
                 }
             }
         }
+        #endregion
+
+        #region Get Data
+        /// <summary>
+        /// get A41 data
+        /// </summary>
+        /// <returns></returns>
+        public Tuple<bool, List<A41ViewModel>> GetA41()
+        {
+            if (db.Bond_Account_Info.Count() > 0)
+            {
+                return new Tuple<bool, List<A41ViewModel>>(true,
+                    (from q in db.Bond_Account_Info.AsEnumerable()
+                     select DbToA41Model(q)).ToList());
+            }
+            return new Tuple<bool, List<A41ViewModel>>(false, new List<A41ViewModel>());
+        }
+        #endregion
+
+        #region cache 部分
+        /// <summary>
+        /// cache 資料
+        /// </summary>
+        /// <param name="dataModel"></param>
+        public void saveTempA41(List<A41ViewModel> dataModel)
+        {
+            Cache.Invalidate("A41fileData"); //清除
+            Cache.Set("A41fileData", dataModel, 10); //db to cache
+        }
+        /// <summary>
+        /// 抓 cache 資料
+        /// </summary>
+        /// <returns></returns>
+        public List<A41ViewModel> tempA41()
+        {
+            return (List<A41ViewModel>)Cache.Get("A41fileData"); //get cache data
+        }
+        #endregion
+
+        #region Save DB 部分
+        /// <summary>
+        /// A41 save db
+        /// </summary>
+        /// <param name="dataModel"></param>
+        /// <returns></returns>
+        public MSGReturnModel saveA41(List<A41ViewModel> dataModel)
+        {
+            MSGReturnModel result = new MSGReturnModel();
+            try
+            {
+                if (db.Bond_Account_Info.Count() > 0)
+                    db.Bond_Account_Info.RemoveRange(db.Bond_Account_Info.ToList()); //資料全刪除
+                if (0.Equals(dataModel.Count))
+                {
+                    result.RETURN_FLAG = false;
+                    result.REASON_CODE = "No Save Data!";
+                }
+                foreach (var item in dataModel)
+                {
+                    db.Bond_Account_Info.Add(
+                    new Bond_Account_Info()
+                    {
+                        Reference_Nbr = item.Reference_Nbr,
+                        Bond_Number = item.Bond_Number,
+                        Lots = item.Lots,
+                        Segment_Name = item.Segment_Name,
+                        Curr_Sp_Issuer = item.Curr_Sp_Issuer,
+                        Curr_Moodys_Issuer = item.Curr_Moodys_Issuer,
+                        Curr_Fitch_Issuer = item.Curr_Fitch_Issuer,
+                        Curr_Tw_Issuer = item.Curr_Tw_Issuer,
+                        Curr_Sp_Issue = item.Curr_Sp_Issue,
+                        Curr_Moodys_Issue = item.Curr_Moodys_Issue,
+                        Curr_Fitch_Issue = item.Curr_Fitch_Issue,
+                        Curr_Tw_Issue = item.Curr_Tw_Issue,
+                        Ori_Amount = TypeTransfer.stringToDoubleN(item.Ori_Amount),
+                        Current_Int_Rate = TypeTransfer.stringToDoubleN(item.Current_Int_Rate),
+                        Origination_Date = TypeTransfer.stringToDateTimeN(item.Origination_Date),
+                        Maturity_Date = TypeTransfer.stringToDateTimeN(item.Maturity_Date),
+                        Principal_Payment_Method_Code = item.Principal_Payment_Method_Code,
+                        Payment_Frequency = item.Payment_Frequency,
+                        Balloon_Date = item.Balloon_Date,
+                        Issuer_Area = item.Issuer_Area,
+                        Industry_Sector = item.Industry_Sector,
+                        Product = item.Product,
+                        Finance_Instruments = item.Finance_Instruments,
+                        Ias39_Category = item.Ias39_Category,
+                        Principal = TypeTransfer.stringToDoubleN(item.Principal),
+                        Amort_Amt_Tw = TypeTransfer.stringToDoubleN(item.Amort_Amt_Tw),
+                        Interest_Receivable = TypeTransfer.stringToDoubleN(item.Interest_Receivable),
+                        Interest_Receivable_tw = TypeTransfer.stringToDoubleN(item.Interest_Receivable_tw),
+                        Interest_Rate_Type = item.Interest_Rate_Type,
+                        Impair_Yn = item.Impair_Yn,
+                        Eir = TypeTransfer.stringToDoubleN(item.Eir),
+                        Currency_Code = item.Currency_Code,
+                        Report_Date = TypeTransfer.stringToDateTimeN(item.Report_Date),
+                        Issuer = item.Issuer,
+                        Country_Risk = item.Country_Risk,
+                        Ex_rate = TypeTransfer.stringToDoubleN(item.Ex_rate),
+                        Lien_position = item.Lien_position,
+                        Portfolio = item.Portfolio,
+                        Dept = item.Dept,
+                        Asset_Seg = item.Asset_Seg,
+                        Ori_Ex_rate = TypeTransfer.stringToDoubleN(item.Ori_Ex_rate),
+                        Bond_Type = item.Bond_Type,
+                        Assessment_Sub_Kind = item.Assessment_Sub_Kind,
+                        Processing_Date = TypeTransfer.stringToDateTimeN(item.Processing_Date),
+                        Version = TypeTransfer.stringToIntN(item.Version)
+                    });
+                }
+                db.SaveChanges(); //Save
+                result.RETURN_FLAG = true;
+            }
+            catch (Exception ex)
+            {
+                foreach (var item in db.Bond_Account_Info)
+                {
+                    db.Bond_Account_Info.Remove(item); //失敗先刪除
+                }
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = ex.Message;
+            }
+            return result;
+        }
+        #endregion
 
         #region Excel 部分
 
-        #region Excel 資料轉成 Exhibit29Model
+        #region Excel 資料轉成 A41ViewModel
         /// <summary>
-        /// Excel 資料轉成 Exhibit29Model
+        /// Excel 資料轉成 A41ViewModel
         /// </summary>
         /// <param name="pathType">Excel 副檔名</param>
         /// <param name="stream"></param>
@@ -87,17 +204,15 @@ namespace Transfer.Models.Repositiry
 
                 if (resultData.Tables[0].Rows.Count > 2) //判斷有無資料
                 {
-                    dataModel = resultData.Tables[1].AsEnumerable().Skip(1)
-                        .Select((x, y) => {
-                            return getA41Model(x, (y + 1).ToString().PadLeft(10, '0')); }
+                    dataModel = resultData.Tables[1].AsEnumerable().Skip(1) //第二頁籤
+                        .Select((x, y) =>
+                        {
+                            return getA41Model(x, (y + 1).ToString().PadLeft(10, '0'));
+                        }
                         ).ToList();
 
-                        //(from q in resultData.Tables[1].AsEnumerable()
-                                 //第二頁籤(All) 第一頁籤(欄位定義說明)
-                                 //select getA41Model(q)).Skip(2).ToList();
-                    //skip(1) 為排除Excel Title列那行(參數可調)
-                    //dataModel = dataModel.Take(dataModel.Count - 1).ToList();
-                    ////排除最後一筆 為 * Data in percent 的註解 
+                    //skip(1) 為排除第一行 Excel Title列那行(參數可調)
+
                 }
             }
             catch (Exception ex)
@@ -108,16 +223,18 @@ namespace Transfer.Models.Repositiry
 
         #endregion
 
+        #region Private Function
+
         #region datarow 組成 A41ViewModel
         /// <summary>
         /// datarow 組成 A41ViewModel
         /// </summary>
         /// <param name="item">DataRow</param>
         /// <returns>A41ViewModel</returns>
-        private A41ViewModel getA41Model(DataRow item,string num)
+        private A41ViewModel getA41Model(DataRow item, string num)
         {
             var Maturity_Date = TypeTransfer.objToString(item[14]);
-            DateTime MDate = DateTime.MinValue;          
+            DateTime MDate = DateTime.MinValue;
             var Balloon_Date = TypeTransfer.objToString(item[16]);
             string Principal_Payment_Method_Code = "01";
             // Balloon_Date IN ('0') OR  Balloon_Date IS NULL THEN '02'
@@ -142,8 +259,8 @@ namespace Transfer.Models.Repositiry
                 Curr_Tw_Issue = TypeTransfer.objToString(item[10]), //K 最近債項評等_中華
                 Ori_Amount = TypeTransfer.objToString(item[11]), //L 原始金額 
                 Current_Int_Rate = TypeTransfer.objToString(item[12]), //M 合約利率
-                Origination_Date = TypeTransfer.objToString(item[13]), //N 債券購入(認列)日期
-                Maturity_Date = TypeTransfer.objToString(item[14]), //O (缺 P=>15,Q=>16) 到期日
+                Origination_Date = TypeTransfer.objDateToString(item[13]), //N 債券購入(認列)日期
+                Maturity_Date = TypeTransfer.objDateToString(item[14]), //O (缺 P=>15,Q=>16) 到期日
                 Principal_Payment_Method_Code = Principal_Payment_Method_Code,
                 Payment_Frequency = string.Empty,
                 Balloon_Date = TypeTransfer.objToString(item[17]), //R (缺 S=>18) 贖回日期(本金一次贖回)
@@ -160,7 +277,7 @@ namespace Transfer.Models.Repositiry
                 Impair_Yn = TypeTransfer.objToString(item[30]), //AE 是否有客觀減損證據
                 Eir = TypeTransfer.objToString(item[31]), //AF 有效利率(折現率)
                 Currency_Code = TypeTransfer.objToString(item[32]), //AG 債券幣別
-                Report_Date = TypeTransfer.objToString(item[33]), //AH 評估基準日/報導日
+                Report_Date = TypeTransfer.objDateToString(item[33]), //AH 評估基準日/報導日
                 Issuer = TypeTransfer.objToString(item[34]), //AI 發行人
                 Country_Risk = TypeTransfer.objToString(item[35]), //AJ 保證國別
                 Ex_rate = TypeTransfer.objToString(item[36]), //AK 月底匯率
@@ -175,6 +292,67 @@ namespace Transfer.Models.Repositiry
                 Version = TypeTransfer.objToString(item[45]) //AT 資料版本
             };
         }
+        #endregion
+
+        #region Db 組成 A41ViewModel
+        /// <summary>
+        /// Db 組成 A41ViewModel
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        private A41ViewModel DbToA41Model(Bond_Account_Info data)
+        {
+            return new A41ViewModel()
+            {
+                Reference_Nbr = data.Reference_Nbr,
+                Bond_Number = data.Bond_Number,
+                Lots = data.Lots,
+                Segment_Name = data.Segment_Name,
+                Curr_Sp_Issuer = data.Curr_Sp_Issuer,
+                Curr_Moodys_Issuer = data.Curr_Moodys_Issuer,
+                Curr_Fitch_Issuer = data.Curr_Fitch_Issuer,
+                Curr_Tw_Issuer = data.Curr_Tw_Issuer,
+                Curr_Sp_Issue = data.Curr_Sp_Issue,
+                Curr_Moodys_Issue = data.Curr_Moodys_Issue,
+                Curr_Fitch_Issue = data.Curr_Fitch_Issue,
+                Curr_Tw_Issue = data.Curr_Tw_Issue,
+                Ori_Amount = TypeTransfer.doubleNToString(data.Ori_Amount),
+                Current_Int_Rate = TypeTransfer.doubleNToString(data.Current_Int_Rate),
+                Origination_Date = TypeTransfer.dateTimeNToString(data.Origination_Date),
+                Maturity_Date = TypeTransfer.dateTimeNToString(data.Maturity_Date),
+                Principal_Payment_Method_Code = data.Principal_Payment_Method_Code,
+                Payment_Frequency = data.Payment_Frequency,
+                Balloon_Date = data.Balloon_Date,
+                Issuer_Area = data.Issuer_Area,
+                Industry_Sector = data.Industry_Sector,
+                Product = data.Product,
+                Finance_Instruments = data.Finance_Instruments,
+                Ias39_Category = data.Ias39_Category,
+                Principal = TypeTransfer.doubleNToString(data.Principal),
+                Amort_Amt_Tw = TypeTransfer.doubleNToString(data.Amort_Amt_Tw),
+                Interest_Receivable = TypeTransfer.doubleNToString(data.Interest_Receivable),
+                Interest_Receivable_tw = TypeTransfer.doubleNToString(data.Interest_Receivable_tw),
+                Interest_Rate_Type = data.Interest_Rate_Type,
+                Impair_Yn = data.Impair_Yn,
+                Eir = TypeTransfer.doubleNToString(data.Eir),
+                Currency_Code = data.Currency_Code,
+                Report_Date = TypeTransfer.dateTimeNToString(data.Report_Date),
+                Issuer = data.Issuer,
+                Country_Risk = data.Country_Risk,
+                Ex_rate = TypeTransfer.doubleNToString(data.Ex_rate),
+                Lien_position = data.Lien_position,
+                Portfolio = data.Portfolio,
+                Dept = data.Dept,
+                Asset_Seg = data.Asset_Seg,
+                Ori_Ex_rate = TypeTransfer.doubleNToString(data.Ori_Ex_rate),
+                Bond_Type = data.Bond_Type,
+                Assessment_Sub_Kind = data.Assessment_Sub_Kind,
+                Processing_Date = TypeTransfer.dateTimeNToString(data.Processing_Date),
+                Version = TypeTransfer.intNToString(data.Version)
+            };
+        }
+        #endregion
+
         #endregion
     }
 }

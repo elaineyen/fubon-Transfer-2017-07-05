@@ -30,21 +30,18 @@
         <div class="col-md-12">
             <div class="viewDetail">
                 <div id="jqgridDiv" class="jqd">
-                    @*<table id="list1"></table>*@
-                    @*<div id="pager1"></div>*@
                 </div>
             </div>
         </div>
     </div>
 </div>
 <script type="text/javascript">
-
     $(function () {
 
         //#region 註冊URL
         var url = {};
         url.transfer = '@Url.Action("Transfer", "A4")';
-        url.getExcelData = '@Url.Action("getExcelData","A4")';
+        url.getExcelData = '@Url.Action("GetJqGridData", "A4")';
         //#endregion 註冊URL
 
         //#region 註冊click事件
@@ -164,7 +161,7 @@
         //listId (Jqgrid產生table的ID)
         //pagerId (下方產生筆數的ID)
         //colNameArray (設定上方Title *要與Data 傳入Json 屬性相對應)
-        //widthArray (寬度設定 L=> 210 M=>120)
+        //widthArray (寬度設定 L=> 250 M=>120)
         //title (標題)
         function createJqgrid(listId, pagerId, colNameArray, widthArray,title)
         {
@@ -200,20 +197,19 @@
                              '資產區隔', '成本匯率', '債券種類',
                              'Stage評估次分類', '資料處理日期', '資料版本'
                             ];
-                colNameArray = ["abc", "bcd"];
-                colModelArray = [
-                    { name: 'abc', index: 'abc', width: 55 },
-                { name: 'bcd', index: 'bcd', width: 55 }];
-                //debugger
                 $('#jqgridDiv').append('<table id="' + listId + '"></table>');
                 $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');
                 $("#" + listId).jqGrid({
                     url: url.getExcelData,
                     datatype: "json",
                     mtype: "POST",
+                    postData:
+                    {
+                        type: "Excel",
+                    },
                     jsonReader:
                     {
-                        repeatitems: false
+                        repeatitems: false,
                     },
                     colNames: colNameArray,
                     colModel: colModelArray,
@@ -228,8 +224,8 @@
                     caption: title, //標題
                     //resizable: false,
                     shrinkToFit: false,
-                    autoencode: true,
-                    viewsortcols: [true, 'vertical', true],
+                    //autoencode: true,
+                    //viewsortcols: [true, 'vertical', true],
                     contentType: "application/json",
                     //ajaxRowOptions: { contentType: "application/json" },
                     //serializeRowData: function (data) {

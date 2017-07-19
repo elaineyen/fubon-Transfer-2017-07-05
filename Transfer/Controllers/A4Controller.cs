@@ -2,32 +2,15 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using Transfer.Models;
 using Transfer.Models.Interface;
 using Transfer.Models.Repositiry;
 using Transfer.Utility;
 using Transfer.ViewModels;
-using System.Web.Caching;
 
 namespace Transfer.Controllers
 {
-    public class jqGridParam
-    {
-        public int total { get; set; }
-        public int page { get; set; }
-        public int records { get; set; }
-        public test[] rows { get; set; }
-    }
-
-    public class test
-    {
-        public string id { get; set; }
-        public string abc { get; set; }
-        public string bcd { get; set; }
-    }
 
     [Authorize]
     public class A4Controller : CommonController
@@ -35,11 +18,14 @@ namespace Transfer.Controllers
         private IA4Repository A4Repository;
         private ICommon CommonFunction;
         private IFRS9Entities db = new IFRS9Entities();
-        
+        public ICacheProvider Cache { get; set; }
+       
+
         public A4Controller()
         {
             this.A4Repository = new A4Repository();
             this.CommonFunction = new Common();
+            this.Cache = new DefaultCacheProvider();
         }
 
         /// <summary>
@@ -47,6 +33,15 @@ namespace Transfer.Controllers
         /// </summary>
         /// <returns></returns>
         public ActionResult Index()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// A41(債券明細檔)
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult A41Detail()
         {
             return View();
         }
@@ -107,12 +102,9 @@ namespace Transfer.Controllers
                 if (dataModel.Count > 0)
                 {
                     result.RETURN_FLAG = true;
-                    TempData["fileData"] = dataModel;
-                    //Cache["A41Data"] = dataModel;
-
-                    //result.Datas = Json(dataModel); 
-                    //會超過序列化或還原序列化期間發生錯誤。
-                    //字串的長度超過在 maxJsonLength 前端使用 
+                    Cache.Invalidate("A41ExcelfileData"); //清除 Cache
+                    Cache.Set("A41ExcelfileData", dataModel, 15); //把資料存到 Cache
+                    //A4Repository.saveTempA41(dataModel);
                 }
                 else
                 {
@@ -131,35 +123,31 @@ namespace Transfer.Controllers
             return Json(result);
         }
 
+        /// <summary>
+        /// Get Cache Data
+        /// </summary>
+        /// <param name="jdata"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         [HttpPost]
-        public JsonResult getExcelData(string sidx, string sord, int page, int rows,
-                             bool _search)
+        public JsonResult GetJqGridData(jqGridParam jdata,string type)
         {
-            List<A41ViewModel> data = 
-                TempData["fileData"] as List<A41ViewModel>;
-            var count = data.Count;
-            int pageIndex = page;
-            int pageSize = rows;
-            int startRow = (pageIndex * pageSize) + 1;
-            int totalRecords = count;
-            int totalPages = (int)Math.Ceiling((float)totalRecords / (float)pageSize);
-
-            List<test> aa = new List<test>() {
-                 new test() {id = "1",abc="234",bcd= "345" },
-                new test() {id = "2", abc="345",bcd = "456" }
-            };
-
-            var result = Jqgrid.modelToJqgridResult(totalPages, pageIndex, count, aa);
-            //    new  {
-            //    total = totalPages,
-            //    page = pageIndex,
-            //    records = count,
-            //    rows = TypeTransfer.dataToJson(aa)
-            //};
-
-            //test[] tests =
-            //return Json(data.First());
-            return Json(result, JsonRequestBehavior.AllowGet);
+            List<A41ViewModel> data = new List<A41ViewModel>();
+            switch (type)
+            {
+                case "Excel":
+                    if(Cache.IsSet("A41ExcelfileData"))
+                        data = (List<A41ViewModel>)Cache.Get("A41ExcelfileData");  //從Cache 抓資料
+                    break;
+                case "Db":
+                    if (Cache.IsSet("A41DbfileData"))
+                        data = (List<A41ViewModel>)Cache.Get("A41DbfileData");
+                    break;
+            }
+            //List<A41ViewModel> data =
+            //A4Repository.tempA41(); //從Cache 抓資料
+            var result = Jqgrid.modelToJqgridResult(jdata, data);
+            return Json(result);
         }
 
         /// <summary>
@@ -176,8 +164,8 @@ namespace Transfer.Controllers
                 // Excel 檔案位置
                 DateTime startTime = DateTime.Now;
                 string projectFile = Server.MapPath("~/FileUploads");
-                string fileName = @"Exhibit 10.xlsx"; //預設
-                string configFileName = ConfigurationManager.AppSettings["fileA8Name"];
+                string fileName = @"Data Requirements.xlsx"; //預設
+                string configFileName = ConfigurationManager.AppSettings["fileA4Name"];
                 if (!string.IsNullOrWhiteSpace(configFileName))
                     fileName = configFileName; //config 設定就取代
                 string path = Path.Combine(projectFile, fileName);
@@ -191,16 +179,15 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region txtlog 檔案名稱
-                string txtpath = "Exhibit10Transfer.txt"; //預設txt名稱
-                string configTxtName = ConfigurationManager.AppSettings["txtLogA8Name"];
+                string txtpath = "DataRequirementsTransfer.txt"; //預設txt名稱
+                string configTxtName = ConfigurationManager.AppSettings["txtLogA4Name"];
                 if (!string.IsNullOrWhiteSpace(configTxtName))
                     txtpath = configTxtName; //有設定webConfig且不為空就取代
                 #endregion
 
-                #region save Moody_Monthly_PD_Info(A81)
-                tableName = "Moody_Monthly_PD_Info";
-                MSGReturnModel resultA41 = new MSGReturnModel();
-                    //A4Repository.SaveA8("A81",dataModel); //save to DB
+                #region save Bond_Account_Info(A41)
+                tableName = "Bond_Account_Info";
+                MSGReturnModel resultA41 = A4Repository.saveA41(dataModel); //save to DB
                 bool A41Log = CommonFunction.saveLog(tableName, fileName, proName, resultA41.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA41.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
@@ -242,10 +229,21 @@ namespace Transfer.Controllers
             {
                 switch (type)
                 {
-                    case "A41": //抓Moody_Monthly_PD_Info(A81)資料
-                        //var A81Data = A8Repository.GetA81();
-                        //result.RETURN_FLAG = A81Data.Item1;
-                        //result.Datas = Json(A81Data.Item2);
+                    case "A41": //Bond_Account_Info(A41)資料
+                        if (!Cache.IsSet("A41DbfileData") ||
+                            0.Equals(((List<A41ViewModel>)Cache.Get("A41DbfileData")).Count))
+                            //無Cache 設定 或Cache 資料為0筆
+                        {
+                            var A41Data = A4Repository.GetA41();
+                            result.RETURN_FLAG = A41Data.Item1;
+                            Cache.Invalidate("A41DbfileData"); //清除
+                            Cache.Set("A41DbfileData", A41Data.Item2, 15); //把資料存到 Cache
+                        }
+                        else
+                        {
+                            result.RETURN_FLAG = true; //有舊資料
+                        }
+                        //A4Repository.saveTempA41(A41Data.Item2); //把資料存到 Cache
                         break;
                 }
                 if (result.RETURN_FLAG)

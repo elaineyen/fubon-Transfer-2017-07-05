@@ -77,6 +77,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
     <Reference Include="System.Web.DynamicData" />
@@ -186,6 +187,7 @@
     <Compile Include="Models\Interface\IA5Repository.cs" />
     <Compile Include="Models\Interface\IA7Repository.cs" />
     <Compile Include="Models\Interface\IA8Repository.cs" />
+    <Compile Include="Models\Interface\ICacheProvider.cs" />
     <Compile Include="Models\Interface\ICommon.cs" />
     <Compile Include="Models\Interface\IDbEvent.cs" />
     <Compile Include="Models\Moody_Monthly_PD_Info.cs">
@@ -205,9 +207,11 @@
     <Compile Include="Models\Repositiry\A5Repository.cs" />
     <Compile Include="Models\Repositiry\A7Repository.cs" />
     <Compile Include="Models\Repositiry\Common.cs" />
+    <Compile Include="Models\Repositiry\DefaultCacheProvider.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Utility\Extension.cs" />
     <Compile Include="Utility\Jqgrid.cs" />
+    <Compile Include="Utility\jqGridParam.cs" />
     <Compile Include="Utility\LdapAuthentication.cs" />
     <Compile Include="Utility\TxtLog.cs" />
     <Compile Include="Utility\TypeTransfer.cs" />
@@ -406,6 +410,7 @@
     <Content Include="Views\Account\Login.cshtml" />
     <Content Include="Views\A7\A74Detail.cshtml" />
     <Content Include="Views\A4\Index.cshtml" />
+    <Content Include="Views\A4\A41Detail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
