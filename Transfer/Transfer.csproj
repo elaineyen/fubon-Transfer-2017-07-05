@@ -183,6 +183,9 @@
     <Compile Include="Models\IFRS9_Log.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\IFRS9_Main.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Interface\IA4Repository.cs" />
     <Compile Include="Models\Interface\IA5Repository.cs" />
     <Compile Include="Models\Interface\IA7Repository.cs" />

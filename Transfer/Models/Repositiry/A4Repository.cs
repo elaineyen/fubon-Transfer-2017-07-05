@@ -14,7 +14,6 @@ namespace Transfer.Models.Repositiry
     public class A4Repository : IA4Repository, IDbEvent
     {
         #region 其他
-        public ICacheProvider Cache { get; set; }
         protected IFRS9Entities db
         {
             get;
@@ -24,7 +23,6 @@ namespace Transfer.Models.Repositiry
         public A4Repository()
         {
             this.db = new IFRS9Entities();
-            Cache = new DefaultCacheProvider();
         }
 
         public void SaveChange()
@@ -67,27 +65,9 @@ namespace Transfer.Models.Repositiry
         }
         #endregion
 
-        #region cache 部分
-        /// <summary>
-        /// cache 資料
-        /// </summary>
-        /// <param name="dataModel"></param>
-        public void saveTempA41(List<A41ViewModel> dataModel)
-        {
-            Cache.Invalidate("A41fileData"); //清除
-            Cache.Set("A41fileData", dataModel, 10); //db to cache
-        }
-        /// <summary>
-        /// 抓 cache 資料
-        /// </summary>
-        /// <returns></returns>
-        public List<A41ViewModel> tempA41()
-        {
-            return (List<A41ViewModel>)Cache.Get("A41fileData"); //get cache data
-        }
-        #endregion
-
         #region Save DB 部分
+
+        #region Save A41
         /// <summary>
         /// A41 save db
         /// </summary>
@@ -96,10 +76,9 @@ namespace Transfer.Models.Repositiry
         public MSGReturnModel saveA41(List<A41ViewModel> dataModel)
         {
             MSGReturnModel result = new MSGReturnModel();
+            int now_id = 0;
             try
             {
-                if (db.Bond_Account_Info.Count() > 0)
-                    db.Bond_Account_Info.RemoveRange(db.Bond_Account_Info.ToList()); //資料全刪除
                 if (0.Equals(dataModel.Count))
                 {
                     result.RETURN_FLAG = false;
@@ -107,10 +86,11 @@ namespace Transfer.Models.Repositiry
                 }
                 foreach (var item in dataModel)
                 {
+                    now_id = Convert.ToInt32(item.Reference_Nbr);
                     db.Bond_Account_Info.Add(
                     new Bond_Account_Info()
                     {
-                        Reference_Nbr = item.Reference_Nbr,
+                        Reference_Nbr = now_id,
                         Bond_Number = item.Bond_Number,
                         Lots = item.Lots,
                         Segment_Name = item.Segment_Name,
@@ -162,15 +142,105 @@ namespace Transfer.Models.Repositiry
             }
             catch (Exception ex)
             {
-                foreach (var item in db.Bond_Account_Info)
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = ex.Message + 
+                    " Reference_Nbr : "+ now_id.ToString();
+            }
+            return result;
+        }
+        #endregion
+
+        #region Save B01
+        public MSGReturnModel saveB01()
+        {
+            MSGReturnModel result = new MSGReturnModel();
+            try
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = "NO Data!";
+                if (db.Bond_Account_Info.Count() > 0)
                 {
-                    db.Bond_Account_Info.Remove(item); //失敗先刪除
+                    db.IFRS9_Main.AddRange(
+                    db.Bond_Account_Info.AsEnumerable()
+                    .Select(x =>
+                    {
+                        return new IFRS9_Main()
+                        {
+                            Reference_Nbr = x.Reference_Nbr, //
+                            //Customer_Nbr = //
+                            //Ead = //
+                            Principal = x.Principal,
+                            Interest_Receivable = x.Interest_Receivable, //
+                            Principal_Payment_Method_Code = x.Principal_Payment_Method_Code, //
+                            //Total_Period = //
+                            Current_Int_Rate = x.Current_Int_Rate, //
+                            //Current_Pd = //
+                            //Current_Lgd = //
+                            //Remaining_Month = //
+                            Eir = x.Eir, //
+                            //CPD_Segment_Code = //
+                            //Processing_Date = //
+                            Product_Code = x.Principal_Payment_Method_Code, //
+                            //Department = //
+                            //PD_Model_Code = //
+                       //18 //Current_Rating_Code = x.
+                            //Report_Date = //
+                            Maturity_Date = x.Maturity_Date, //
+                            //Account_Code = //
+                            //BadCredit_Ind = //
+                            //Charge_Off_Ind = //
+                            //Collateral_Legal_Action_Ind = //
+                            //Credit_Black_List_Ind = //
+                            //Credit_Card_Block_code = //
+                            //Credit_Review_Risk_Grade = //
+                            Current_External_Rating = string.Empty, //function 待code
+                            //Current_External_Rating_1 = //
+                            //Current_External_Rating_2 = //
+                            //Current_External_Rating_3 = //
+                            //Current_External_Rating_4 = //
+                            //Current_External_Rating_On_Missing = //
+                            //Current_Internal_Rating = //
+                            //Default_Ind = //
+                            //Early_Warning_Ind = //
+                            //Five_Types_Delinquent_Category = //
+                            //Ias39_Impaire_Ind = //
+                            //Ias39_Impaire_Desc = //
+                            //Industry_Average_Rating = //
+                            //Manual_Identified_Impaire_Stage_Code = //
+                            //Internal_Risk_Classification = //
+                            //Off_Bs_Item_Paid_Amt = //
+                            Original_External_Rating = string.Empty, //function 待code
+                            //Original_External_Rating_1 = //
+                            //Original_External_Rating_2 = //
+                            //Original_External_Rating_3 = //
+                            //Original_External_Rating_4 = //
+                            //Original_External_Rating_On_Missing = //
+                            //Original_Internal_Rating = //
+                            //Other_BadCredit_Ind = //
+                            //Other_Lending_Max_Delinquent_Days = //
+                            //Product_Average_Rating = //
+                            //Restructure_Ind = //
+                            //Ten_Types_Delinquent_Category = //
+                            //Watch_List_Ind = //
+                            //Write_Off_Ind = //
+                            Version = x.Version, //
+                            Lien_position = x.Lien_position, //
+                            Ori_Amount = x.Ori_Amount, //
+                            //Payment_Frequency = x.Payment_Frequency
+                        };
+                    })
+                    );
                 }
+            }
+            catch (Exception ex)
+            {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = ex.Message;
             }
             return result;
         }
+        #endregion
+
         #endregion
 
         #region Excel 部分
@@ -201,13 +271,15 @@ namespace Transfer.Models.Repositiry
                 reader.IsFirstRowAsColumnNames = true;
                 resultData = reader.AsDataSet();
                 reader.Close();
-
+                int idNum = 0;
+                if (db.Bond_Account_Info.Count() > 0)
+                    idNum = db.Bond_Account_Info.AsEnumerable().Max(x => x.Reference_Nbr);
                 if (resultData.Tables[0].Rows.Count > 2) //判斷有無資料
                 {
-                    dataModel = resultData.Tables[1].AsEnumerable().Skip(1) //第二頁籤
+                    dataModel = resultData.Tables[1].AsEnumerable().Skip(1) //第二頁籤第二行開始
                         .Select((x, y) =>
                         {
-                            return getA41Model(x, (y + 1).ToString().PadLeft(10, '0'));
+                            return getA41Model(x, (y + 1+ idNum).ToString());
                         }
                         ).ToList();
 
@@ -238,7 +310,7 @@ namespace Transfer.Models.Repositiry
             var Balloon_Date = TypeTransfer.objToString(item[16]);
             string Principal_Payment_Method_Code = "01";
             // Balloon_Date IN ('0') OR  Balloon_Date IS NULL THEN '02'
-            if (Maturity_Date.IsNullOrWhiteSpace() || "0".Equals(Maturity_Date))
+            if (Balloon_Date.IsNullOrWhiteSpace() || "0".Equals(Balloon_Date))
                 Principal_Payment_Method_Code = "02";
             //Year( Maturity_Date) > = 2100  Then  '04'
             if (DateTime.TryParse(Maturity_Date, out MDate) && MDate.Year > 2100)
@@ -304,7 +376,7 @@ namespace Transfer.Models.Repositiry
         {
             return new A41ViewModel()
             {
-                Reference_Nbr = data.Reference_Nbr,
+                Reference_Nbr = data.Reference_Nbr.ToString(),
                 Bond_Number = data.Bond_Number,
                 Lots = data.Lots,
                 Segment_Name = data.Segment_Name,

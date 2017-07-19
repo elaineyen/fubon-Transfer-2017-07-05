@@ -33,17 +33,5 @@ namespace Transfer.Models.Interface
         /// 
         /// </summary>
         void SaveChange();
-
-        /// <summary>
-        /// 暫存A41資料 在cache
-        /// </summary>
-        /// <param name="dataModel"></param>
-        void saveTempA41(List<A41ViewModel> dataModel);
-
-        /// <summary>
-        /// 抓取暫存A41資料 
-        /// </summary>
-        /// <returns></returns>
-        List<A41ViewModel> tempA41();
     }
 }

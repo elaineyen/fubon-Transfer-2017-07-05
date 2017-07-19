@@ -130,7 +130,7 @@ namespace Transfer.Controllers
         /// <param name="type"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult GetJqGridData(jqGridParam jdata,string type)
+        public JsonResult GetCacheData(jqGridParam jdata,string type)
         {
             List<A41ViewModel> data = new List<A41ViewModel>();
             switch (type)
