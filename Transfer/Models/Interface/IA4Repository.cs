@@ -29,8 +29,27 @@ namespace Transfer.Models.Interface
         /// <returns></returns>
         MSGReturnModel saveA41(List<A41ViewModel> dataModel);
 
+        /// <summary>
+        /// save B01 to DB
+        /// </summary>
+        /// <param name="version">version</param>
+        /// <param name="date">Report_Date</param>
+        /// <returns></returns>
         MSGReturnModel saveB01(string version, DateTime date);
 
+        /// <summary>
+        /// save C01 to DB
+        /// </summary>
+        /// <param name="version">version</param>
+        /// <param name="date">Report_Date</param>
+        /// <returns></returns>
+        MSGReturnModel saveC01(string version, DateTime date);
+
+        /// <summary>
+        /// 抓取指定的 log 資料
+        /// </summary>
+        /// <param name="tableTypes">"B01","C01"...</param>
+        /// <returns></returns>
         List<string> GetLogData(List<string> tableTypes);
 
         /// <summary>

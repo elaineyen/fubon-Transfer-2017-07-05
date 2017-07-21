@@ -17,7 +17,7 @@ namespace Transfer.Models
         public System.DateTime Report_Date { get; set; }
         public System.DateTime Processing_Date { get; set; }
         public string Product_Code { get; set; }
-        public string Reference_Nbr { get; set; }
+        public int Reference_Nbr { get; set; }
         public string Current_Rating_Code { get; set; }
         public Nullable<double> Exposure { get; set; }
         public Nullable<double> Actual_Year_To_Maturity { get; set; }
@@ -27,7 +27,7 @@ namespace Transfer.Models
         public Nullable<double> Current_Int_Rate { get; set; }
         public Nullable<double> EIR { get; set; }
         public string Impairment_Stage { get; set; }
-        public Nullable<int> Version { get; set; }
+        public string Version { get; set; }
         public string Lien_position { get; set; }
         public Nullable<double> Ori_Amount { get; set; }
         public Nullable<double> Principal { get; set; }

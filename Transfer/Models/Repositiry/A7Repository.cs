@@ -10,6 +10,7 @@ using Transfer.Enum;
 using Transfer.Models.Interface;
 using Transfer.Utility;
 using Transfer.ViewModels;
+using static Transfer.Enum.Ref;
 
 namespace Transfer.Models.Repositiry
 {
@@ -242,14 +243,12 @@ namespace Transfer.Models.Repositiry
                 }
                 db.SaveChanges(); //Save
                 result.RETURN_FLAG = true;
+                result.DESCRIPTION = Message_Type.save_Success.GetDescription("A71");
             }
             catch (Exception ex)
             {
-                foreach (var item in db.Moody_Monthly_PD_Info)
-                {
-                    db.Moody_Monthly_PD_Info.Remove(item); //失敗先刪除
-                }
                 result.RETURN_FLAG = false;
+                result.DESCRIPTION = Message_Type.save_Fail.GetDescription("A71", ex.Message);
             }
             return result;
         }
@@ -284,11 +283,14 @@ namespace Transfer.Models.Repositiry
                             if (datas.Rows.Count > 0 && datas.Rows.Count.Equals(count))
                             {
                                 result.RETURN_FLAG = true;
+                                result.DESCRIPTION = Message_Type.save_Success
+                                    .GetDescription("A72");
                             }
                             else
                             {
                                 result.RETURN_FLAG = false;
-                                result.DESCRIPTION = "新增筆數有誤!";
+                                result.DESCRIPTION = Message_Type.save_Fail
+                                    .GetDescription("A72", "新增筆數有誤!");
                             }
                         }
                     }
@@ -297,7 +299,8 @@ namespace Transfer.Models.Repositiry
             catch (Exception ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = ex.Message;
+                result.DESCRIPTION = Message_Type.save_Fail
+                                    .GetDescription("A72", ex.Message);
             }
             return result;
         }
@@ -327,10 +330,14 @@ namespace Transfer.Models.Repositiry
                             if (A73Datas.Rows.Count > 0 && A73Datas.Rows.Count.Equals(count))
                             {
                                 result.RETURN_FLAG = true;
+                                result.DESCRIPTION = Message_Type.save_Success
+                                    .GetDescription("A73");
                             }
                             else
                             {
-                                result.DESCRIPTION = "新增筆數有誤!";
+                                result.RETURN_FLAG = false;
+                                result.DESCRIPTION = Message_Type.save_Fail
+                                    .GetDescription("A73", "新增筆數有誤!");
                             }
                         }
                     }
@@ -339,7 +346,8 @@ namespace Transfer.Models.Repositiry
             catch (Exception ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = ex.Message;
+                result.DESCRIPTION = Message_Type.save_Fail
+                                    .GetDescription("A73", ex.Message);
             }
             return result;
         }
@@ -408,12 +416,15 @@ namespace Transfer.Models.Repositiry
                     db.Grade_Moody_Info.AddRange(A51s);
                     db.SaveChanges(); //Save
                     result.RETURN_FLAG = true;
+                    result.DESCRIPTION = Message_Type.save_Success
+                                          .GetDescription("A51");
                 }
             }
             catch (Exception ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = ex.Message;
+                result.DESCRIPTION = Message_Type.save_Fail
+                                    .GetDescription("A51", ex.Message);
             }
             return result;
         }
@@ -476,21 +487,18 @@ namespace Transfer.Models.Repositiry
         {
             MSGReturnModel result = new MSGReturnModel();
             result.RETURN_FLAG = false;
-            result.DESCRIPTION = "請確認檔案是否開啟or不選擇覆蓋!";
-            switch (type)
+            result.DESCRIPTION = Message_Type.download_Fail
+                .GetDescription(type, "找不到資料");
+            if (db.Moody_Tm_YYYY.Count() > 0)
             {
-                case "A72":
-                    if (db.Moody_Tm_YYYY.Count() > 0)
-                    {
-                        DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList()).Item1;
+                DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList()).Item1;
+                switch (type)
+                {
+                    case "A72":
                         result.DESCRIPTION = FileRelated.DataTableToExcel(datas, path, "A72");
                         result.RETURN_FLAG = string.IsNullOrWhiteSpace(result.DESCRIPTION);
-                    }
-                    break;
-                case "A73":
-                    if (db.Moody_Tm_YYYY.Count() > 0)
-                    {
-                        DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList()).Item1;
+                        break;
+                    case "A73":
                         DataTable newData = FromA72GetA73(datas); //要組新的 Table                           
                         if (newData != null) //有資料
                         {
@@ -499,10 +507,12 @@ namespace Transfer.Models.Repositiry
                         }
                         else
                         {
-                            result.DESCRIPTION = "No Data!";
+                            result.DESCRIPTION = Message_Type.download_Fail.GetDescription(type, "No Data!");
                         }
-                    }
-                    break;
+                        break;
+                }
+                if (result.RETURN_FLAG)
+                    result.DESCRIPTION = Message_Type.download_Success.GetDescription(type);
             }
             return result;
         }

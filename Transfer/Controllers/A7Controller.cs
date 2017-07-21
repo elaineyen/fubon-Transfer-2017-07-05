@@ -7,6 +7,7 @@ using Transfer.Models.Interface;
 using Transfer.Models.Repositiry;
 using Transfer.Utility;
 using Transfer.ViewModels;
+using static Transfer.Enum.Ref;
 
 namespace Transfer.Controllers
 {
@@ -63,7 +64,7 @@ namespace Transfer.Controllers
                 if (FileModel.File == null)
                 {
                     result.RETURN_FLAG = false;
-                    result.DESCRIPTION = "請選擇檔案!";
+                    result.DESCRIPTION = Message_Type.upload_Not_Find.GetDescription();
                     return Json(result);
                 }
                 #endregion
@@ -72,7 +73,7 @@ namespace Transfer.Controllers
                 if (FileModel.File.ContentLength == 0 || !ModelState.IsValid)
                 {
                     result.RETURN_FLAG = false;
-                    result.DESCRIPTION = "請確認檔案為Excel檔案或超過大小!";
+                    result.DESCRIPTION = Message_Type.excel_Validate.GetDescription();
                     return Json(result);
                 }
                 #endregion
@@ -106,7 +107,7 @@ namespace Transfer.Controllers
                 else
                 {
                     result.RETURN_FLAG = false;
-                    result.DESCRIPTION = "無筆對到資料!";
+                    result.DESCRIPTION = Message_Type.data_Not_Compare.GetDescription();
                 }
                 #endregion
 
@@ -115,7 +116,8 @@ namespace Transfer.Controllers
             catch (Exception ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = ex.Message;
+                result.DESCRIPTION = Message_Type.upload_Fail
+                    .GetDescription(FileModel.File.FileName, ex.Message);
             }
             return Json(result);
         }
@@ -157,25 +159,25 @@ namespace Transfer.Controllers
 
                 #region save 資料
                 #region save Moody_Tm_YYYY(A71)
-                tableName = "Moody_Tm_YYYY";
+                tableName = Table_Type.A71.GetDescription();
                 MSGReturnModel resultA71 = A7Repository.saveA71(dataModel); //save to DB
                 bool A71Log = CommonFunction.saveLog("A71",tableName, fileName, proName, resultA71.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA71.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
                 #region save Tm_Adjust_YYYY(A72)
-                tableName = "Tm_Adjust_YYYY";
+                tableName = Table_Type.A72.GetDescription();
                 MSGReturnModel resultA72 = A7Repository.saveA72(); //save to DB
                 bool A72Log = CommonFunction.saveLog("A72",tableName, fileName, proName, resultA72.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA72.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
                 #region save GM_YYYY(A73)
-                tableName = "GM_YYYY";
+                tableName = Table_Type.A73.GetDescription();
                 MSGReturnModel resultA73 = A7Repository.saveA73(); //save to DB
                 bool A73Log = CommonFunction.saveLog("A73",tableName, fileName, proName, resultA73.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA73.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
                 #region save Grade_Moody_Info(A51)
-                tableName = "Grade_Moody_Info";
+                tableName = Table_Type.A51.GetDescription();
                 MSGReturnModel resultA51 = A7Repository.saveA51(); //save to DB
                 bool A51Log = CommonFunction.saveLog("A51",tableName, fileName, proName, resultA51.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA51.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
@@ -186,19 +188,19 @@ namespace Transfer.Controllers
                                      resultA73.RETURN_FLAG &&
                                      resultA51.RETURN_FLAG;
 
-                result.DESCRIPTION = "Success!";
+                result.DESCRIPTION = Message_Type.save_Success.GetDescription("A71,A72,A73,A51");
 
                 if (!result.RETURN_FLAG)
                 {
                     List<string> errs = new List<string>();
                     if (!resultA71.RETURN_FLAG)
-                        errs.Add("SaveA71 Error: " + resultA71.DESCRIPTION);
+                        errs.Add(resultA71.DESCRIPTION);
                     if (!resultA72.RETURN_FLAG)
-                        errs.Add("SaveA72 Error: " + resultA72.DESCRIPTION);
+                        errs.Add(resultA72.DESCRIPTION);
                     if (!resultA73.RETURN_FLAG)
-                        errs.Add("SaveA73 Error: " + resultA73.DESCRIPTION);
+                        errs.Add(resultA73.DESCRIPTION);
                     if (!resultA51.RETURN_FLAG)
-                        errs.Add("SaveA51 Error: " + resultA51.DESCRIPTION);
+                        errs.Add(resultA51.DESCRIPTION);
 
                     result.DESCRIPTION = string.Join("\n", errs);
                 }
@@ -207,7 +209,8 @@ namespace Transfer.Controllers
             catch (Exception ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = ex.Message;
+                result.DESCRIPTION = Message_Type.save_Fail
+                    .GetDescription(null, ex.Message);
             }
             return Json(result);
         }
@@ -221,8 +224,6 @@ namespace Transfer.Controllers
         public JsonResult GetData(string type)
         {
             MSGReturnModel result = new MSGReturnModel();
-            result.RETURN_FLAG = false;
-            result.DESCRIPTION = "No Data!";
             try
             {
                 switch (type)
@@ -248,13 +249,12 @@ namespace Transfer.Controllers
                         result.Datas = Json(A51.Item2);
                         break;
                 }
-                if (result.RETURN_FLAG)
-                    result.DESCRIPTION = "Success!";
             }
             catch (Exception ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = ex.Message;
+                result.DESCRIPTION = Message_Type.not_Find_Any.
+                    GetDescription(type,ex.Message);
             }
             return Json(result);
         }
@@ -268,8 +268,6 @@ namespace Transfer.Controllers
         public JsonResult GetExcel(string type)
         {
             MSGReturnModel result = new MSGReturnModel();
-            result.RETURN_FLAG = false;
-            result.DESCRIPTION = "請確認檔案是否開啟!";
             string path = string.Empty;
             try
             {
@@ -286,13 +284,12 @@ namespace Transfer.Controllers
                         result = A7Repository.DownLoadExcel(type, ExcelLocation(path));
                         break;
                 }
-                if (result.RETURN_FLAG)
-                    result.DESCRIPTION = "Success !";
             }
             catch (Exception ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = ex.Message;
+                result.DESCRIPTION = Message_Type.download_Fail
+                    .GetDescription(type, ex.Message);
             }
             return Json(result);
         }

@@ -124,15 +124,15 @@ namespace Transfer.Models.Repositiry
         /// <returns></returns>
         public MSGReturnModel SaveA8(string type, List<Exhibit10Model> dataModel)
         {
-            MSGReturnModel result = new MSGReturnModel();
-            result.RETURN_FLAG = true;
+            MSGReturnModel result = new MSGReturnModel();            
             try
             {
                 List<string> A8Type = new List<string>() {"A81","A82","A83" };
                 if (!A8Type.Contains(type))
                 {
                     result.RETURN_FLAG = false;
-                    result.DESCRIPTION = "傳入判斷參數錯誤!";
+                    result.DESCRIPTION = Message_Type.parameter_Error.GetDescription();
+                    return result;
                 }
                 #region save Moody_Monthly_PD_Info(A81)
                 if ("A81".Equals(type))
@@ -258,11 +258,13 @@ namespace Transfer.Models.Repositiry
                 }
                 #endregion
                 SaveChange();
+                result.RETURN_FLAG = true;
+                result.DESCRIPTION = Message_Type.save_Success.GetDescription(type);
             }
             catch (Exception ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = ex.Message;
+                result.DESCRIPTION = Message_Type.save_Fail.GetDescription(type, ex.Message) ;
             }
             return result;
         }

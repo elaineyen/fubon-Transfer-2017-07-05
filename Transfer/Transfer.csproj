@@ -155,6 +155,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\A8Controller.cs" />
     <Compile Include="Enum\A7Type.cs" />
+    <Compile Include="Enum\TableType.cs" />
     <Compile Include="Enum\MessageType.cs" />
     <Compile Include="Enum\PDType.cs" />
     <Compile Include="Global.asax.cs">

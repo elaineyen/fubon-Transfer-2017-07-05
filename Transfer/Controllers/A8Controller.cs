@@ -8,6 +8,7 @@ using Transfer.Models.Interface;
 using Transfer.Models.Repositiry;
 using Transfer.Utility;
 using Transfer.ViewModels;
+using static Transfer.Enum.Ref;
 
 namespace Transfer.Controllers
 {
@@ -58,7 +59,7 @@ namespace Transfer.Controllers
                 if (FileModel.File == null)
                 {
                     result.RETURN_FLAG = false;
-                    result.DESCRIPTION = "請選擇檔案!";
+                    result.DESCRIPTION = Message_Type.upload_Not_Find.GetDescription();
                     return Json(result);
                 }
                 #endregion
@@ -67,7 +68,7 @@ namespace Transfer.Controllers
                 if (FileModel.File.ContentLength == 0 || !ModelState.IsValid)
                 {
                     result.RETURN_FLAG = false;
-                    result.DESCRIPTION = "請確認檔案為Excel檔案或超過大小!";
+                    result.DESCRIPTION = Message_Type.excel_Validate.GetDescription();
                     return Json(result);
                 }
                 #endregion
@@ -103,7 +104,7 @@ namespace Transfer.Controllers
                 else
                 {
                     result.RETURN_FLAG = false;
-                    result.DESCRIPTION = "無筆對到資料!";
+                    result.DESCRIPTION = Message_Type.data_Not_Compare.GetDescription();
                 }
                 #endregion
 
@@ -112,7 +113,7 @@ namespace Transfer.Controllers
             catch (Exception ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = ex.Message;
+                result.DESCRIPTION = Message_Type.upload_Fail.GetDescription(null, ex.Message);
             }
             return Json(result);
         }
@@ -153,21 +154,21 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region save Moody_Monthly_PD_Info(A81)
-                tableName = "Moody_Monthly_PD_Info";
+                tableName = Table_Type.A81.GetDescription();
                 MSGReturnModel resultA81 = A8Repository.SaveA8("A81",dataModel); //save to DB
                 bool A81Log = CommonFunction.saveLog("A81",tableName, fileName, proName, resultA81.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA81.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
                 #region save Moody_Quartly_PD_Info(A82)
-                tableName = "Moody_Quartly_PD_Info";
+                tableName = Table_Type.A82.GetDescription();
                 MSGReturnModel resultA82 = A8Repository.SaveA8("A82",dataModel); //save to DB
                 bool A82Log = CommonFunction.saveLog("A82",tableName, fileName, proName, resultA82.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA82.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
                 #region save Moody_Predit_PD_Info(A83)
-                tableName = "Moody_Predit_PD_Info";
+                tableName = Table_Type.A83.GetDescription();
                 MSGReturnModel resultA83 = A8Repository.SaveA8("A83",dataModel); //save to DB
                 bool A83Log = CommonFunction.saveLog("A83",tableName, fileName, proName, resultA83.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA83.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
@@ -176,17 +177,17 @@ namespace Transfer.Controllers
                 result.RETURN_FLAG = resultA81.RETURN_FLAG &&
                                      resultA82.RETURN_FLAG &&
                                      resultA83.RETURN_FLAG;
-                result.DESCRIPTION = "Success!";
+                result.DESCRIPTION = Message_Type.save_Success.GetDescription("A81,A82,A83");
 
                 if (!result.RETURN_FLAG)
                 {
                     List<string> errs = new List<string>();
                     if (!resultA81.RETURN_FLAG)
-                        errs.Add("SaveA81 Error: " + resultA81.DESCRIPTION);
+                        errs.Add(resultA81.DESCRIPTION);
                     if (!resultA82.RETURN_FLAG)
-                        errs.Add("SaveA82 Error: " + resultA82.DESCRIPTION);
+                        errs.Add(resultA82.DESCRIPTION);
                     if (!resultA83.RETURN_FLAG)
-                        errs.Add("SaveA83 Error: " + resultA83.DESCRIPTION);
+                        errs.Add(resultA83.DESCRIPTION);
 
                     result.DESCRIPTION = string.Join("\n", errs);
                 }
@@ -195,7 +196,7 @@ namespace Transfer.Controllers
             catch (Exception ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = ex.Message;
+                result.DESCRIPTION = Message_Type.save_Fail.GetDescription(null,ex.Message);
             }
             return Json(result);
         }
@@ -210,7 +211,7 @@ namespace Transfer.Controllers
         {
             MSGReturnModel result = new MSGReturnModel();
             result.RETURN_FLAG = false;
-            result.DESCRIPTION = "No Data!";
+            result.DESCRIPTION = Message_Type.not_Find_Any.GetDescription(type);
             try
             {
                 switch (type)
@@ -231,13 +232,11 @@ namespace Transfer.Controllers
                         result.Datas = Json(A83Data.Item2);
                         break;
                 }
-                if (result.RETURN_FLAG)
-                    result.DESCRIPTION = "Success!";
             }
             catch (Exception ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = ex.Message;
+                result.DESCRIPTION = Message_Type.not_Find_Any.GetDescription(type,ex.Message);
             }
             return Json(result);
         }

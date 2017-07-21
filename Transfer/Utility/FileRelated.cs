@@ -6,6 +6,7 @@ using NPOI;
 using NPOI.HSSF.UserModel;
 using NPOI.XSSF.UserModel;
 using NPOI.SS.UserModel;
+using Transfer.Enum;
 //using MExcel = Microsoft.Office.Interop.Excel;
 namespace Transfer.Utility
 {
@@ -33,7 +34,8 @@ namespace Transfer.Utility
             catch (Exception ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = ex.Message;
+                result.DESCRIPTION = Ref.Message_Type.upload_Fail
+                    .GetDescription(null, ex.Message);
             }
             return result;
         }
@@ -63,6 +65,7 @@ namespace Transfer.Utility
         /// <param name="thisTable">欲轉換之DataTable</param>
         /// <param name="path">檔案放置位置</param>
         /// <param name="sheetName">寫入之sheet名稱</param>
+        /// <returns>失敗時回傳錯誤訊息</returns>
         public static string DataTableToExcel(DataTable dt, string path, string sheetName)
         {
             string result = string.Empty;

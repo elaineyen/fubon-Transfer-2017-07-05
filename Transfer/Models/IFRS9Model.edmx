@@ -58,13 +58,13 @@
         <EntityType Name="EL_Data_In">
           <Key>
             <PropertyRef Name="Report_Date" />
-            <PropertyRef Name="Processing_Date" />
             <PropertyRef Name="Product_Code" />
+            <PropertyRef Name="Reference_Nbr" />
           </Key>
           <Property Name="Report_Date" Type="date" Nullable="false" />
           <Property Name="Processing_Date" Type="date" Nullable="false" />
           <Property Name="Product_Code" Type="varchar" MaxLength="64" Nullable="false" />
-          <Property Name="Reference_Nbr" Type="varchar" MaxLength="50" />
+          <Property Name="Reference_Nbr" Type="int" Nullable="false" />
           <Property Name="Current_Rating_Code" Type="varchar" MaxLength="50" />
           <Property Name="Exposure" Type="float" />
           <Property Name="Actual_Year_To_Maturity" Type="float" />
@@ -74,7 +74,7 @@
           <Property Name="Current_Int_Rate" Type="float" />
           <Property Name="EIR" Type="float" />
           <Property Name="Impairment_Stage" Type="varchar" MaxLength="1" />
-          <Property Name="Version" Type="int" />
+          <Property Name="Version" Type="varchar" MaxLength="10" />
           <Property Name="Lien_position" Type="varchar" MaxLength="10" />
           <Property Name="Ori_Amount" Type="float" />
           <Property Name="Principal" Type="float" />
@@ -470,13 +470,13 @@
         <EntityType Name="EL_Data_In">
           <Key>
             <PropertyRef Name="Report_Date" />
-            <PropertyRef Name="Processing_Date" />
             <PropertyRef Name="Product_Code" />
+            <PropertyRef Name="Reference_Nbr" />
           </Key>
           <Property Name="Report_Date" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="Processing_Date" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="Product_Code" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="false" />
-          <Property Name="Reference_Nbr" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Reference_Nbr" Type="Int32" Nullable="false" />
           <Property Name="Current_Rating_Code" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Exposure" Type="Double" />
           <Property Name="Actual_Year_To_Maturity" Type="Double" />
@@ -486,7 +486,7 @@
           <Property Name="Current_Int_Rate" Type="Double" />
           <Property Name="EIR" Type="Double" />
           <Property Name="Impairment_Stage" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
-          <Property Name="Version" Type="Int32" />
+          <Property Name="Version" Type="String" />
           <Property Name="Lien_position" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="Ori_Amount" Type="Double" />
           <Property Name="Principal" Type="Double" />

@@ -9,6 +9,7 @@ using Transfer.Models.Interface;
 using Transfer.Models.Repositiry;
 using Transfer.Utility;
 using Transfer.ViewModels;
+using static Transfer.Enum.Ref;
 
 namespace Transfer.Controllers
 {
@@ -16,12 +17,11 @@ namespace Transfer.Controllers
     [Authorize]
     public class A4Controller : CommonController
     {
-        private string[] selects = { "All", "B01" };
+        private string[] selects = { "All", "B01","C01" };
         private IA4Repository A4Repository;
         private ICommon CommonFunction;
         private IFRS9Entities db = new IFRS9Entities();
         public ICacheProvider Cache { get; set; }
-
 
         public A4Controller()
         {
@@ -74,17 +74,17 @@ namespace Transfer.Controllers
                 if (FileModel.File == null)
                 {
                     result.RETURN_FLAG = false;
-                    result.DESCRIPTION = "請選擇檔案!";
+                    result.DESCRIPTION = Message_Type.upload_Not_Find.GetDescription();
                     return Json(result);
                 }
                 #endregion
 
-                #region 前端檔案大小不服或不為Excel檔案(驗證)
+                #region 前端檔案大小不符或不為Excel檔案(驗證)
 
                 if (FileModel.File.ContentLength == 0)
                 {
                     result.RETURN_FLAG = false;
-                    result.DESCRIPTION = "請確認檔案為Excel檔案!";
+                    result.DESCRIPTION = Message_Type.excel_Validate.GetDescription();
                     return Json(result);
                 }
                 #endregion
@@ -116,12 +116,11 @@ namespace Transfer.Controllers
                     result.RETURN_FLAG = true;
                     Cache.Invalidate("A41ExcelfileData"); //清除 Cache
                     Cache.Set("A41ExcelfileData", dataModel, 15); //把資料存到 Cache
-                    //A4Repository.saveTempA41(dataModel);
                 }
                 else
                 {
                     result.RETURN_FLAG = false;
-                    result.DESCRIPTION = "無筆對到資料!";
+                    result.DESCRIPTION = Message_Type.data_Not_Compare.GetDescription();
                 }
                 #endregion
 
@@ -198,25 +197,22 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region save Bond_Account_Info(A41)
-                tableName = "Bond_Account_Info";
+                var table = Table_Type.A41;
+                tableName = table.GetDescription() ;
                 MSGReturnModel resultA41 = A4Repository.saveA41(dataModel); //save to DB
-                bool A41Log = CommonFunction.saveLog("A41", tableName, fileName, proName, resultA41.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                bool A41Log = CommonFunction.saveLog(table.ToString(),tableName,
+                    fileName, proName, resultA41.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA41.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
-
                 result.RETURN_FLAG = resultA41.RETURN_FLAG;
-                result.DESCRIPTION = "Success!";
+                result.DESCRIPTION = Message_Type.save_Success.GetDescription("A41");
 
                 if (!result.RETURN_FLAG)
                 {
-                    List<string> errs = new List<string>();
-                    if (!resultA41.RETURN_FLAG)
-                        errs.Add("SaveA41 Error: " + resultA41.DESCRIPTION);
-
-                    result.DESCRIPTION = string.Join("\n", errs);
+                    result.DESCRIPTION = Message_Type.save_Fail
+                        .GetDescription("A41", resultA41.DESCRIPTION);
                 }
-
             }
             catch (Exception ex)
             {
@@ -236,7 +232,7 @@ namespace Transfer.Controllers
         {
             MSGReturnModel result = new MSGReturnModel();
             result.RETURN_FLAG = false;
-            result.DESCRIPTION = "No Data!";
+            result.DESCRIPTION = Message_Type.not_Find_Any.GetDescription(type);
             try
             {
                 switch (type)
@@ -253,18 +249,15 @@ namespace Transfer.Controllers
                         }
                         else
                         {
-                            result.RETURN_FLAG = true; //有舊資料
+                            result.RETURN_FLAG = true; //有Cache資料
                         }
-                        //A4Repository.saveTempA41(A41Data.Item2); //把資料存到 Cache
                         break;
                 }
-                if (result.RETURN_FLAG)
-                    result.DESCRIPTION = "Success!";
             }
             catch (Exception ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = ex.Message;
+                result.DESCRIPTION = Message_Type.not_Find_Any.GetDescription(type, ex.Message);
             }
             return Json(result);
         }
@@ -292,17 +285,18 @@ namespace Transfer.Controllers
             DateTime startTime = DateTime.Now;
             switch (type)
             {
-                case "All":
+                case "All": //All 也是重B01開始 B01 => C01
                 case "B01":
                     result = A4Repository.saveB01(version, dat);
-                    tableName = "IFRS9_Main";
-                    bool A41Log = CommonFunction.saveLog("A41", tableName, fileName, proName, result.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
-                    result.Datas = Json(transferMessage(next, "C01"));
+                    tableName = Table_Type.B01.GetDescription();
+                    bool B01Log = CommonFunction.saveLog("B01", tableName, fileName, proName, result.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                    result.Datas = Json(transferMessage(next, "C01")); //回傳要不要做下一個transfer
                     break;
                 case "C01":
-                    result.RETURN_FLAG = true;
-                    result.DESCRIPTION = "end";
-                    result.Datas = Json(transferMessage(false, string.Empty));
+                    result = A4Repository.saveC01(version, dat);
+                    tableName = Table_Type.C01.GetDescription();
+                    bool C01Log = CommonFunction.saveLog("C01", tableName, fileName, proName, result.RETURN_FLAG, startTime, DateTime.Now);
+                    result.Datas = Json(transferMessage(false, string.Empty)); //目前到C01 而已
                     break;
             }
             return Json(result);
@@ -311,7 +305,7 @@ namespace Transfer.Controllers
         public JsonResult GetLogData()
         {
             List<string> logDatas = A4Repository.GetLogData(selects.ToList());
-            return Json(logDatas);
+            return Json(string.Join(",",logDatas));
         }
 
         /// <summary>

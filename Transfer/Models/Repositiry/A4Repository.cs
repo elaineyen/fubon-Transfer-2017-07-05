@@ -76,23 +76,22 @@ namespace Transfer.Models.Repositiry
                 {
                     foreach (string tableType in tableTypes)
                     {
-                       var items = db.IFRS9_Log.AsEnumerable()
-                            .Where(x => tableType.Equals(x.Table_type)).ToList();
+                        var items = db.IFRS9_Log.AsEnumerable()
+                             .Where(x => tableType.Equals(x.Table_type)).ToList();
                         if (items.Count > 0)
                         {
-                            var lastDate = items.Max(y =>y.Create_date);
+                            var lastDate = items.Max(y => y.Create_date);
                             result.AddRange(items.Where(x => lastDate.Equals(x.Create_date))
                                 .OrderByDescending(x => x.Create_time)
-                                .Select(x => 
+                                .Select(x =>
                                 { return string.Format("{0} {1} {2} {3}",
                                     x.Table_type,
                                     x.Create_date,
                                     x.Create_time,
-                                    "Y".Equals(x.TYPE) ? "成功":"失敗"
-                                    );}));
-                            
-                        }
+                                    "Y".Equals(x.TYPE) ? "成功" : "失敗"
+                                    ); }));
 
+                        }
                     }
                 }
             }
@@ -130,7 +129,7 @@ namespace Transfer.Models.Repositiry
                     FirstOrDefault(x => x.Report_Date != null
                     && x.Report_Date.Value.ToString("yyyy/MM/dd")
                     .Equals(dataModel.First().Report_Date)) != null)
-                    //資料裡面已經有相同的 Report_Date ?? 是否需加入 version
+                //資料裡面已經有相同的 Report_Date ?? 是否需加入 version
                 {
                     result.RETURN_FLAG = false;
                     result.DESCRIPTION = "Already Save Data!";
@@ -142,7 +141,7 @@ namespace Transfer.Models.Repositiry
                     db.Bond_Account_Info.Add(
                     new Bond_Account_Info()
                     {
-                        Reference_Nbr = now_id,
+                        Reference_Nbr = now_id, 
                         Bond_Number = item.Bond_Number,
                         Lots = item.Lots,
                         Segment_Name = item.Segment_Name,
@@ -195,22 +194,28 @@ namespace Transfer.Models.Repositiry
             catch (Exception ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = ex.Message + 
-                    " Reference_Nbr : "+ now_id.ToString();
+                result.DESCRIPTION = ex.Message +
+                    " Reference_Nbr : " + now_id.ToString();
             }
             return result;
         }
         #endregion
 
         #region Save B01
-        public MSGReturnModel saveB01(string version ,DateTime date)
+        /// <summary>
+        /// save B01
+        /// </summary>
+        /// <param name="version"></param>
+        /// <param name="date">Report_Date</param>
+        /// <returns></returns>
+        public MSGReturnModel saveB01(string version, DateTime date)
         {
             MSGReturnModel result = new MSGReturnModel();
             try
             {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Ref.Message_Type
-                    .not_Find_Any.GetDescription();
+                    .not_Find_Any.GetDescription("B01");
                 if (db.Bond_Account_Info.Count() > 0)
                 {
                     List<Bond_Account_Info> addData = //這次要新增的資料
@@ -221,7 +226,7 @@ namespace Transfer.Models.Repositiry
                     if (0.Equals(addData.Count))
                     {
                         result.DESCRIPTION = Ref.Message_Type
-                            .query_Not_Find.GetDescription();
+                            .query_Not_Find.GetDescription("B01");
                         return result;
                     }
 
@@ -229,15 +234,15 @@ namespace Transfer.Models.Repositiry
                     {
                         List<int> B01Ids = new List<int>();
                         B01Ids.AddRange(db.IFRS9_Main.AsEnumerable()
-                        .Select(x => x.Reference_Nbr).ToList()); //抓取 B01PK
-                        addData = addData.Where(x => 
+                        .Select(x => x.Reference_Nbr).ToList()); //抓取 B01 Reference_Nbr
+                        addData = addData.Where(x =>
                         !B01Ids.Contains(x.Reference_Nbr)).ToList(); //排除 save 重複資料
                     }
 
                     if (0.Equals(addData.Count))
                     {
                         result.DESCRIPTION = Ref.Message_Type
-                            .already_Save.GetDescription();
+                            .already_Save.GetDescription("B01");
                         return result;
                     }
 
@@ -306,30 +311,38 @@ namespace Transfer.Models.Repositiry
                             Version = x.Version, //
                             Lien_position = x.Lien_position, //
                             Ori_Amount = x.Ori_Amount, //
-                            //Payment_Frequency = x.Payment_Frequency
+                            Payment_Frequency = transferPaymentFrequency(x.Payment_Frequency)
                         };
                     }));
                     db.SaveChanges();
                     result.RETURN_FLAG = true;
                     result.DESCRIPTION = Ref.Message_Type
-                        .save_Success.GetDescription();
+                        .save_Success.GetDescription("B01");
                 }
             }
             catch (Exception ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = ex.Message;
+                result.DESCRIPTION = Ref.Message_Type
+                        .save_Fail.GetDescription("B01", ex.Message);
             }
             return result;
         }
         #endregion
 
+        #region Save C01
+        /// <summary>
+        /// Save C01
+        /// </summary>
+        /// <param name="version"></param>
+        /// <param name="date">Report_Date</param>
+        /// <returns></returns>
         public MSGReturnModel saveC01(string version, DateTime date)
         {
             MSGReturnModel result = new MSGReturnModel();
             result.RETURN_FLAG = false;
             result.DESCRIPTION = Ref.Message_Type
-                    .not_Find_Any.GetDescription();
+                    .not_Find_Any.GetDescription("C01");
             try
             {
                 if (db.IFRS9_Main.Count() > 0)
@@ -343,24 +356,72 @@ namespace Transfer.Models.Repositiry
                     if (0.Equals(addData.Count))
                     {
                         result.DESCRIPTION = Ref.Message_Type
-                            .query_Not_Find.GetDescription();
+                            .query_Not_Find.GetDescription("C01");
                         return result;
                     }
 
-                    foreach (IFRS9_Main item in addData)
+                    if (db.EL_Data_In.Count() > 0)
                     {
-                        //if(db.EL_Data_In.SingleOrDefault(x=>x.))
+                        List<int> C01Ids = new List<int>();
+                        C01Ids.AddRange(db.EL_Data_In.AsEnumerable()
+                        .Select(x => x.Reference_Nbr).ToList()); //抓取 C01 Reference_Nbr
+                        addData = addData.Where(x =>
+                        !C01Ids.Contains(x.Reference_Nbr)).ToList(); //排除 save 重複資料
                     }
 
+                    if (0.Equals(addData.Count))
+                    {
+                        result.DESCRIPTION = Ref.Message_Type
+                            .already_Save.GetDescription("C01");
+                        return result;
+                    }
+                    DateTime now = DateTime.Now;
+
+                    db.EL_Data_In.AddRange(
+                    addData.Select(x => new EL_Data_In()
+                    {
+                        Report_Date = x.Report_Date.Value, //評估基準日/報導日
+                        Processing_Date = now.Date, //資料處理日期
+                        Product_Code = x.Product_Code, //產品
+                        Reference_Nbr = x.Reference_Nbr, //案件編號/帳號
+                        Current_Rating_Code = x.Current_Rating_Code, //風險區隔
+                        Exposure = TypeTransfer.doubleNToDouble(x.Principal)
+                        + TypeTransfer.doubleNToDouble(x.Interest_Receivable),
+                        // 曝險額 = 餘額+利息 (4)Principal + (5)Interest_Receivable
+                        Actual_Year_To_Maturity = x.Maturity_Date.dateSubtractToYear(x.Report_Date),
+                        // 合約到期年限 = 由(到期日-評估基準日/報導日),取date再轉換成年
+                        Duration_Year = x.Remaining_Month != null ?
+                        getC01DurationYear(x.Remaining_Month) : x.Maturity_Date.dateSubtractToYear(x.Report_Date),
+                        //估計存續期間_年
+                        Remaining_Month = x.Remaining_Month != null ?
+                        x.Remaining_Month : x.Maturity_Date.dateSubtractToMonths(x.Report_Date),
+                        //估計存續期間_月
+                        Current_LGD = x.Current_Lgd, //違約損失率
+                        Current_Int_Rate = x.Current_Int_Rate, //合约利率/產品利率
+                        EIR = x.Eir, //有效利率
+                        Impairment_Stage = getC01ImpairmentStage(x.Product_Code), //減損階段
+                        Version = x.Version, //資料版本
+                        Lien_position = x.Lien_position, //擔保順位
+                        Ori_Amount = x.Ori_Amount, //原始購買金額
+                        Principal = x.Principal, //金融資產餘額
+                        Interest_Receivable = x.Interest_Receivable, //應收利息
+                        Payment_Frequency = x.Payment_Frequency //償還(繳款)頻率 (次/年)
+                    }));
+                    db.SaveChanges();
+                    result.RETURN_FLAG = true;
+                    result.DESCRIPTION = Ref.Message_Type
+                        .save_Success.GetDescription("C01");
                 }
             }
             catch (Exception ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = ex.Message;
+                result.DESCRIPTION = Ref.Message_Type
+                        .save_Fail.GetDescription("C01", ex.Message);
             }
             return result;
         }
+        #endregion
 
         #endregion
 
@@ -400,7 +461,7 @@ namespace Transfer.Models.Repositiry
                     dataModel = resultData.Tables[1].AsEnumerable().Skip(1) //第二頁籤第二行開始
                         .Select((x, y) =>
                         {
-                            return getA41Model(x, (y + 1+ idNum).ToString());
+                            return getA41Model(x, (y + 1 + idNum).ToString());
                         }
                         ).ToList();
 
@@ -453,9 +514,9 @@ namespace Transfer.Models.Repositiry
                 Ori_Amount = TypeTransfer.objToString(item[11]), //L 原始金額 
                 Current_Int_Rate = TypeTransfer.objToString(item[12]), //M 合約利率
                 Origination_Date = TypeTransfer.objDateToString(item[13]), //N 債券購入(認列)日期
-                Maturity_Date = TypeTransfer.objDateToString(item[14]), //O (缺 P=>15,Q=>16) 到期日
+                Maturity_Date = TypeTransfer.objDateToString(item[14]), //O (缺 P=>15) 到期日
                 Principal_Payment_Method_Code = Principal_Payment_Method_Code,
-                Payment_Frequency = string.Empty,
+                Payment_Frequency = TypeTransfer.objDateToString(item[16]), //Q 票面利率週期
                 Balloon_Date = TypeTransfer.objToString(item[17]), //R (缺 S=>18) 贖回日期(本金一次贖回)
                 Issuer_Area = TypeTransfer.objToString(item[19]), //T Issuer所屬區域
                 Industry_Sector = TypeTransfer.objToString(item[20]), //U 對手產業別
@@ -543,6 +604,57 @@ namespace Transfer.Models.Repositiry
                 Processing_Date = TypeTransfer.dateTimeNToString(data.Processing_Date),
                 Version = data.Version
             };
+        }
+        #endregion
+
+        #region A41 PaymentFrequency To B01
+        /// <summary>
+        /// A41 PaymentFrequency To B01
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private int? transferPaymentFrequency(string value)
+        {
+            if (value.IsNullOrWhiteSpace())
+                return null;
+            switch (value)
+            {
+                case "A":
+                    return 1;
+                case "S":
+                    return 2;
+            }
+            int i = 0;
+            if (Int32.TryParse(value, out i))
+                return i;
+            return null;
+        }
+        #endregion
+
+        #region Get C01 Duration_Year
+        /// <summary>
+        /// C01 Duration_Year
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private double? getC01DurationYear(int? value)
+        {
+            return (value.Value / 12);
+        }
+        #endregion
+
+        #region Get C01 Impairment_Stage
+        /// <summary>
+        /// Get C01 Impairment_Stage
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        private string getC01ImpairmentStage(string value)
+        {
+            List<string> pro_codes = new List<string>() { "LOAN_A", "LOAN_B", "LONE_P" };
+            if (value.IsNullOrWhiteSpace())
+                return null;
+            return pro_codes.Contains(value) ? "1" : string.Empty;
         }
         #endregion
 
