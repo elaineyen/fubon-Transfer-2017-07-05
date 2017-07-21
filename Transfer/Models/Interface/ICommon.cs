@@ -9,6 +9,7 @@ namespace Transfer.Models.Interface
     public interface ICommon
     {
         bool saveLog(
+            string tableType,
             string tableName,
             string fileName,
             string programName,

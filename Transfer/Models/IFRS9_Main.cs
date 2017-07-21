@@ -72,7 +72,7 @@ namespace Transfer.Models
         public string Ten_Types_Delinquent_Category { get; set; }
         public string Watch_List_Ind { get; set; }
         public string Write_Off_Ind { get; set; }
-        public Nullable<int> Version { get; set; }
+        public string Version { get; set; }
         public string Lien_position { get; set; }
         public Nullable<double> Ori_Amount { get; set; }
         public Nullable<int> Payment_Frequency { get; set; }

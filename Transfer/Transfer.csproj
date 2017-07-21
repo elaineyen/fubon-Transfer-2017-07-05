@@ -155,11 +155,15 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\A8Controller.cs" />
     <Compile Include="Enum\A7Type.cs" />
+    <Compile Include="Enum\MessageType.cs" />
     <Compile Include="Enum\PDType.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Models\Bond_Account_Info.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\EL_Data_In.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Grade_Moody_Info.cs">
@@ -312,6 +316,7 @@
       <LastGenOutput>IFRS9Model.cs</LastGenOutput>
     </Content>
     <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\i18n\datepicker-zh-TW.js" />
     <Content Include="Scripts\Sidebar.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <EntityDeploy Include="Models\IFRS9Model.edmx">
@@ -414,6 +419,7 @@
     <Content Include="Views\A7\A74Detail.cshtml" />
     <Content Include="Views\A4\Index.cshtml" />
     <Content Include="Views\A4\A41Detail.cshtml" />
+    <Content Include="Views\A4\A42Detail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

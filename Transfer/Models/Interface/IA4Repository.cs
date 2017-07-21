@@ -29,6 +29,10 @@ namespace Transfer.Models.Interface
         /// <returns></returns>
         MSGReturnModel saveA41(List<A41ViewModel> dataModel);
 
+        MSGReturnModel saveB01(string version, DateTime date);
+
+        List<string> GetLogData(List<string> tableTypes);
+
         /// <summary>
         /// 
         /// </summary>

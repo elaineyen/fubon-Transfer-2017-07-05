@@ -1,0 +1,163 @@
+﻿@{
+    ViewBag.Manu = "A4Main";
+    ViewBag.SubManu = "A42SubMain";
+    ViewBag.Title = "B01 (執行減損計算 債券)";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .ui-datepicker-trigger {
+        border: none;
+        background: none;
+    }
+
+    .error {
+        /*border-color: red;*/
+        color:red;
+    }
+</style>
+<div class="container" id="main">
+    <div class="row main_hand">
+        <div class="col-md-12 main_hand_div">
+            <form id="myFrom">
+                <table width="100%">
+                    <tr>
+                        <td style="width:450px" class="form-group">
+                            <label>日期 : </label>
+                            <input type="text" id="datepicker" name="datepicker">
+                        </td>
+                        <td style="padding-top:8px">
+                            <label>版本 : </label>
+                            <input type="text" id="version" name="version">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-top:10px">
+                            <label>轉檔類型 : </label>
+                            @Html.DropDownList("transferType",
+                           (SelectList)ViewBag.selectOption,
+                            new { @class = "form-control", @style = "display:inherit" })
+                        </td>
+                        <td style="padding-top:10px"> 
+                            <input type="button" class="btn btn-primary" value="轉檔" id="btnA42Transfer" />
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+    <div class="row main_body" style="overflow:auto;height:100%">
+        <div class="col-md-12">
+            <div class="viewDetail">
+                @Html.TextArea("log", string.Empty, 20, 30,
+               new { @class = "form-control", @style = "max-width:none", disabled = "disabled" })
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-ui-1.10.0.min.js"></script>
+<script src="~/Scripts/i18n/datepicker-zh-TW.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script type="text/javascript">
+    $(function () {
+        var d = new Date()
+        $("#datepicker").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: 'yy/mm/dd',
+            showOn: "both",
+            buttonText: '<i class="fa fa-calendar fa-2x toggle-btn"></i>',
+            onSelect: function (value) {
+                if (isDate(value))
+                    $('#myFrom').valid();
+            }
+        }).datepicker('setDate', new Date(d.getFullYear()+'-'+(d.getMonth()+1)+'-'+25));
+
+        //#region 註冊URL
+        var url = {};
+        url.transfer = '@Url.Action("TransferToOther", "A4")';
+        @*url.getDbData = '@Url.Action("GetCacheData", "A4")';*@
+        //#endregion 註冊URL
+
+        //#region 註冊click事件
+        $('input:button').each(function () {
+            var id = $(this).attr('id');
+            switch (id) {
+                case 'btnA42Transfer':
+                    $("#" + id).on('click', function () { transferData() });
+                    break;
+            }
+        })
+        //#endregion 註冊click事件
+
+        //#region 轉檔
+        function transferData()
+        {
+            var version = $('#version').val();
+            var date = $('#datepicker').val();
+            var type = $('#transferType').val();
+            $.validator.addMethod("dateFormate", 
+                function (value, element, arg) 
+                {
+                    return isDate(value);
+                }, "日期格式為yyyy/mm/dd");
+            $("#myFrom").validate({
+                rules: {
+                    version: { required: true },
+                    datepicker: { dateFormate: date }
+                },
+                messages: {
+                    version: "版本為必填!",
+                }
+            })
+            if ($('#myFrom').valid()) {
+                callTransfer(type, version, date, type === "All")           
+            }
+       }
+        //#endregion
+
+        function callTransfer(type, version, date, next)
+        {
+            $.blockUI();
+            $.ajax({
+                type: "POST",
+                data: JSON.stringify({
+                    type: type,
+                    version: version,
+                    date: date,
+                    next: next
+                }),
+                dataType: "json",
+                url: url.transfer,
+                contentType: 'application/json'
+            })
+            .done(function (result) {
+                $.unblockUI();
+                var log = $('#log').text();
+                if (log.length === 0)
+                    $('#log').text(result.DESCRIPTION);
+                else
+                    $('#log').text($('#log').text() + '\n' + result.DESCRIPTION);
+                if (result.RETURN_FLAG)
+                {
+                    alert("success : " + result.DESCRIPTION);
+                    var data = result.Datas.Data;
+                    if (data.split(',')[0] === "true")
+                    {
+                        callTransfer(type, version, date.split(',')[1], true)
+                    }
+                }
+                else
+                {
+                    alert("error : " + result.DESCRIPTION)
+                }
+            });
+        }
+
+        function isDate(value) {
+            var dateFormat;
+            dateFormat = /^\d{4}\/(0[1-9]|1[012])\/(0[1-9]|[12][0-9]|3[01])$/;
+            return dateFormat.test(value);
+        }
+    });
+</script>

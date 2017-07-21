@@ -58,6 +58,6 @@ namespace Transfer.Models
         public string Bond_Type { get; set; }
         public string Assessment_Sub_Kind { get; set; }
         public Nullable<System.DateTime> Processing_Date { get; set; }
-        public Nullable<int> Version { get; set; }
+        public string Version { get; set; }
     }
 }

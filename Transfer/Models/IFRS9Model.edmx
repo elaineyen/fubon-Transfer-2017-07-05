@@ -53,7 +53,33 @@
           <Property Name="Bond_Type" Type="varchar" MaxLength="30" />
           <Property Name="Assessment_Sub_Kind" Type="varchar" MaxLength="50" />
           <Property Name="Processing_Date" Type="date" />
+          <Property Name="Version" Type="varchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="EL_Data_In">
+          <Key>
+            <PropertyRef Name="Report_Date" />
+            <PropertyRef Name="Processing_Date" />
+            <PropertyRef Name="Product_Code" />
+          </Key>
+          <Property Name="Report_Date" Type="date" Nullable="false" />
+          <Property Name="Processing_Date" Type="date" Nullable="false" />
+          <Property Name="Product_Code" Type="varchar" MaxLength="64" Nullable="false" />
+          <Property Name="Reference_Nbr" Type="varchar" MaxLength="50" />
+          <Property Name="Current_Rating_Code" Type="varchar" MaxLength="50" />
+          <Property Name="Exposure" Type="float" />
+          <Property Name="Actual_Year_To_Maturity" Type="float" />
+          <Property Name="Duration_Year" Type="float" />
+          <Property Name="Remaining_Month" Type="int" />
+          <Property Name="Current_LGD" Type="float" />
+          <Property Name="Current_Int_Rate" Type="float" />
+          <Property Name="EIR" Type="float" />
+          <Property Name="Impairment_Stage" Type="varchar" MaxLength="1" />
           <Property Name="Version" Type="int" />
+          <Property Name="Lien_position" Type="varchar" MaxLength="10" />
+          <Property Name="Ori_Amount" Type="float" />
+          <Property Name="Principal" Type="float" />
+          <Property Name="Interest_Receivable" Type="float" />
+          <Property Name="Payment_Frequency" Type="int" />
         </EntityType>
         <EntityType Name="Grade_Moody_Info">
           <Key>
@@ -71,6 +97,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Table_type" Type="varchar" MaxLength="10" />
           <Property Name="Table_name" Type="varchar" MaxLength="20" />
           <Property Name="File_name" Type="varchar" MaxLength="30" />
           <Property Name="Program_name" Type="varchar" MaxLength="20" />
@@ -142,7 +169,7 @@
           <Property Name="Ten_Types_Delinquent_Category" Type="varchar" MaxLength="12" />
           <Property Name="Watch_List_Ind" Type="varchar" MaxLength="2" />
           <Property Name="Write_Off_Ind" Type="varchar" MaxLength="2" />
-          <Property Name="Version" Type="int" />
+          <Property Name="Version" Type="varchar" MaxLength="10" />
           <Property Name="Lien_position" Type="varchar" MaxLength="10" />
           <Property Name="Ori_Amount" Type="float" />
           <Property Name="Payment_Frequency" Type="int" />
@@ -211,6 +238,7 @@
         </EntityType>
         <EntityContainer Name="IFRS9ModelStoreContainer">
           <EntitySet Name="Bond_Account_Info" EntityType="Self.Bond_Account_Info" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="EL_Data_In" EntityType="Self.EL_Data_In" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Grade_Moody_Info" EntityType="Self.Grade_Moody_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IFRS9_Log" EntityType="Self.IFRS9_Log" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IFRS9_Main" EntityType="Self.IFRS9_Main" Schema="dbo" store:Type="Tables" />
@@ -236,6 +264,7 @@
           <Property Name="End_date" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
           <Property Name="End_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
           <Property Name="TYPE" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Table_type" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="Moody_Monthly_PD_Info">
           <Key>
@@ -279,6 +308,7 @@
           <EntitySet Name="Grade_Moody_Info" EntityType="IFRS9Model.Grade_Moody_Info" />
           <EntitySet Name="Bond_Account_Info" EntityType="IFRS9Model.Bond_Account_Info" />
           <EntitySet Name="IFRS9_Main" EntityType="IFRS9Model.IFRS9_Main" />
+          <EntitySet Name="EL_Data_In" EntityType="IFRS9Model.EL_Data_In" />
         </EntityContainer>
         <EntityType Name="Moody_Tm_YYYY">
           <Key>
@@ -368,7 +398,7 @@
           <Property Name="Bond_Type" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
           <Property Name="Assessment_Sub_Kind" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Processing_Date" Type="DateTime" Precision="0" />
-          <Property Name="Version" Type="Int32" />
+          <Property Name="Version" Type="String" MaxLength="10" Unicode="false" FixedLength="false" />
         </EntityType>
         <EntityType Name="IFRS9_Main">
           <Key>
@@ -432,9 +462,35 @@
           <Property Name="Ten_Types_Delinquent_Category" Type="String" MaxLength="12" FixedLength="false" Unicode="false" />
           <Property Name="Watch_List_Ind" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
           <Property Name="Write_Off_Ind" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Name="Version" Type="String" MaxLength="10" Unicode="false" FixedLength="false" />
+          <Property Name="Lien_position" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Ori_Amount" Type="Double" />
+          <Property Name="Payment_Frequency" Type="Int32" />
+        </EntityType>
+        <EntityType Name="EL_Data_In">
+          <Key>
+            <PropertyRef Name="Report_Date" />
+            <PropertyRef Name="Processing_Date" />
+            <PropertyRef Name="Product_Code" />
+          </Key>
+          <Property Name="Report_Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Processing_Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Product_Code" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="false" />
+          <Property Name="Reference_Nbr" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Current_Rating_Code" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Exposure" Type="Double" />
+          <Property Name="Actual_Year_To_Maturity" Type="Double" />
+          <Property Name="Duration_Year" Type="Double" />
+          <Property Name="Remaining_Month" Type="Int32" />
+          <Property Name="Current_LGD" Type="Double" />
+          <Property Name="Current_Int_Rate" Type="Double" />
+          <Property Name="EIR" Type="Double" />
+          <Property Name="Impairment_Stage" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
           <Property Name="Version" Type="Int32" />
           <Property Name="Lien_position" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="Ori_Amount" Type="Double" />
+          <Property Name="Principal" Type="Double" />
+          <Property Name="Interest_Receivable" Type="Double" />
           <Property Name="Payment_Frequency" Type="Int32" />
         </EntityType>
       </Schema>
@@ -446,6 +502,7 @@
           <EntitySetMapping Name="IFRS9_Log">
             <EntityTypeMapping TypeName="IFRS9Model.IFRS9_Log">
               <MappingFragment StoreEntitySet="IFRS9_Log">
+                <ScalarProperty Name="Table_type" ColumnName="Table_type" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Table_name" ColumnName="Table_name" />
                 <ScalarProperty Name="File_name" ColumnName="File_name" />
@@ -652,6 +709,31 @@
                 <ScalarProperty Name="Ead" ColumnName="Ead" />
                 <ScalarProperty Name="Customer_Nbr" ColumnName="Customer_Nbr" />
                 <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EL_Data_In">
+            <EntityTypeMapping TypeName="IFRS9Model.EL_Data_In">
+              <MappingFragment StoreEntitySet="EL_Data_In">
+                <ScalarProperty Name="Payment_Frequency" ColumnName="Payment_Frequency" />
+                <ScalarProperty Name="Interest_Receivable" ColumnName="Interest_Receivable" />
+                <ScalarProperty Name="Principal" ColumnName="Principal" />
+                <ScalarProperty Name="Ori_Amount" ColumnName="Ori_Amount" />
+                <ScalarProperty Name="Lien_position" ColumnName="Lien_position" />
+                <ScalarProperty Name="Version" ColumnName="Version" />
+                <ScalarProperty Name="Impairment_Stage" ColumnName="Impairment_Stage" />
+                <ScalarProperty Name="EIR" ColumnName="EIR" />
+                <ScalarProperty Name="Current_Int_Rate" ColumnName="Current_Int_Rate" />
+                <ScalarProperty Name="Current_LGD" ColumnName="Current_LGD" />
+                <ScalarProperty Name="Remaining_Month" ColumnName="Remaining_Month" />
+                <ScalarProperty Name="Duration_Year" ColumnName="Duration_Year" />
+                <ScalarProperty Name="Actual_Year_To_Maturity" ColumnName="Actual_Year_To_Maturity" />
+                <ScalarProperty Name="Exposure" ColumnName="Exposure" />
+                <ScalarProperty Name="Current_Rating_Code" ColumnName="Current_Rating_Code" />
+                <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
+                <ScalarProperty Name="Product_Code" ColumnName="Product_Code" />
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
+                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

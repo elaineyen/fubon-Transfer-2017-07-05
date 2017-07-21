@@ -33,5 +33,6 @@ namespace Transfer.Models
         public virtual DbSet<Grade_Moody_Info> Grade_Moody_Info { get; set; }
         public virtual DbSet<Bond_Account_Info> Bond_Account_Info { get; set; }
         public virtual DbSet<IFRS9_Main> IFRS9_Main { get; set; }
+        public virtual DbSet<EL_Data_In> EL_Data_In { get; set; }
     }
 }

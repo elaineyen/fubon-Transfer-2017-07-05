@@ -21,6 +21,7 @@ namespace Transfer.Models.Repositiry
         /// <param name="end">結束時間</param>
         /// <returns>回傳成功或失敗</returns>
         public bool saveLog(
+            string tableType,
             string tableName,
             string fileName,
             string programName,
@@ -39,11 +40,12 @@ namespace Transfer.Models.Repositiry
                 db.IFRS9_Log.Add(new IFRS9_Log() //寫入DB
                 {
                     Id = id,
-                    Table_name = tableName.Substring(0, 20),
+                    Table_type = tableType,
+                    Table_name = tableName.Substring(0,(tableName.Length > 20 ? 20 : tableName.Length)),
                     File_name = fileName,
                     Program_name = programName,
                     Create_date = start.ToString("yyyyMMdd"),
-                    Create_time = start.ToString("HHmmss"),
+                    Create_time = start.ToString("HH:mm:ss"),
                     End_date = end.ToString("yyyyMMdd"),
                     End_time = end.ToString("HH:mm:ss"),
                     TYPE = falg ? "Y" : "N"

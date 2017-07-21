@@ -5,6 +5,7 @@ using System.Data;
 using System.IO;
 using System.Linq;
 using System.Web;
+using Transfer.Enum;
 using Transfer.Models.Interface;
 using Transfer.Utility;
 using Transfer.ViewModels;
@@ -65,6 +66,45 @@ namespace Transfer.Models.Repositiry
         }
         #endregion
 
+        #region 
+        public List<string> GetLogData(List<string> tableTypes)
+        {
+            List<string> result = new List<string>();
+            try
+            {
+                if (db.IFRS9_Log.Count() > 0 && tableTypes.Count > 0)
+                {
+                    foreach (string tableType in tableTypes)
+                    {
+                       var items = db.IFRS9_Log.AsEnumerable()
+                            .Where(x => tableType.Equals(x.Table_type)).ToList();
+                        if (items.Count > 0)
+                        {
+                            var lastDate = items.Max(y =>y.Create_date);
+                            result.AddRange(items.Where(x => lastDate.Equals(x.Create_date))
+                                .OrderByDescending(x => x.Create_time)
+                                .Select(x => 
+                                { return string.Format("{0} {1} {2} {3}",
+                                    x.Table_type,
+                                    x.Create_date,
+                                    x.Create_time,
+                                    "Y".Equals(x.TYPE) ? "成功":"失敗"
+                                    );}));
+                            
+                        }
+
+                    }
+                }
+            }
+            catch
+            {
+
+            }
+            return result;
+        }
+
+        #endregion
+
         #region Save DB 部分
 
         #region Save A41
@@ -82,7 +122,19 @@ namespace Transfer.Models.Repositiry
                 if (0.Equals(dataModel.Count))
                 {
                     result.RETURN_FLAG = false;
-                    result.REASON_CODE = "No Save Data!";
+                    result.DESCRIPTION = "No Save Data!";
+                    return result;
+                }
+                if (db.Bond_Account_Info.Count() > 0 &&
+                    db.Bond_Account_Info.AsEnumerable().
+                    FirstOrDefault(x => x.Report_Date != null
+                    && x.Report_Date.Value.ToString("yyyy/MM/dd")
+                    .Equals(dataModel.First().Report_Date)) != null)
+                    //資料裡面已經有相同的 Report_Date ?? 是否需加入 version
+                {
+                    result.RETURN_FLAG = false;
+                    result.DESCRIPTION = "Already Save Data!";
+                    return result;
                 }
                 foreach (var item in dataModel)
                 {
@@ -134,7 +186,7 @@ namespace Transfer.Models.Repositiry
                         Bond_Type = item.Bond_Type,
                         Assessment_Sub_Kind = item.Assessment_Sub_Kind,
                         Processing_Date = TypeTransfer.stringToDateTimeN(item.Processing_Date),
-                        Version = TypeTransfer.stringToIntN(item.Version)
+                        Version = item.Version
                     });
                 }
                 db.SaveChanges(); //Save
@@ -151,18 +203,46 @@ namespace Transfer.Models.Repositiry
         #endregion
 
         #region Save B01
-        public MSGReturnModel saveB01()
+        public MSGReturnModel saveB01(string version ,DateTime date)
         {
             MSGReturnModel result = new MSGReturnModel();
             try
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = "NO Data!";
+                result.DESCRIPTION = Ref.Message_Type
+                    .not_Find_Any.GetDescription();
                 if (db.Bond_Account_Info.Count() > 0)
                 {
+                    List<Bond_Account_Info> addData = //這次要新增的資料
+                        db.Bond_Account_Info.AsEnumerable()
+                        .Where(x => x.Report_Date != null &&
+                        date.Equals(x.Report_Date.Value) //抓取相同的Report_date
+                        && version.Equals(x.Version)).ToList();  //抓取相同的 Verison
+                    if (0.Equals(addData.Count))
+                    {
+                        result.DESCRIPTION = Ref.Message_Type
+                            .query_Not_Find.GetDescription();
+                        return result;
+                    }
+
+                    if (db.IFRS9_Main.Count() > 0)
+                    {
+                        List<int> B01Ids = new List<int>();
+                        B01Ids.AddRange(db.IFRS9_Main.AsEnumerable()
+                        .Select(x => x.Reference_Nbr).ToList()); //抓取 B01PK
+                        addData = addData.Where(x => 
+                        !B01Ids.Contains(x.Reference_Nbr)).ToList(); //排除 save 重複資料
+                    }
+
+                    if (0.Equals(addData.Count))
+                    {
+                        result.DESCRIPTION = Ref.Message_Type
+                            .already_Save.GetDescription();
+                        return result;
+                    }
+
                     db.IFRS9_Main.AddRange(
-                    db.Bond_Account_Info.AsEnumerable()
-                    .Select(x =>
+                    addData.Select(x =>
                     {
                         return new IFRS9_Main()
                         {
@@ -183,8 +263,8 @@ namespace Transfer.Models.Repositiry
                             Product_Code = x.Principal_Payment_Method_Code, //
                             //Department = //
                             //PD_Model_Code = //
-                       //18 //Current_Rating_Code = x.
-                            //Report_Date = //
+                            //18 //Current_Rating_Code = x.
+                            Report_Date = x.Report_Date,
                             Maturity_Date = x.Maturity_Date, //
                             //Account_Code = //
                             //BadCredit_Ind = //
@@ -228,8 +308,11 @@ namespace Transfer.Models.Repositiry
                             Ori_Amount = x.Ori_Amount, //
                             //Payment_Frequency = x.Payment_Frequency
                         };
-                    })
-                    );
+                    }));
+                    db.SaveChanges();
+                    result.RETURN_FLAG = true;
+                    result.DESCRIPTION = Ref.Message_Type
+                        .save_Success.GetDescription();
                 }
             }
             catch (Exception ex)
@@ -240,6 +323,44 @@ namespace Transfer.Models.Repositiry
             return result;
         }
         #endregion
+
+        public MSGReturnModel saveC01(string version, DateTime date)
+        {
+            MSGReturnModel result = new MSGReturnModel();
+            result.RETURN_FLAG = false;
+            result.DESCRIPTION = Ref.Message_Type
+                    .not_Find_Any.GetDescription();
+            try
+            {
+                if (db.IFRS9_Main.Count() > 0)
+                {
+                    List<IFRS9_Main> addData = //這次要新增的資料
+                        db.IFRS9_Main.AsEnumerable()
+                        .Where(x => x.Report_Date != null &&
+                        date.Equals(x.Report_Date.Value) //抓取相同的Report_date
+                        && version.Equals(x.Version)).ToList();  //抓取相同的 Verison
+
+                    if (0.Equals(addData.Count))
+                    {
+                        result.DESCRIPTION = Ref.Message_Type
+                            .query_Not_Find.GetDescription();
+                        return result;
+                    }
+
+                    foreach (IFRS9_Main item in addData)
+                    {
+                        //if(db.EL_Data_In.SingleOrDefault(x=>x.))
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = ex.Message;
+            }
+            return result;
+        }
 
         #endregion
 
@@ -420,7 +541,7 @@ namespace Transfer.Models.Repositiry
                 Bond_Type = data.Bond_Type,
                 Assessment_Sub_Kind = data.Assessment_Sub_Kind,
                 Processing_Date = TypeTransfer.dateTimeNToString(data.Processing_Date),
-                Version = TypeTransfer.intNToString(data.Version)
+                Version = data.Version
             };
         }
         #endregion

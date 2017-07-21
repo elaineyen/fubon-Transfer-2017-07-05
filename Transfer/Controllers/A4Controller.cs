@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Web.Mvc;
 using Transfer.Models;
 using Transfer.Models.Interface;
@@ -15,11 +16,12 @@ namespace Transfer.Controllers
     [Authorize]
     public class A4Controller : CommonController
     {
+        private string[] selects = { "All", "B01" };
         private IA4Repository A4Repository;
         private ICommon CommonFunction;
         private IFRS9Entities db = new IFRS9Entities();
         public ICacheProvider Cache { get; set; }
-       
+
 
         public A4Controller()
         {
@@ -46,6 +48,16 @@ namespace Transfer.Controllers
             return View();
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult A42Detail()
+        {
+            ViewBag.selectOption = new SelectList(
+                selects.Select(x => new { Text = x, Value = x }), "Value", "Text");
+            return View();
+        }
 
         /// <summary>
         /// 選擇檔案後點選資料上傳觸發
@@ -68,7 +80,7 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region 前端檔案大小不服或不為Excel檔案(驗證)
-               
+
                 if (FileModel.File.ContentLength == 0)
                 {
                     result.RETURN_FLAG = false;
@@ -76,7 +88,7 @@ namespace Transfer.Controllers
                     return Json(result);
                 }
                 #endregion
-            
+
                 #region 上傳檔案
                 var fileName = Path.GetFileName(FileModel.File.FileName); //檔案名稱
 
@@ -130,13 +142,13 @@ namespace Transfer.Controllers
         /// <param name="type"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult GetCacheData(jqGridParam jdata,string type)
+        public JsonResult GetCacheData(jqGridParam jdata, string type)
         {
             List<A41ViewModel> data = new List<A41ViewModel>();
             switch (type)
             {
                 case "Excel":
-                    if(Cache.IsSet("A41ExcelfileData"))
+                    if (Cache.IsSet("A41ExcelfileData"))
                         data = (List<A41ViewModel>)Cache.Get("A41ExcelfileData");  //從Cache 抓資料
                     break;
                 case "Db":
@@ -188,7 +200,7 @@ namespace Transfer.Controllers
                 #region save Bond_Account_Info(A41)
                 tableName = "Bond_Account_Info";
                 MSGReturnModel resultA41 = A4Repository.saveA41(dataModel); //save to DB
-                bool A41Log = CommonFunction.saveLog(tableName, fileName, proName, resultA41.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                bool A41Log = CommonFunction.saveLog("A41", tableName, fileName, proName, resultA41.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA41.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
@@ -232,7 +244,7 @@ namespace Transfer.Controllers
                     case "A41": //Bond_Account_Info(A41)資料
                         if (!Cache.IsSet("A41DbfileData") ||
                             0.Equals(((List<A41ViewModel>)Cache.Get("A41DbfileData")).Count))
-                            //無Cache 設定 或Cache 資料為0筆
+                        //無Cache 設定 或Cache 資料為0筆
                         {
                             var A41Data = A4Repository.GetA41();
                             result.RETURN_FLAG = A41Data.Item1;
@@ -255,6 +267,62 @@ namespace Transfer.Controllers
                 result.DESCRIPTION = ex.Message;
             }
             return Json(result);
+        }
+
+        [HttpPost]
+        public JsonResult TransferToOther(string type, string date, string version, bool next)
+        {
+            MSGReturnModel result = new MSGReturnModel();
+
+            result.RETURN_FLAG = false;
+            result.REASON_CODE = "傳入參數錯誤!";
+
+            DateTime dat = DateTime.MinValue;
+
+            if (version.IsNullOrWhiteSpace() || !DateTime.TryParse(date, out dat))
+                return Json(result);
+
+            string tableName = string.Empty;
+            string fileName = @"Data Requirements.xlsx"; //預設
+            string configFileName = ConfigurationManager.AppSettings["fileA4Name"];
+            if (!string.IsNullOrWhiteSpace(configFileName))
+                fileName = configFileName; //config 設定就取代
+
+            string proName = "Transfer";
+            DateTime startTime = DateTime.Now;
+            switch (type)
+            {
+                case "All":
+                case "B01":
+                    result = A4Repository.saveB01(version, dat);
+                    tableName = "IFRS9_Main";
+                    bool A41Log = CommonFunction.saveLog("A41", tableName, fileName, proName, result.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                    result.Datas = Json(transferMessage(next, "C01"));
+                    break;
+                case "C01":
+                    result.RETURN_FLAG = true;
+                    result.DESCRIPTION = "end";
+                    result.Datas = Json(transferMessage(false, string.Empty));
+                    break;
+            }
+            return Json(result);
+        }
+
+        public JsonResult GetLogData()
+        {
+            List<string> logDatas = A4Repository.GetLogData(selects.ToList());
+            return Json(logDatas);
+        }
+
+        /// <summary>
+        /// 判斷轉檔有沒有後續 
+        /// </summary>
+        /// <param name="next"></param>
+        /// <param name="nextType"></param>
+        /// <returns></returns>
+        private string transferMessage(bool next,string nextType )
+        {
+            return next ? "true," + nextType : "false";
         }
 
     }

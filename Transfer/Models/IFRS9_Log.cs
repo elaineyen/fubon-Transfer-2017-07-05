@@ -23,5 +23,6 @@ namespace Transfer.Models
         public string End_date { get; set; }
         public string End_time { get; set; }
         public string TYPE { get; set; }
+        public string Table_type { get; set; }
     }
 }
