@@ -17,9 +17,7 @@ namespace Transfer.Controllers
     {
         private IA8Repository A8Repository;
         private ICommon CommonFunction;
-
-        private IFRS9Entities db = new IFRS9Entities();
-
+       
         public A8Controller()
         {
             this.A8Repository = new A8Repository();

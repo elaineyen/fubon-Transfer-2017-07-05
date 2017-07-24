@@ -191,6 +191,18 @@
     <Compile Include="Models\IFRS9_Main.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\IFRS9_Menu_Main.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\IFRS9_Menu_Set.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\IFRS9_Menu_Sub.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\IFRS9_User.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Interface\IA4Repository.cs" />
     <Compile Include="Models\Interface\IA5Repository.cs" />
     <Compile Include="Models\Interface\IA7Repository.cs" />
@@ -421,6 +433,7 @@
     <Content Include="Views\A4\Index.cshtml" />
     <Content Include="Views\A4\A41Detail.cshtml" />
     <Content Include="Views\A4\A42Detail.cshtml" />
+    <Content Include="Views\Account\Menu.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

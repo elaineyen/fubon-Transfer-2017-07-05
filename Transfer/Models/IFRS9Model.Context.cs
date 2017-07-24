@@ -34,5 +34,9 @@ namespace Transfer.Models
         public virtual DbSet<Bond_Account_Info> Bond_Account_Info { get; set; }
         public virtual DbSet<IFRS9_Main> IFRS9_Main { get; set; }
         public virtual DbSet<EL_Data_In> EL_Data_In { get; set; }
+        public virtual DbSet<IFRS9_Menu_Main> IFRS9_Menu_Main { get; set; }
+        public virtual DbSet<IFRS9_Menu_Set> IFRS9_Menu_Set { get; set; }
+        public virtual DbSet<IFRS9_Menu_Sub> IFRS9_Menu_Sub { get; set; }
+        public virtual DbSet<IFRS9_User> IFRS9_User { get; set; }
     }
 }

@@ -611,6 +611,8 @@ namespace Transfer.Models.Repositiry
         }
         #endregion
 
+        //private double? transferCurrentIntRate(string )
+
         #region A41 PaymentFrequency To B01
         /// <summary>
         /// A41 PaymentFrequency To B01

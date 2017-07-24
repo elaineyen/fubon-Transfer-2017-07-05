@@ -174,6 +174,40 @@
           <Property Name="Ori_Amount" Type="float" />
           <Property Name="Payment_Frequency" Type="int" />
         </EntityType>
+        <EntityType Name="IFRS9_Menu_Main">
+          <Key>
+            <PropertyRef Name="Menu" />
+          </Key>
+          <Property Name="Menu" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="Menu_Id" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="Menu_Detail" Type="varchar" MaxLength="40" />
+          <Property Name="Class" Type="varchar" MaxLength="30" />
+        </EntityType>
+        <EntityType Name="IFRS9_Menu_Set">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="User_Name" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="Menu_Id" Type="varchar" MaxLength="30" Nullable="false" />
+        </EntityType>
+        <EntityType Name="IFRS9_Menu_Sub">
+          <Key>
+            <PropertyRef Name="Menu_Id" />
+          </Key>
+          <Property Name="Menu" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="Menu_Id" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="Menu_Detail" Type="varchar" MaxLength="40" />
+          <Property Name="Class" Type="varchar" MaxLength="30" />
+          <Property Name="Href" Type="varchar" MaxLength="50" Nullable="false" />
+        </EntityType>
+        <EntityType Name="IFRS9_User">
+          <Key>
+            <PropertyRef Name="User_Name" />
+          </Key>
+          <Property Name="User_Name" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="User_Password" Type="varchar" MaxLength="30" Nullable="false" />
+        </EntityType>
         <EntityType Name="Moody_Monthly_PD_Info">
           <Key>
             <PropertyRef Name="Id" />
@@ -236,16 +270,68 @@
           <Property Name="WR" Type="float" />
           <Property Name="Default_Value" Type="float" />
         </EntityType>
+        <Association Name="fk_Menu">
+          <End Role="IFRS9_Menu_Main" Type="Self.IFRS9_Menu_Main" Multiplicity="1" />
+          <End Role="IFRS9_Menu_Sub" Type="Self.IFRS9_Menu_Sub" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IFRS9_Menu_Main">
+              <PropertyRef Name="Menu" />
+            </Principal>
+            <Dependent Role="IFRS9_Menu_Sub">
+              <PropertyRef Name="Menu" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_Menu_Id">
+          <End Role="IFRS9_Menu_Sub" Type="Self.IFRS9_Menu_Sub" Multiplicity="1" />
+          <End Role="IFRS9_Menu_Set" Type="Self.IFRS9_Menu_Set" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IFRS9_Menu_Sub">
+              <PropertyRef Name="Menu_Id" />
+            </Principal>
+            <Dependent Role="IFRS9_Menu_Set">
+              <PropertyRef Name="Menu_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_User_Name">
+          <End Role="IFRS9_User" Type="Self.IFRS9_User" Multiplicity="1" />
+          <End Role="IFRS9_Menu_Set" Type="Self.IFRS9_Menu_Set" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IFRS9_User">
+              <PropertyRef Name="User_Name" />
+            </Principal>
+            <Dependent Role="IFRS9_Menu_Set">
+              <PropertyRef Name="User_Name" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="IFRS9ModelStoreContainer">
           <EntitySet Name="Bond_Account_Info" EntityType="Self.Bond_Account_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EL_Data_In" EntityType="Self.EL_Data_In" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Grade_Moody_Info" EntityType="Self.Grade_Moody_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IFRS9_Log" EntityType="Self.IFRS9_Log" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IFRS9_Main" EntityType="Self.IFRS9_Main" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="IFRS9_Menu_Main" EntityType="Self.IFRS9_Menu_Main" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="IFRS9_Menu_Set" EntityType="Self.IFRS9_Menu_Set" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="IFRS9_Menu_Sub" EntityType="Self.IFRS9_Menu_Sub" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="IFRS9_User" EntityType="Self.IFRS9_User" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Monthly_PD_Info" EntityType="Self.Moody_Monthly_PD_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Predit_PD_Info" EntityType="Self.Moody_Predit_PD_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Quartly_PD_Info" EntityType="Self.Moody_Quartly_PD_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Tm_YYYY" EntityType="Self.Moody_Tm_YYYY" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="fk_Menu" Association="Self.fk_Menu">
+            <End Role="IFRS9_Menu_Main" EntitySet="IFRS9_Menu_Main" />
+            <End Role="IFRS9_Menu_Sub" EntitySet="IFRS9_Menu_Sub" />
+          </AssociationSet>
+          <AssociationSet Name="fk_Menu_Id" Association="Self.fk_Menu_Id">
+            <End Role="IFRS9_Menu_Sub" EntitySet="IFRS9_Menu_Sub" />
+            <End Role="IFRS9_Menu_Set" EntitySet="IFRS9_Menu_Set" />
+          </AssociationSet>
+          <AssociationSet Name="fk_User_Name" Association="Self.fk_User_Name">
+            <End Role="IFRS9_User" EntitySet="IFRS9_User" />
+            <End Role="IFRS9_Menu_Set" EntitySet="IFRS9_Menu_Set" />
+          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -309,6 +395,22 @@
           <EntitySet Name="Bond_Account_Info" EntityType="IFRS9Model.Bond_Account_Info" />
           <EntitySet Name="IFRS9_Main" EntityType="IFRS9Model.IFRS9_Main" />
           <EntitySet Name="EL_Data_In" EntityType="IFRS9Model.EL_Data_In" />
+          <EntitySet Name="IFRS9_Menu_Main" EntityType="IFRS9Model.IFRS9_Menu_Main" />
+          <EntitySet Name="IFRS9_Menu_Set" EntityType="IFRS9Model.IFRS9_Menu_Set" />
+          <EntitySet Name="IFRS9_Menu_Sub" EntityType="IFRS9Model.IFRS9_Menu_Sub" />
+          <EntitySet Name="IFRS9_User" EntityType="IFRS9Model.IFRS9_User" />
+          <AssociationSet Name="fk_Menu" Association="IFRS9Model.fk_Menu">
+            <End Role="IFRS9_Menu_Main" EntitySet="IFRS9_Menu_Main" />
+            <End Role="IFRS9_Menu_Sub" EntitySet="IFRS9_Menu_Sub" />
+          </AssociationSet>
+          <AssociationSet Name="fk_Menu_Id" Association="IFRS9Model.fk_Menu_Id">
+            <End Role="IFRS9_Menu_Sub" EntitySet="IFRS9_Menu_Sub" />
+            <End Role="IFRS9_Menu_Set" EntitySet="IFRS9_Menu_Set" />
+          </AssociationSet>
+          <AssociationSet Name="fk_User_Name" Association="IFRS9Model.fk_User_Name">
+            <End Role="IFRS9_User" EntitySet="IFRS9_User" />
+            <End Role="IFRS9_Menu_Set" EntitySet="IFRS9_Menu_Set" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Moody_Tm_YYYY">
           <Key>
@@ -486,13 +588,89 @@
           <Property Name="Current_Int_Rate" Type="Double" />
           <Property Name="EIR" Type="Double" />
           <Property Name="Impairment_Stage" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
-          <Property Name="Version" Type="String" />
+          <Property Name="Version" Type="String" MaxLength="10" Unicode="false" FixedLength="false" />
           <Property Name="Lien_position" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="Ori_Amount" Type="Double" />
           <Property Name="Principal" Type="Double" />
           <Property Name="Interest_Receivable" Type="Double" />
           <Property Name="Payment_Frequency" Type="Int32" />
         </EntityType>
+        <EntityType Name="IFRS9_Menu_Main">
+          <Key>
+            <PropertyRef Name="Menu" />
+          </Key>
+          <Property Name="Menu" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Menu_Id" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Menu_Detail" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="Class" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="IFRS9_Menu_Sub" Relationship="IFRS9Model.fk_Menu" FromRole="IFRS9_Menu_Main" ToRole="IFRS9_Menu_Sub" />
+        </EntityType>
+        <EntityType Name="IFRS9_Menu_Set">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="User_Name" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Menu_Id" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="IFRS9_Menu_Sub" Relationship="IFRS9Model.fk_Menu_Id" FromRole="IFRS9_Menu_Set" ToRole="IFRS9_Menu_Sub" />
+          <NavigationProperty Name="IFRS9_User" Relationship="IFRS9Model.fk_User_Name" FromRole="IFRS9_Menu_Set" ToRole="IFRS9_User" />
+        </EntityType>
+        <EntityType Name="IFRS9_Menu_Sub">
+          <Key>
+            <PropertyRef Name="Menu_Id" />
+          </Key>
+          <Property Name="Menu" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Menu_Id" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Menu_Detail" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="Class" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Href" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="IFRS9_Menu_Main" Relationship="IFRS9Model.fk_Menu" FromRole="IFRS9_Menu_Sub" ToRole="IFRS9_Menu_Main" />
+          <NavigationProperty Name="IFRS9_Menu_Set" Relationship="IFRS9Model.fk_Menu_Id" FromRole="IFRS9_Menu_Sub" ToRole="IFRS9_Menu_Set" />
+        </EntityType>
+        <EntityType Name="IFRS9_User">
+          <Key>
+            <PropertyRef Name="User_Name" />
+          </Key>
+          <Property Name="User_Name" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="User_Password" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="IFRS9_Menu_Set" Relationship="IFRS9Model.fk_User_Name" FromRole="IFRS9_User" ToRole="IFRS9_Menu_Set" />
+        </EntityType>
+        <Association Name="fk_Menu">
+          <End Type="IFRS9Model.IFRS9_Menu_Main" Role="IFRS9_Menu_Main" Multiplicity="1" />
+          <End Type="IFRS9Model.IFRS9_Menu_Sub" Role="IFRS9_Menu_Sub" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IFRS9_Menu_Main">
+              <PropertyRef Name="Menu" />
+            </Principal>
+            <Dependent Role="IFRS9_Menu_Sub">
+              <PropertyRef Name="Menu" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_Menu_Id">
+          <End Type="IFRS9Model.IFRS9_Menu_Sub" Role="IFRS9_Menu_Sub" Multiplicity="1" />
+          <End Type="IFRS9Model.IFRS9_Menu_Set" Role="IFRS9_Menu_Set" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IFRS9_Menu_Sub">
+              <PropertyRef Name="Menu_Id" />
+            </Principal>
+            <Dependent Role="IFRS9_Menu_Set">
+              <PropertyRef Name="Menu_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_User_Name">
+          <End Type="IFRS9Model.IFRS9_User" Role="IFRS9_User" Multiplicity="1" />
+          <End Type="IFRS9Model.IFRS9_Menu_Set" Role="IFRS9_Menu_Set" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IFRS9_User">
+              <PropertyRef Name="User_Name" />
+            </Principal>
+            <Dependent Role="IFRS9_Menu_Set">
+              <PropertyRef Name="User_Name" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -734,6 +912,44 @@
                 <ScalarProperty Name="Product_Code" ColumnName="Product_Code" />
                 <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
                 <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IFRS9_Menu_Main">
+            <EntityTypeMapping TypeName="IFRS9Model.IFRS9_Menu_Main">
+              <MappingFragment StoreEntitySet="IFRS9_Menu_Main">
+                <ScalarProperty Name="Class" ColumnName="Class" />
+                <ScalarProperty Name="Menu_Detail" ColumnName="Menu_Detail" />
+                <ScalarProperty Name="Menu_Id" ColumnName="Menu_Id" />
+                <ScalarProperty Name="Menu" ColumnName="Menu" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IFRS9_Menu_Set">
+            <EntityTypeMapping TypeName="IFRS9Model.IFRS9_Menu_Set">
+              <MappingFragment StoreEntitySet="IFRS9_Menu_Set">
+                <ScalarProperty Name="Menu_Id" ColumnName="Menu_Id" />
+                <ScalarProperty Name="User_Name" ColumnName="User_Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IFRS9_Menu_Sub">
+            <EntityTypeMapping TypeName="IFRS9Model.IFRS9_Menu_Sub">
+              <MappingFragment StoreEntitySet="IFRS9_Menu_Sub">
+                <ScalarProperty Name="Href" ColumnName="Href" />
+                <ScalarProperty Name="Class" ColumnName="Class" />
+                <ScalarProperty Name="Menu_Detail" ColumnName="Menu_Detail" />
+                <ScalarProperty Name="Menu_Id" ColumnName="Menu_Id" />
+                <ScalarProperty Name="Menu" ColumnName="Menu" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IFRS9_User">
+            <EntityTypeMapping TypeName="IFRS9Model.IFRS9_User">
+              <MappingFragment StoreEntitySet="IFRS9_User">
+                <ScalarProperty Name="User_Password" ColumnName="User_Password" />
+                <ScalarProperty Name="User_Name" ColumnName="User_Name" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
