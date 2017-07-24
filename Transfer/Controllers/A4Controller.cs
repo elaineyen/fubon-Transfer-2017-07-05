@@ -157,8 +157,9 @@ namespace Transfer.Controllers
             }
             //List<A41ViewModel> data =
             //A4Repository.tempA41(); //從Cache 抓資料
-            var result = Jqgrid.modelToJqgridResult(jdata, data);
-            return Json(result);
+            //var result = Jqgrid.modelToJqgridResult(jdata, data);
+            //return Json(result);
+            return Json(jdata.modelToJqgridResult(data));
         }
 
         /// <summary>

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity.Infrastructure;
 using System.IO;
 using System.Linq;
 using Transfer.Models.Interface;
@@ -261,10 +262,13 @@ namespace Transfer.Models.Repositiry
                 result.RETURN_FLAG = true;
                 result.DESCRIPTION = Message_Type.save_Success.GetDescription(type);
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = Message_Type.save_Fail.GetDescription(type, ex.Message) ;
+                result.DESCRIPTION = Message_Type
+                                     .save_Fail.GetDescription(type,
+                                     $"message: {ex.Message}" +
+                                     $", inner message {ex.InnerException?.InnerException?.Message}");
             }
             return result;
         }

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Transfer.Models.Interface;
 
 namespace Transfer.Models.Repositiry
@@ -52,7 +50,7 @@ namespace Transfer.Models.Repositiry
                 });
                 db.SaveChanges(); //DB SAVE
             }
-            catch (Exception ex)
+            catch 
             {
                 flag = false;
             }
@@ -60,6 +58,11 @@ namespace Transfer.Models.Repositiry
         }
         #endregion
 
+        /// <summary>
+        /// get EF connection to ADO.NET connection
+        /// </summary>
+        /// <param name="efConnection"></param>
+        /// <returns></returns>
         public string RemoveEntityFrameworkMetadata(string efConnection)
         {
             string efstr = string.Empty;

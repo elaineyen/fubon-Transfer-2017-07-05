@@ -3,6 +3,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
@@ -245,10 +246,13 @@ namespace Transfer.Models.Repositiry
                 result.RETURN_FLAG = true;
                 result.DESCRIPTION = Message_Type.save_Success.GetDescription("A71");
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = Message_Type.save_Fail.GetDescription("A71", ex.Message);
+                result.DESCRIPTION = Message_Type
+                                    .save_Fail.GetDescription("A71",
+                                    $"message: {ex.Message}" +
+                                    $", inner message {ex.InnerException?.InnerException?.Message}");
             }
             return result;
         }
@@ -296,11 +300,21 @@ namespace Transfer.Models.Repositiry
                     }
                 }
             }
+            catch (SqlException ex)
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = Message_Type
+                        .save_Fail.GetDescription("A72",
+                        $"message: {ex.Message}" +
+                        $", inner message {ex.InnerException?.InnerException?.Message}");
+            }
             catch (Exception ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = Message_Type.save_Fail
-                                    .GetDescription("A72", ex.Message);
+                result.DESCRIPTION = Message_Type
+                        .save_Fail.GetDescription("A72",
+                        $"message: {ex.Message}" +
+                        $", inner message {ex.InnerException?.InnerException?.Message}");
             }
             return result;
         }
@@ -343,11 +357,21 @@ namespace Transfer.Models.Repositiry
                     }
                 }
             }
+            catch (SqlException ex)
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = Message_Type
+                        .save_Fail.GetDescription("A73",
+                        $"message: {ex.Message}" +
+                        $", inner message {ex.InnerException?.InnerException?.Message}");
+            }
             catch (Exception ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = Message_Type.save_Fail
-                                    .GetDescription("A73", ex.Message);
+                result.DESCRIPTION = Message_Type
+                        .save_Fail.GetDescription("A73",
+                        $"message: {ex.Message}" +
+                        $", inner message {ex.InnerException?.InnerException?.Message}");
             }
             return result;
         }
@@ -420,11 +444,13 @@ namespace Transfer.Models.Repositiry
                                           .GetDescription("A51");
                 }
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = Message_Type.save_Fail
-                                    .GetDescription("A51", ex.Message);
+                result.DESCRIPTION = Message_Type
+                        .save_Fail.GetDescription("A51",
+                        $"message: {ex.Message}" +
+                        $", inner message {ex.InnerException?.InnerException?.Message}");
             }
             return result;
         }
@@ -765,7 +791,7 @@ namespace Transfer.Models.Repositiry
                 dt.Rows.Add(nrow);
                 #endregion
             }
-            catch (Exception ex)
+            catch 
             {
 
             }

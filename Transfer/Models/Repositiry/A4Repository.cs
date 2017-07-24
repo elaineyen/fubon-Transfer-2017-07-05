@@ -2,13 +2,13 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity.Infrastructure;
 using System.IO;
 using System.Linq;
-using System.Web;
-using Transfer.Enum;
 using Transfer.Models.Interface;
 using Transfer.Utility;
 using Transfer.ViewModels;
+using static Transfer.Enum.Ref;
 
 namespace Transfer.Models.Repositiry
 {
@@ -115,7 +115,6 @@ namespace Transfer.Models.Repositiry
         public MSGReturnModel saveA41(List<A41ViewModel> dataModel)
         {
             MSGReturnModel result = new MSGReturnModel();
-            int now_id = 0;
             try
             {
                 if (0.Equals(dataModel.Count))
@@ -137,11 +136,10 @@ namespace Transfer.Models.Repositiry
                 }
                 foreach (var item in dataModel)
                 {
-                    now_id = Convert.ToInt32(item.Reference_Nbr);
                     db.Bond_Account_Info.Add(
                     new Bond_Account_Info()
                     {
-                        Reference_Nbr = now_id, 
+                        Reference_Nbr = Convert.ToInt32(item.Reference_Nbr), 
                         Bond_Number = item.Bond_Number,
                         Lots = item.Lots,
                         Segment_Name = item.Segment_Name,
@@ -191,11 +189,13 @@ namespace Transfer.Models.Repositiry
                 db.SaveChanges(); //Save
                 result.RETURN_FLAG = true;
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = ex.Message +
-                    " Reference_Nbr : " + now_id.ToString();
+                result.DESCRIPTION = Message_Type
+                        .save_Fail.GetDescription("A41",
+                        $"message: {ex.Message}"+
+                        $", inner message {ex.InnerException?.InnerException?.Message}");
             }
             return result;
         }
@@ -214,7 +214,7 @@ namespace Transfer.Models.Repositiry
             try
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = Ref.Message_Type
+                result.DESCRIPTION = Message_Type
                     .not_Find_Any.GetDescription("B01");
                 if (db.Bond_Account_Info.Count() > 0)
                 {
@@ -225,7 +225,7 @@ namespace Transfer.Models.Repositiry
                         && version.Equals(x.Version)).ToList();  //抓取相同的 Verison
                     if (0.Equals(addData.Count))
                     {
-                        result.DESCRIPTION = Ref.Message_Type
+                        result.DESCRIPTION = Message_Type
                             .query_Not_Find.GetDescription("B01");
                         return result;
                     }
@@ -241,7 +241,7 @@ namespace Transfer.Models.Repositiry
 
                     if (0.Equals(addData.Count))
                     {
-                        result.DESCRIPTION = Ref.Message_Type
+                        result.DESCRIPTION = Message_Type
                             .already_Save.GetDescription("B01");
                         return result;
                     }
@@ -316,15 +316,17 @@ namespace Transfer.Models.Repositiry
                     }));
                     db.SaveChanges();
                     result.RETURN_FLAG = true;
-                    result.DESCRIPTION = Ref.Message_Type
+                    result.DESCRIPTION = Message_Type
                         .save_Success.GetDescription("B01");
                 }
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = Ref.Message_Type
-                        .save_Fail.GetDescription("B01", ex.Message);
+                result.DESCRIPTION = Message_Type
+                        .save_Fail.GetDescription("B01",
+                        $"message: {ex.Message}" +
+                        $", inner message {ex.InnerException?.InnerException?.Message}");
             }
             return result;
         }
@@ -341,7 +343,7 @@ namespace Transfer.Models.Repositiry
         {
             MSGReturnModel result = new MSGReturnModel();
             result.RETURN_FLAG = false;
-            result.DESCRIPTION = Ref.Message_Type
+            result.DESCRIPTION = Message_Type
                     .not_Find_Any.GetDescription("C01");
             try
             {
@@ -355,7 +357,7 @@ namespace Transfer.Models.Repositiry
 
                     if (0.Equals(addData.Count))
                     {
-                        result.DESCRIPTION = Ref.Message_Type
+                        result.DESCRIPTION = Message_Type
                             .query_Not_Find.GetDescription("C01");
                         return result;
                     }
@@ -371,7 +373,7 @@ namespace Transfer.Models.Repositiry
 
                     if (0.Equals(addData.Count))
                     {
-                        result.DESCRIPTION = Ref.Message_Type
+                        result.DESCRIPTION = Message_Type
                             .already_Save.GetDescription("C01");
                         return result;
                     }
@@ -409,15 +411,17 @@ namespace Transfer.Models.Repositiry
                     }));
                     db.SaveChanges();
                     result.RETURN_FLAG = true;
-                    result.DESCRIPTION = Ref.Message_Type
+                    result.DESCRIPTION = Message_Type
                         .save_Success.GetDescription("C01");
                 }
             }
-            catch (Exception ex)
+            catch (DbUpdateException ex)
             {
                 result.RETURN_FLAG = false;
-                result.DESCRIPTION = Ref.Message_Type
-                        .save_Fail.GetDescription("C01", ex.Message);
+                result.DESCRIPTION = Message_Type
+                        .save_Fail.GetDescription("C01",
+                        $"message: {ex.Message}" +
+                        $", inner message {ex.InnerException?.InnerException?.Message}");
             }
             return result;
         }

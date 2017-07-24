@@ -4,11 +4,11 @@ using System.Linq;
 
 namespace Transfer.Utility
 {
-    public class Jqgrid
+    public static class Jqgrid
     {
         public static object modelToJqgridResult<T>(
-            jqGridParam jdata,
-            List<T> data)
+            this jqGridParam jdata,
+            List<T> data) 
         {
             if (0.Equals(data.Count))
             return new
