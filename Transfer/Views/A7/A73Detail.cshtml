@@ -58,7 +58,11 @@
             })
             .done(function (result) {
                 $.unblockUI();
-                alert(result.DESCRIPTION);
+                if (result.RETURN_FLAG)
+                    toastr.success(result.DESCRIPTION);
+                else
+                    toastr.error(result.DESCRIPTION);
+                //alert(result.DESCRIPTION);
             })
         }
         //#endregion 下載Excel 檔案
@@ -93,7 +97,7 @@
                     createJqgrid("list1", "pager1", data, title);
                 }
                 else {
-                    alert(result.DESCRIPTION);
+                    toastr.error(result.DESCRIPTION);
                 }
             });
         }

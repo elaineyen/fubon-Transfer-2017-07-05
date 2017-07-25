@@ -22,6 +22,9 @@ namespace Transfer
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*"));
 
+            bundles.Add(new ScriptBundle("~/bundles/toastr").Include(
+                        "~/Scripts/toastr.js"));
+
             // 使用開發版本的 Modernizr 進行開發並學習。然後，當您
             // 準備好實際執行時，請使用 http://modernizr.com 上的建置工具，只選擇您需要的測試。
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
@@ -40,7 +43,8 @@ namespace Transfer
                       "~/Content/jquery.jqGrid/ui.jqgrid.css",
                       "~/Content/themes/base/minified/jquery-ui.min.css",
                       "~/Content/Sidebar.css",
-                      "~/Content/font-awesome.min.css"
+                      "~/Content/font-awesome.min.css",
+                      "~/Content/toastr.css"
                       ));
         }
     }

@@ -1,7 +1,7 @@
 ﻿@{
     ViewBag.Manu = "A4Main";
     ViewBag.SubManu = "A42SubMain";
-    ViewBag.Title = "B01 (執行減損計算 債券)";
+    ViewBag.Title = "執行減損計算 (債券)";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <style>
@@ -77,7 +77,6 @@
         var url = {};
         url.transfer = '@Url.Action("TransferToOther", "A4")';
         url.getLogData = '@Url.Action("GetLogData","A4")';
-        @*url.getDbData = '@Url.Action("GetCacheData", "A4")';*@
         //#endregion 註冊URL
 
         //#region 註冊click事件
@@ -140,18 +139,20 @@
                     var data = result.Datas.Data;                  
                     if (data.split(',')[0] === "true") //要轉下一個
                     {
-                        alert("success => " + result.DESCRIPTION
+                        //alert("success => " + result.DESCRIPTION
+                        //    + " 接著轉 : " + data.split(',')[1]);
+                        toastr.success("success => " + result.DESCRIPTION
                             + " 接著轉 : " + data.split(',')[1]);
-                        callTransfer(data.split(',')[1], version, date, true)
+                        callTransfer(data.split(',')[1], version, date, true);
                     }
                     else
                     {
-                        alert("success => " + result.DESCRIPTION)
+                        toastr.success("success => " + result.DESCRIPTION);
                     }
                 }
                 else
                 {
-                    alert("error => " + result.DESCRIPTION)
+                    toastr.error("error => " + result.DESCRIPTION);
                 }
             });
         }

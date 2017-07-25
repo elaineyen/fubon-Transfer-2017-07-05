@@ -69,7 +69,10 @@
             })
             .done(function (result) {
                 $.unblockUI(); //畫面打開
-                alert(result.DESCRIPTION);
+                if (result.RETURN_FLAG)
+                    toastr.success(result.DESCRIPTION);
+                else
+                    toastr.error(result.DESCRIPTION);
             })
         }
         //#endregion 資料上傳(Excel 資料寫入 local sql)
@@ -111,12 +114,12 @@
                         $('#btnTransfer').prop('disabled', false);
                     }
                     else {
-                        alert(result.DESCRIPTION);
+                        toastr.warning(result.DESCRIPTION);
                     }
                 },
                 error: function (result) {
                     $.unblockUI();
-                    alert(result.DESCRIPTION);
+                    toastr.error(result.DESCRIPTION);
                 }
             });
         }

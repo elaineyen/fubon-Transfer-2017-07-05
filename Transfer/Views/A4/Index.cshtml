@@ -138,13 +138,12 @@
                         $('#btnTransfer').prop('disabled', false);
                     }
                     else {
-                        alert(result.DESCRIPTION);
+                        toastr.warning(result.DESCRIPTION);
                     }
                 },
-                error: function (result) {
-                    debugger
+                error: function (result) {                    
                     $.unblockUI();
-                    alert(result.DESCRIPTION);
+                    toastr.error(result.DESCRIPTION);
                 }
             });
         }
