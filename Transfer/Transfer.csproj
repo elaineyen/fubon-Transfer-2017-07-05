@@ -154,6 +154,7 @@
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\A8Controller.cs" />
+    <Compile Include="Enum\DebtType.cs" />
     <Compile Include="Enum\A7Type.cs" />
     <Compile Include="Enum\TableType.cs" />
     <Compile Include="Enum\MessageType.cs" />

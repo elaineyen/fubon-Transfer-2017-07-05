@@ -84,12 +84,14 @@ namespace Transfer.Models.Repositiry
                             result.AddRange(items.Where(x => lastDate.Equals(x.Create_date))
                                 .OrderByDescending(x => x.Create_time)
                                 .Select(x =>
-                                { return string.Format("{0} {1} {2} {3}",
-                                    x.Table_type,
-                                    x.Create_date,
-                                    x.Create_time,
-                                    "Y".Equals(x.TYPE) ? "成功" : "失敗"
-                                    ); }));
+                                {
+                                    return string.Format("{0} {1} {2} {3}",
+                                      x.Table_type,
+                                      x.Create_date,
+                                      x.Create_time,
+                                      "Y".Equals(x.TYPE) ? "成功" : "失敗"
+                                      );
+                                }));
 
                         }
                     }
@@ -139,7 +141,7 @@ namespace Transfer.Models.Repositiry
                     db.Bond_Account_Info.Add(
                     new Bond_Account_Info()
                     {
-                        Reference_Nbr = Convert.ToInt32(item.Reference_Nbr), 
+                        Reference_Nbr = Convert.ToInt32(item.Reference_Nbr),
                         Bond_Number = item.Bond_Number,
                         Lots = item.Lots,
                         Segment_Name = item.Segment_Name,
@@ -194,7 +196,7 @@ namespace Transfer.Models.Repositiry
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Message_Type
                         .save_Fail.GetDescription("A41",
-                        $"message: {ex.Message}"+
+                        $"message: {ex.Message}" +
                         $", inner message {ex.InnerException?.InnerException?.Message}");
             }
             return result;
@@ -207,8 +209,9 @@ namespace Transfer.Models.Repositiry
         /// </summary>
         /// <param name="version"></param>
         /// <param name="date">Report_Date</param>
+        /// <param name="type">M = 房貸 ,B = 債券</param>
         /// <returns></returns>
-        public MSGReturnModel saveB01(string version, DateTime date)
+        public MSGReturnModel saveB01(string version, DateTime date, string type)
         {
             MSGReturnModel result = new MSGReturnModel();
             try
@@ -245,75 +248,151 @@ namespace Transfer.Models.Repositiry
                             .already_Save.GetDescription("B01");
                         return result;
                     }
-
-                    db.IFRS9_Main.AddRange(
-                    addData.Select(x =>
+                    if (Debt_Type.M.ToString().Equals(type)) //房貸
                     {
-                        return new IFRS9_Main()
-                        {
-                            Reference_Nbr = x.Reference_Nbr, //
-                            //Customer_Nbr = //
-                            //Ead = //
-                            Principal = x.Principal,
-                            Interest_Receivable = x.Interest_Receivable, //
-                            Principal_Payment_Method_Code = x.Principal_Payment_Method_Code, //
-                            //Total_Period = //
-                            Current_Int_Rate = x.Current_Int_Rate, //
-                            //Current_Pd = //
-                            //Current_Lgd = //
-                            //Remaining_Month = //
-                            Eir = x.Eir, //
-                            //CPD_Segment_Code = //
-                            //Processing_Date = //
-                            Product_Code = x.Principal_Payment_Method_Code, //
-                            //Department = //
-                            //PD_Model_Code = //
-                            //18 //Current_Rating_Code = x.
-                            Report_Date = x.Report_Date,
-                            Maturity_Date = x.Maturity_Date, //
-                            //Account_Code = //
-                            //BadCredit_Ind = //
-                            //Charge_Off_Ind = //
-                            //Collateral_Legal_Action_Ind = //
-                            //Credit_Black_List_Ind = //
-                            //Credit_Card_Block_code = //
-                            //Credit_Review_Risk_Grade = //
-                            Current_External_Rating = string.Empty, //function 待code
-                            //Current_External_Rating_1 = //
-                            //Current_External_Rating_2 = //
-                            //Current_External_Rating_3 = //
-                            //Current_External_Rating_4 = //
-                            //Current_External_Rating_On_Missing = //
-                            //Current_Internal_Rating = //
-                            //Default_Ind = //
-                            //Early_Warning_Ind = //
-                            //Five_Types_Delinquent_Category = //
-                            //Ias39_Impaire_Ind = //
-                            //Ias39_Impaire_Desc = //
-                            //Industry_Average_Rating = //
-                            //Manual_Identified_Impaire_Stage_Code = //
-                            //Internal_Risk_Classification = //
-                            //Off_Bs_Item_Paid_Amt = //
-                            Original_External_Rating = string.Empty, //function 待code
-                            //Original_External_Rating_1 = //
-                            //Original_External_Rating_2 = //
-                            //Original_External_Rating_3 = //
-                            //Original_External_Rating_4 = //
-                            //Original_External_Rating_On_Missing = //
-                            //Original_Internal_Rating = //
-                            //Other_BadCredit_Ind = //
-                            //Other_Lending_Max_Delinquent_Days = //
-                            //Product_Average_Rating = //
-                            //Restructure_Ind = //
-                            //Ten_Types_Delinquent_Category = //
-                            //Watch_List_Ind = //
-                            //Write_Off_Ind = //
-                            Version = x.Version, //
-                            Lien_position = x.Lien_position, //
-                            Ori_Amount = x.Ori_Amount, //
-                            Payment_Frequency = transferPaymentFrequency(x.Payment_Frequency)
-                        };
-                    }));
+                        db.IFRS9_Main.AddRange(
+                           addData.Select(x =>
+                           {
+                               return new IFRS9_Main()
+                               {
+                                   Reference_Nbr = x.Reference_Nbr, //
+                                   //Customer_Nbr = //
+                                   //Ead = //
+                                   Principal = x.Principal,
+                                   Interest_Receivable = x.Interest_Receivable, //
+                                   Principal_Payment_Method_Code = x.Principal_Payment_Method_Code, //
+                                   //Total_Period = //
+                                   Current_Int_Rate = transferCurrentIntRate(x.Current_Int_Rate, x.Eir),//
+                                   //Current_Pd = //
+                                   //Current_Lgd = //A02(22)Current_LGD
+                                   //Remaining_Month = //
+                                   Eir = TypeTransfer.doubleNToDouble(x.Eir) <= 0d ?
+                                          0.00001 : x.Eir.Value / 100, //
+                                   //CPD_Segment_Code = //
+                                   //Processing_Date = //
+                                   Product_Code = "Loan01", //房貸 例如 設定為Loan01
+                                   //Department = //
+                                   //PD_Model_Code = //
+                                   //18 //Current_Rating_Code = x.Current_Rating_Code , A41無Current_Rating_Code
+                                   Report_Date = x.Report_Date,
+                                   //20 Maturity_Date = (A02)x.LEXP_DATE, //LEXP_DATE
+                                   //Account_Code = //
+                                   //BadCredit_Ind = //
+                                   //Charge_Off_Ind = //
+                                   //Collateral_Legal_Action_Ind = (A01-LAS39)x.Collateral_Legal_Action_Ind
+                                   //Credit_Black_List_Ind = //
+                                   //Credit_Card_Block_code = //
+                                   //Credit_Review_Risk_Grade = //
+                                   Current_External_Rating = string.Empty, //function 待code
+                                   //Current_External_Rating_1 = //
+                                   //Current_External_Rating_2 = //
+                                   //Current_External_Rating_3 = //
+                                   //Current_External_Rating_4 = //
+                                   //Current_External_Rating_On_Missing = //
+                                   //Current_Internal_Rating = //
+                                   //Default_Ind = //
+                                   //Delinquent_Days = //A02-帳卡明細(Loan_Account_Info)
+                                   //Early_Warning_Ind = //
+                                   //Five_Types_Delinquent_Category = //
+                                   //Ias39_Impaire_Ind = //A01-IAS39明細(Loan_IAS39_Info)(5)IAS39_Impaire_Ind
+                                   //Ias39_Impaire_Desc = //A01-IAS39明細(Loan_IAS39_Info)(6)IAS39_Impaire_Desc
+                                   //Industry_Average_Rating = //
+                                   //Manual_Identified_Impaire_Stage_Code = //
+                                   //Internal_Risk_Classification = //
+                                   //Off_Bs_Item_Paid_Amt = //
+                                   Original_External_Rating = string.Empty, //function 待code
+                                   //Original_External_Rating_1 = //
+                                   //Original_External_Rating_2 = //
+                                   //Original_External_Rating_3 = //
+                                   //Original_External_Rating_4 = //
+                                   //Original_External_Rating_On_Missing = //
+                                   //Original_Internal_Rating = //
+                                   //Other_BadCredit_Ind = //
+                                   //Other_Lending_Max_Delinquent_Days = //
+                                   //Product_Average_Rating = //
+                                   //Restructure_Ind = //A01-IAS39明細(Loan_IAS39_Info)(11)Restructure_Ind
+                                   //Ten_Types_Delinquent_Category = //
+                                   //Watch_List_Ind = //
+                                   //Write_Off_Ind = //
+                                   //Version = x.Version, //
+                                   //Lien_position = x.Lien_position, //
+                                   Ori_Amount = x.Ori_Amount, //
+                                   Payment_Frequency = transferPaymentFrequency(x.Payment_Frequency, type)
+                               };
+                           }));
+                    }
+                    if (Debt_Type.B.ToString().Equals(type)) //債券
+                    {
+                        db.IFRS9_Main.AddRange(
+                           addData.Select(x =>
+                           {
+                               return new IFRS9_Main()
+                               {
+                                   Reference_Nbr = x.Reference_Nbr, //
+                                   //Customer_Nbr = //
+                                   //Ead = //
+                                   Principal = x.Principal,
+                                   Interest_Receivable = x.Interest_Receivable, //
+                                   Principal_Payment_Method_Code = x.Principal_Payment_Method_Code, //
+                                   //Total_Period = //
+                                   Current_Int_Rate = transferCurrentIntRate(x.Current_Int_Rate, x.Eir),//
+                                   //Current_Pd = //
+                                   //Current_Lgd = //
+                                   //Remaining_Month = //
+                                   Eir = TypeTransfer.doubleNToDouble(x.Eir) <= 0d ?
+                                          0.00001 : x.Eir.Value / 100, //
+                                   //CPD_Segment_Code = //
+                                   //Processing_Date = //
+                                   Product_Code = transferProductCode(x.Principal_Payment_Method_Code), //
+                                   //Department = //
+                                   //PD_Model_Code = //
+                                   //18 //Current_Rating_Code = x.
+                                   Report_Date = x.Report_Date,
+                                   Maturity_Date = x.Maturity_Date, //
+                                   //Account_Code = //
+                                   //BadCredit_Ind = //
+                                   //Charge_Off_Ind = //
+                                   //Collateral_Legal_Action_Ind = //
+                                   //Credit_Black_List_Ind = //
+                                   //Credit_Card_Block_code = //
+                                   //Credit_Review_Risk_Grade = //
+                                   Current_External_Rating = string.Empty, //function 待code
+                                   //Current_External_Rating_1 = //
+                                   //Current_External_Rating_2 = //
+                                   //Current_External_Rating_3 = //
+                                   //Current_External_Rating_4 = //
+                                   //Current_External_Rating_On_Missing = //
+                                   //Current_Internal_Rating = //
+                                   //Default_Ind = //
+                                   //Early_Warning_Ind = //
+                                   //Five_Types_Delinquent_Category = //
+                                   //Ias39_Impaire_Ind = //
+                                   //Ias39_Impaire_Desc = //
+                                   //Industry_Average_Rating = //
+                                   //Manual_Identified_Impaire_Stage_Code = //
+                                   //Internal_Risk_Classification = //
+                                   //Off_Bs_Item_Paid_Amt = //
+                                   Original_External_Rating = string.Empty, //function 待code
+                                   //Original_External_Rating_1 = //
+                                   //Original_External_Rating_2 = //
+                                   //Original_External_Rating_3 = //
+                                   //Original_External_Rating_4 = //
+                                   //Original_External_Rating_On_Missing = //
+                                   //Original_Internal_Rating = //
+                                   //Other_BadCredit_Ind = //
+                                   //Other_Lending_Max_Delinquent_Days = //
+                                   //Product_Average_Rating = //
+                                   //Restructure_Ind = //
+                                   //Ten_Types_Delinquent_Category = //
+                                   //Watch_List_Ind = //
+                                   //Write_Off_Ind = //
+                                   Version = x.Version, //
+                                   Lien_position = x.Lien_position, //
+                                   Ori_Amount = x.Ori_Amount, //
+                                   Payment_Frequency = transferPaymentFrequency(x.Payment_Frequency,type)
+                               };
+                           }));
+                    }
                     db.SaveChanges();
                     result.RETURN_FLAG = true;
                     result.DESCRIPTION = Message_Type
@@ -338,8 +417,9 @@ namespace Transfer.Models.Repositiry
         /// </summary>
         /// <param name="version"></param>
         /// <param name="date">Report_Date</param>
+        /// <param name="type">M = 房貸 ,B = 債券</param>
         /// <returns></returns>
-        public MSGReturnModel saveC01(string version, DateTime date)
+        public MSGReturnModel saveC01(string version, DateTime date, string type)
         {
             MSGReturnModel result = new MSGReturnModel();
             result.RETURN_FLAG = false;
@@ -379,36 +459,84 @@ namespace Transfer.Models.Repositiry
                     }
                     DateTime now = DateTime.Now;
 
-                    db.EL_Data_In.AddRange(
-                    addData.Select(x => new EL_Data_In()
+                    if (Debt_Type.M.ToString().Equals(type)) //房貸
                     {
-                        Report_Date = x.Report_Date.Value, //評估基準日/報導日
-                        Processing_Date = now.Date, //資料處理日期
-                        Product_Code = x.Product_Code, //產品
-                        Reference_Nbr = x.Reference_Nbr, //案件編號/帳號
-                        Current_Rating_Code = x.Current_Rating_Code, //風險區隔
-                        Exposure = TypeTransfer.doubleNToDouble(x.Principal)
-                        + TypeTransfer.doubleNToDouble(x.Interest_Receivable),
-                        // 曝險額 = 餘額+利息 (4)Principal + (5)Interest_Receivable
-                        Actual_Year_To_Maturity = x.Maturity_Date.dateSubtractToYear(x.Report_Date),
-                        // 合約到期年限 = 由(到期日-評估基準日/報導日),取date再轉換成年
-                        Duration_Year = x.Remaining_Month != null ?
-                        getC01DurationYear(x.Remaining_Month) : x.Maturity_Date.dateSubtractToYear(x.Report_Date),
-                        //估計存續期間_年
-                        Remaining_Month = x.Remaining_Month != null ?
-                        x.Remaining_Month : x.Maturity_Date.dateSubtractToMonths(x.Report_Date),
-                        //估計存續期間_月
-                        Current_LGD = x.Current_Lgd, //違約損失率
-                        Current_Int_Rate = x.Current_Int_Rate, //合约利率/產品利率
-                        EIR = x.Eir, //有效利率
-                        Impairment_Stage = getC01ImpairmentStage(x.Product_Code), //減損階段
-                        Version = x.Version, //資料版本
-                        Lien_position = x.Lien_position, //擔保順位
-                        Ori_Amount = x.Ori_Amount, //原始購買金額
-                        Principal = x.Principal, //金融資產餘額
-                        Interest_Receivable = x.Interest_Receivable, //應收利息
-                        Payment_Frequency = x.Payment_Frequency //償還(繳款)頻率 (次/年)
-                    }));
+                        db.EL_Data_In.AddRange(
+                           addData.Select(x => new EL_Data_In()
+                           {
+                               Report_Date = x.Report_Date.Value, //評估基準日/報導日
+                               Processing_Date = now.Date, //資料處理日期
+                               Product_Code = x.Product_Code, //產品
+                               Reference_Nbr = x.Reference_Nbr, //案件編號/帳號
+                               Current_Rating_Code = x.Current_Rating_Code, //風險區隔
+                               Exposure = TypeTransfer.doubleNToDouble(x.Principal)
+                               + TypeTransfer.doubleNToDouble(x.Interest_Receivable),
+                               // 曝險額 = 餘額+利息 (4)Principal + (5)Interest_Receivable
+                               Actual_Year_To_Maturity = x.Maturity_Date.dateSubtractToYear(x.Report_Date),
+                               // 合約到期年限 = 由(到期日-評估基準日/報導日),取date再轉換成年
+                               Duration_Year = x.Remaining_Month != null ?
+                               getC01DurationYear(x.Remaining_Month) : x.Maturity_Date.dateSubtractToYear(x.Report_Date),
+                               //估計存續期間_年
+                               Remaining_Month = x.Remaining_Month != null ?
+                               x.Remaining_Month : x.Maturity_Date.dateSubtractToMonths(x.Report_Date),
+                               //估計存續期間_月
+                               Current_LGD = TypeTransfer.doubleNToDouble(x.Current_Lgd) > 1 ? 1:
+                               (TypeTransfer.doubleNToDouble(x.Current_Lgd) < 0 ? 0 :
+                               TypeTransfer.doubleNToDouble(x.Current_Lgd)),
+                               //違約損失率    若> 1 給值1, 若小於0,給值0
+                               Current_Int_Rate = x.Current_Int_Rate, //合约利率/產品利率
+                               EIR = x.Eir, //有效利率
+                               Impairment_Stage = getMortgageC01ImpairmentStage(
+                                   x.Collateral_Legal_Action_Ind,
+                                   x.Delinquent_Days,
+                                   x.Ias39_Impaire_Ind,
+                                   x.Ias39_Impaire_Desc,
+                                   x.Restructure_Ind
+                                   ), //減損階段
+                               //Version = x.Version, //資料版本
+                               //Lien_position = x.Lien_position, //擔保順位
+                               //Ori_Amount = x.Ori_Amount, //原始購買金額
+                               //Principal = x.Principal, //金融資產餘額
+                               //Interest_Receivable = x.Interest_Receivable, //應收利息
+                               Payment_Frequency = x.Payment_Frequency //償還(繳款)頻率 (次/年)
+                           }));
+                    }
+                    if (Debt_Type.B.ToString().Equals(type)) //債券
+                    {
+                        db.EL_Data_In.AddRange(
+                           addData.Select(x => new EL_Data_In()
+                           {
+                               Report_Date = x.Report_Date.Value, //評估基準日/報導日
+                               Processing_Date = now.Date, //資料處理日期
+                               Product_Code = x.Product_Code, //產品
+                               Reference_Nbr = x.Reference_Nbr, //案件編號/帳號
+                               Current_Rating_Code = x.Current_Rating_Code, //風險區隔
+                               Exposure = TypeTransfer.doubleNToDouble(x.Principal)
+                               + TypeTransfer.doubleNToDouble(x.Interest_Receivable),
+                               // 曝險額 = 餘額+利息 (4)Principal + (5)Interest_Receivable
+                               Actual_Year_To_Maturity = x.Maturity_Date.dateSubtractToYear(x.Report_Date),
+                               // 合約到期年限 = 由(到期日-評估基準日/報導日),取date再轉換成年
+                               Duration_Year = x.Remaining_Month != null ?
+                               getC01DurationYear(x.Remaining_Month) : x.Maturity_Date.dateSubtractToYear(x.Report_Date),
+                               //估計存續期間_年
+                               Remaining_Month = x.Remaining_Month != null ?
+                               x.Remaining_Month : x.Maturity_Date.dateSubtractToMonths(x.Report_Date),
+                               //估計存續期間_月
+                               Current_LGD = TypeTransfer.doubleNToDouble(x.Current_Lgd) > 1 ? 1 :
+                               (TypeTransfer.doubleNToDouble(x.Current_Lgd) < 0 ? 0 :
+                               TypeTransfer.doubleNToDouble(x.Current_Lgd)),
+                               //違約損失率    若> 1 給值1, 若小於0,給值0
+                               Current_Int_Rate = x.Current_Int_Rate, //合约利率/產品利率
+                               EIR = x.Eir, //有效利率
+                               Impairment_Stage = getBondsC01ImpairmentStage(x.Product_Code), //減損階段
+                               Version = x.Version, //資料版本
+                               Lien_position = x.Lien_position, //擔保順位
+                               Ori_Amount = x.Ori_Amount, //原始購買金額
+                               Principal = x.Principal, //金融資產餘額
+                               Interest_Receivable = x.Interest_Receivable, //應收利息
+                               Payment_Frequency = x.Payment_Frequency //償還(繳款)頻率 (次/年)
+                           }));
+                    }
                     db.SaveChanges();
                     result.RETURN_FLAG = true;
                     result.DESCRIPTION = Message_Type
@@ -611,28 +739,83 @@ namespace Transfer.Models.Repositiry
         }
         #endregion
 
-        //private double? transferCurrentIntRate(string )
+        private string transferProductCode(string value)
+        {
+
+            if (value.IsNullOrWhiteSpace())
+                return value;
+
+            switch (value)
+            {
+                case "01":
+                    return "Bond_A";
+                case "02":
+                    return "Bond_B";
+                case "04":
+                    return "Bond_P";
+            }
+            return value;
+        }
+
+        #region A41 Current_Int_Rate To B01
+        /// <summary>
+        /// A41 Current_Int_Rate To B01
+        /// </summary>
+        /// <param name="currentIntRate"></param>
+        /// <param name="Eir"></param>
+        /// <returns></returns>
+        private double? transferCurrentIntRate(double? currentIntRate, double? Eir)
+        {
+            if (0d == TypeTransfer.doubleNToDouble(currentIntRate))
+            {
+                //CASE WHEN( Current_Int_Rate =0 OR Current_Int_Rate IS NULL) AND A01.EIR=0 THEN 0.000001
+                if (0d == TypeTransfer.doubleNToDouble(Eir))
+                    return 0.000001;
+                //WHEN ( Current_Int_Rate =0 OR Current_Int_Rate IS NULL) AND   A01.EIR<>0 THEN A01.EIR/100
+                else
+                    return Eir.Value / 100;
+            }
+            //ELSE  Current_Int_Rate/100 END
+            return currentIntRate.Value / 100;
+        }
+        #endregion
 
         #region A41 PaymentFrequency To B01
         /// <summary>
         /// A41 PaymentFrequency To B01
         /// </summary>
         /// <param name="value"></param>
+        /// <param name="type"></param>
         /// <returns></returns>
-        private int? transferPaymentFrequency(string value)
+        private int? transferPaymentFrequency(string value,string type)
         {
             if (value.IsNullOrWhiteSpace())
                 return null;
-            switch (value)
+            if (Debt_Type.M.ToString().Equals(type)) //房貸
             {
-                case "A":
-                    return 1;
-                case "S":
-                    return 2;
+                switch (value)
+                {
+                    case "M":
+                        return 12;
+                }
+                //int i = 0;
+                //if (Int32.TryParse(value, out i))
+                //    return i;
             }
-            int i = 0;
-            if (Int32.TryParse(value, out i))
-                return i;
+            if (Debt_Type.B.ToString().Equals(type)) //債券
+            {
+                switch (value)
+                {
+                    case "A":
+                        return 1;
+                    case "S":
+                        return 2;
+                }
+                int i = 0;
+                if (Int32.TryParse(value, out i))
+                    return i;
+            }
+
             return null;
         }
         #endregion
@@ -649,13 +832,13 @@ namespace Transfer.Models.Repositiry
         }
         #endregion
 
-        #region Get C01 Impairment_Stage
+        #region Get Bonds C01 Impairment_Stage
         /// <summary>
-        /// Get C01 Impairment_Stage
+        /// Get Bonds C01 Impairment_Stage
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        private string getC01ImpairmentStage(string value)
+        private string getBondsC01ImpairmentStage(string value)
         {
             List<string> pro_codes = new List<string>() { "LOAN_A", "LOAN_B", "LONE_P" };
             if (value.IsNullOrWhiteSpace())
@@ -663,6 +846,39 @@ namespace Transfer.Models.Repositiry
             return pro_codes.Contains(value) ? "1" : string.Empty;
         }
         #endregion
+
+        private string getMortgageC01ImpairmentStage(
+            string Collateral_Legal_Action_Ind,
+            int? Delinquent_Days,
+            string Ias39_Impaire_Ind,
+            string Ias39_Impaire_Desc,
+            string Restructure_Ind
+            )
+        {
+            //WHEN (IAS39_Impaire_Ind="Y"  AND  IAS39_Impaire_Desc <> "逾期 29天" ) THEN 3 
+            if ("Y".Equals(Ias39_Impaire_Ind) && !"逾期 29天".Equals(Ias39_Impaire_Desc))
+                return "3";
+            //WHEN Delinquent_Days>=100 THEN 3
+            if (TypeTransfer.intNToInt(Delinquent_Days) >= 100)
+                return "3";
+            //WHEN Delinquent_Days IS NULL   THEN 1    /*帳卡上已結清*/
+            if (!Delinquent_Days.HasValue)
+                return "1";
+            //WHEN Restructure_Ind =“Y” THEN 2   /* 紓困名單*/
+            if ("Y".Equals(Restructure_Ind))
+                return "2";
+            //WHEN Collateral_Legal_Action_Ind =‘Y ’   THEN 2       /*假扣押名單*/
+            if ("Y".Equals(Collateral_Legal_Action_Ind))
+                return "2";
+            int d = TypeTransfer.intNToInt(Delinquent_Days);
+            //WHEN Delinquent_Days> 29   AND Delinquent_Days < 90  THEN 2   /*7/7 金控風控建議修改/ 
+            if (d > 29 && d < 90)
+                return "2";
+            //WHEN Delinquent_Days<30 THEN 1                                 /*7/7 金控風控建議修改/
+            if (d < 30)
+                return "1";
+            return null;
+        }
 
         #endregion
     }

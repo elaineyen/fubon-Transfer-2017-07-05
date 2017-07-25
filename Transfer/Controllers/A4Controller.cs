@@ -80,8 +80,8 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region 前端檔案大小不符或不為Excel檔案(驗證)
-
-                if (FileModel.File.ContentLength == 0)
+                //ModelState
+                if (FileModel.File.ContentLength == 0 )
                 {
                     result.RETURN_FLAG = false;
                     result.DESCRIPTION = Message_Type.excel_Validate.GetDescription();
@@ -263,6 +263,14 @@ namespace Transfer.Controllers
             return Json(result);
         }
 
+        /// <summary>
+        /// 前端轉檔一系列動作
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="date"></param>
+        /// <param name="version"></param>
+        /// <param name="next"></param>
+        /// <returns></returns>
         [HttpPost]
         public JsonResult TransferToOther(string type, string date, string version, bool next)
         {
@@ -288,13 +296,13 @@ namespace Transfer.Controllers
             {
                 case "All": //All 也是重B01開始 B01 => C01
                 case "B01":
-                    result = A4Repository.saveB01(version, dat);
+                    result = A4Repository.saveB01(version, dat, Debt_Type.B.ToString());
                     tableName = Table_Type.B01.GetDescription();
                     bool B01Log = CommonFunction.saveLog("B01", tableName, fileName, proName, result.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
                     result.Datas = Json(transferMessage(next, "C01")); //回傳要不要做下一個transfer
                     break;
                 case "C01":
-                    result = A4Repository.saveC01(version, dat);
+                    result = A4Repository.saveC01(version, dat, Debt_Type.B.ToString());
                     tableName = Table_Type.C01.GetDescription();
                     bool C01Log = CommonFunction.saveLog("C01", tableName, fileName, proName, result.RETURN_FLAG, startTime, DateTime.Now);
                     result.Datas = Json(transferMessage(false, string.Empty)); //目前到C01 而已
@@ -303,6 +311,11 @@ namespace Transfer.Controllers
             return Json(result);
         }
 
+        /// <summary>
+        /// 抓取資料庫最後一天日期log Data
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
         public JsonResult GetLogData()
         {
             List<string> logDatas = A4Repository.GetLogData(selects.ToList());

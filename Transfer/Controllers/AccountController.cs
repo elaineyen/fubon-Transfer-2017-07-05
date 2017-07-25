@@ -50,7 +50,7 @@ namespace Transfer.Controllers
                     menu_Sub = subs
                 };
 
-                return View(menus);
+                return PartialView(menus);
             }
             else
             {

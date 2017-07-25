@@ -35,7 +35,7 @@ namespace Transfer.Models.Interface
         /// <param name="version">version</param>
         /// <param name="date">Report_Date</param>
         /// <returns></returns>
-        MSGReturnModel saveB01(string version, DateTime date);
+        MSGReturnModel saveB01(string version, DateTime date, string type);
 
         /// <summary>
         /// save C01 to DB
@@ -43,7 +43,7 @@ namespace Transfer.Models.Interface
         /// <param name="version">version</param>
         /// <param name="date">Report_Date</param>
         /// <returns></returns>
-        MSGReturnModel saveC01(string version, DateTime date);
+        MSGReturnModel saveC01(string version, DateTime date, string type);
 
         /// <summary>
         /// 抓取指定的 log 資料

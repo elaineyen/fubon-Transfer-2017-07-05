@@ -67,6 +67,20 @@ namespace Transfer.Utility
         }
         #endregion
 
+        #region Int? To Int
+        /// <summary>
+        /// Int? 轉 Int (null 回傳 0)
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static int intNToInt(int? value)
+        {
+            if (value.HasValue)
+                return value.Value;
+            return 0;
+        }
+        #endregion
+
         #region Double? To String
         /// <summary>
         /// Double? 轉string (null 回傳 string.Empty)
