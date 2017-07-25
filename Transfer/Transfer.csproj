@@ -438,6 +438,7 @@
     <Content Include="Views\A4\A41Detail.cshtml" />
     <Content Include="Views\A4\A42Detail.cshtml" />
     <Content Include="Views\Account\Menu.cshtml" />
+    <Content Include="Views\A4\A43Detail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

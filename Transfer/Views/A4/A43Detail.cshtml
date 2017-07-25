@@ -1,7 +1,7 @@
 ﻿@{
     ViewBag.Manu = "A4Main";
-    ViewBag.SubManu = "A42SubMain";
-    ViewBag.Title = "執行減損計算 (債券)";
+    ViewBag.SubManu = "A43SubMain";
+    ViewBag.Title = "執行減損計算 (房貸)";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <style>
@@ -60,7 +60,7 @@
 <script src="~/Scripts/jquery.validate.min.js"></script>
 <script type="text/javascript">
     $(function () {
-        var d = new Date();
+        var d = new Date()
         $("#datepicker").datepicker({
             changeMonth: true,
             changeYear: true,
@@ -71,7 +71,7 @@
                 if (isDate(value))
                     $('#myFrom').valid();
             }
-        }).datepicker('setDate', new Date(d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + 25));
+        }).datepicker('setDate', new Date(d.getFullYear()+'-'+(d.getMonth()+1)+'-'+25));
 
         //#region 註冊URL
         var url = {};
@@ -91,14 +91,16 @@
         //#endregion 註冊click事件
 
         //#region 轉檔
-        function transferData() {
+        function transferData()
+        {
             var version = $('#version').val();
             var date = $('#datepicker').val();
             var type = $('#transferType').val();
-            $.validator.addMethod("dateFormate",
-                function (value, element, arg) {
-                    return isDate(value);
-                }, "日期格式為yyyy/mm/dd");
+            $.validator.addMethod("dateFormate", 
+                function (value, element, arg)
+                {
+                    return isDate(value);
+                }, "日期格式為yyyy/mm/dd");
             $("#myFrom").validate({
                 rules: {
                     version: { required: true },
@@ -111,11 +113,12 @@
             if ($('#myFrom').valid()) {
                 callTransfer(type, version, date, type === "All")
             }
-        }
+       }
         //#endregion
 
-        var debt = @Transfer.Enum.Ref.Debt_Type.B.ToString(); //債券
-        function callTransfer(type, version, date, next) {
+        var debt = @Transfer.Enum.Ref.Debt_Type.M.ToString(); //房貸
+        function callTransfer(type, version, date, next)
+        {
             $.blockUI();
             $.ajax({
                 type: "POST",
@@ -132,8 +135,9 @@
             })
             .done(function (result) {
                 $.unblockUI();
-                getLog();
-                if (result.RETURN_FLAG) {
+                getLog(debt);
+                if (result.RETURN_FLAG)
+                {
                     var data = result.Datas.Data;
                     if (data.split(',')[0] === "true") //要轉下一個
                     {
@@ -143,11 +147,13 @@
                             + " 接著轉 : " + data.split(',')[1]);
                         callTransfer(data.split(',')[1], version, date, true);
                     }
-                    else {
+                    else
+                    {
                         toastr.success("success => " + result.DESCRIPTION);
                     }
                 }
-                else {
+                else
+                {
                     toastr.error("error => " + result.DESCRIPTION);
                 }
             });
@@ -160,7 +166,8 @@
         }
 
         getLog(debt);
-        function getLog(debt) {
+        function getLog(debt)
+        {
             $.ajax({
                 type: "POST",
                 data: JSON.stringify({
@@ -171,7 +178,8 @@
                 contentType: 'application/json'
             })
             .done(function (result) {
-                if (result.length > 0) {
+                if (result.length > 0)
+                {
                     $('#log').text("")
                         .text(result.replace(new RegExp(",", "g"), "\n"));
                 }

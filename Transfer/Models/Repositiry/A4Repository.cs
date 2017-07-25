@@ -67,7 +67,7 @@ namespace Transfer.Models.Repositiry
         #endregion
 
         #region 
-        public List<string> GetLogData(List<string> tableTypes)
+        public List<string> GetLogData(List<string> tableTypes, string debt)
         {
             List<string> result = new List<string>();
             try
@@ -219,110 +219,37 @@ namespace Transfer.Models.Repositiry
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Message_Type
                     .not_Find_Any.GetDescription("B01");
-                if (db.Bond_Account_Info.Count() > 0)
+                if (Debt_Type.B.ToString().Equals(type)) //債券
                 {
-                    List<Bond_Account_Info> addData = //這次要新增的資料
-                        db.Bond_Account_Info.AsEnumerable()
-                        .Where(x => x.Report_Date != null &&
-                        date.Equals(x.Report_Date.Value) //抓取相同的Report_date
-                        && version.Equals(x.Version)).ToList();  //抓取相同的 Verison
-                    if (0.Equals(addData.Count))
+                    if (db.Bond_Account_Info.Count() > 0)
                     {
-                        result.DESCRIPTION = Message_Type
-                            .query_Not_Find.GetDescription("B01");
-                        return result;
-                    }
+                        List<Bond_Account_Info> addData = //這次要新增的資料
+                            db.Bond_Account_Info.AsEnumerable()
+                            .Where(x => x.Report_Date != null &&
+                            date.Equals(x.Report_Date.Value) //抓取相同的Report_date
+                            && version.Equals(x.Version)).ToList();  //抓取相同的 Verison
+                        if (0.Equals(addData.Count))
+                        {
+                            result.DESCRIPTION = Message_Type
+                                .query_Not_Find.GetDescription("B01");
+                            return result;
+                        }
 
-                    if (db.IFRS9_Main.Count() > 0)
-                    {
-                        List<int> B01Ids = new List<int>();
-                        B01Ids.AddRange(db.IFRS9_Main.AsEnumerable()
-                        .Select(x => x.Reference_Nbr).ToList()); //抓取 B01 Reference_Nbr
-                        addData = addData.Where(x =>
-                        !B01Ids.Contains(x.Reference_Nbr)).ToList(); //排除 save 重複資料
-                    }
+                        if (db.IFRS9_Main.Count() > 0)
+                        {
+                            List<int> B01Ids = new List<int>();
+                            B01Ids.AddRange(db.IFRS9_Main.AsEnumerable()
+                            .Select(x => x.Reference_Nbr).ToList()); //抓取 B01 Reference_Nbr
+                            addData = addData.Where(x =>
+                            !B01Ids.Contains(x.Reference_Nbr)).ToList(); //排除 save 重複資料
+                        }
 
-                    if (0.Equals(addData.Count))
-                    {
-                        result.DESCRIPTION = Message_Type
-                            .already_Save.GetDescription("B01");
-                        return result;
-                    }
-                    if (Debt_Type.M.ToString().Equals(type)) //房貸
-                    {
-                        db.IFRS9_Main.AddRange(
-                           addData.Select(x =>
-                           {
-                               return new IFRS9_Main()
-                               {
-                                   Reference_Nbr = x.Reference_Nbr, //
-                                   //Customer_Nbr = //
-                                   //Ead = //
-                                   Principal = x.Principal,
-                                   Interest_Receivable = x.Interest_Receivable, //
-                                   Principal_Payment_Method_Code = x.Principal_Payment_Method_Code, //
-                                   //Total_Period = //
-                                   Current_Int_Rate = transferCurrentIntRate(x.Current_Int_Rate, x.Eir),//
-                                   //Current_Pd = //
-                                   //Current_Lgd = //A02(22)Current_LGD
-                                   //Remaining_Month = //
-                                   Eir = TypeTransfer.doubleNToDouble(x.Eir) <= 0d ?
-                                          0.00001 : x.Eir.Value / 100, //
-                                   //CPD_Segment_Code = //
-                                   //Processing_Date = //
-                                   Product_Code = "Loan01", //房貸 例如 設定為Loan01
-                                   //Department = //
-                                   //PD_Model_Code = //
-                                   //18 //Current_Rating_Code = x.Current_Rating_Code , A41無Current_Rating_Code
-                                   Report_Date = x.Report_Date,
-                                   //20 Maturity_Date = (A02)x.LEXP_DATE, //LEXP_DATE
-                                   //Account_Code = //
-                                   //BadCredit_Ind = //
-                                   //Charge_Off_Ind = //
-                                   //Collateral_Legal_Action_Ind = (A01-LAS39)x.Collateral_Legal_Action_Ind
-                                   //Credit_Black_List_Ind = //
-                                   //Credit_Card_Block_code = //
-                                   //Credit_Review_Risk_Grade = //
-                                   Current_External_Rating = string.Empty, //function 待code
-                                   //Current_External_Rating_1 = //
-                                   //Current_External_Rating_2 = //
-                                   //Current_External_Rating_3 = //
-                                   //Current_External_Rating_4 = //
-                                   //Current_External_Rating_On_Missing = //
-                                   //Current_Internal_Rating = //
-                                   //Default_Ind = //
-                                   //Delinquent_Days = //A02-帳卡明細(Loan_Account_Info)
-                                   //Early_Warning_Ind = //
-                                   //Five_Types_Delinquent_Category = //
-                                   //Ias39_Impaire_Ind = //A01-IAS39明細(Loan_IAS39_Info)(5)IAS39_Impaire_Ind
-                                   //Ias39_Impaire_Desc = //A01-IAS39明細(Loan_IAS39_Info)(6)IAS39_Impaire_Desc
-                                   //Industry_Average_Rating = //
-                                   //Manual_Identified_Impaire_Stage_Code = //
-                                   //Internal_Risk_Classification = //
-                                   //Off_Bs_Item_Paid_Amt = //
-                                   Original_External_Rating = string.Empty, //function 待code
-                                   //Original_External_Rating_1 = //
-                                   //Original_External_Rating_2 = //
-                                   //Original_External_Rating_3 = //
-                                   //Original_External_Rating_4 = //
-                                   //Original_External_Rating_On_Missing = //
-                                   //Original_Internal_Rating = //
-                                   //Other_BadCredit_Ind = //
-                                   //Other_Lending_Max_Delinquent_Days = //
-                                   //Product_Average_Rating = //
-                                   //Restructure_Ind = //A01-IAS39明細(Loan_IAS39_Info)(11)Restructure_Ind
-                                   //Ten_Types_Delinquent_Category = //
-                                   //Watch_List_Ind = //
-                                   //Write_Off_Ind = //
-                                   //Version = x.Version, //
-                                   //Lien_position = x.Lien_position, //
-                                   Ori_Amount = x.Ori_Amount, //
-                                   Payment_Frequency = transferPaymentFrequency(x.Payment_Frequency, type)
-                               };
-                           }));
-                    }
-                    if (Debt_Type.B.ToString().Equals(type)) //債券
-                    {
+                        if (0.Equals(addData.Count))
+                        {
+                            result.DESCRIPTION = Message_Type
+                                .already_Save.GetDescription("B01");
+                            return result;
+                        }
                         db.IFRS9_Main.AddRange(
                            addData.Select(x =>
                            {
@@ -389,15 +316,19 @@ namespace Transfer.Models.Repositiry
                                    Version = x.Version, //
                                    Lien_position = x.Lien_position, //
                                    Ori_Amount = x.Ori_Amount, //
-                                   Payment_Frequency = transferPaymentFrequency(x.Payment_Frequency,type)
+                                   Payment_Frequency = transferPaymentFrequency(x.Payment_Frequency, type)
                                };
                            }));
                     }
-                    db.SaveChanges();
-                    result.RETURN_FLAG = true;
-                    result.DESCRIPTION = Message_Type
-                        .save_Success.GetDescription("B01");
                 }
+                if (Debt_Type.M.ToString().Equals(type)) //房貸
+                {
+
+                }
+                db.SaveChanges();
+                result.RETURN_FLAG = true;
+                result.DESCRIPTION = Message_Type
+                    .save_Success.GetDescription("B01");
             }
             catch (DbUpdateException ex)
             {
@@ -429,11 +360,17 @@ namespace Transfer.Models.Repositiry
             {
                 if (db.IFRS9_Main.Count() > 0)
                 {
+                    List<string> reportCodes = new List<string>();
+                    if (Debt_Type.M.ToString().Equals(type)) //房貸
+                        reportCodes.Add("Loan01");
+                    if (Debt_Type.B.ToString().Equals(type)) //債券
+                        reportCodes = new List<string> { "Bond_A", "Bond_B", "Bond_P" };
                     List<IFRS9_Main> addData = //這次要新增的資料
-                        db.IFRS9_Main.AsEnumerable()
-                        .Where(x => x.Report_Date != null &&
-                        date.Equals(x.Report_Date.Value) //抓取相同的Report_date
-                        && version.Equals(x.Version)).ToList();  //抓取相同的 Verison
+                    db.IFRS9_Main.AsEnumerable()
+                    .Where(x => x.Report_Date != null &&
+                    date.Equals(x.Report_Date.Value) //抓取相同的Report_date
+                    && version.Equals(x.Version) //抓取相同的 Verison
+                    && reportCodes.Contains(x.Product_Code)).ToList();  //抓取符合的 Product_Code
 
                     if (0.Equals(addData.Count))
                     {
@@ -480,7 +417,7 @@ namespace Transfer.Models.Repositiry
                                Remaining_Month = x.Remaining_Month != null ?
                                x.Remaining_Month : x.Maturity_Date.dateSubtractToMonths(x.Report_Date),
                                //估計存續期間_月
-                               Current_LGD = TypeTransfer.doubleNToDouble(x.Current_Lgd) > 1 ? 1:
+                               Current_LGD = TypeTransfer.doubleNToDouble(x.Current_Lgd) > 1 ? 1 :
                                (TypeTransfer.doubleNToDouble(x.Current_Lgd) < 0 ? 0 :
                                TypeTransfer.doubleNToDouble(x.Current_Lgd)),
                                //違約損失率    若> 1 給值1, 若小於0,給值0
@@ -787,7 +724,7 @@ namespace Transfer.Models.Repositiry
         /// <param name="value"></param>
         /// <param name="type"></param>
         /// <returns></returns>
-        private int? transferPaymentFrequency(string value,string type)
+        private int? transferPaymentFrequency(string value, string type)
         {
             if (value.IsNullOrWhiteSpace())
                 return null;

@@ -50,7 +50,7 @@ namespace Transfer.Models.Interface
         /// </summary>
         /// <param name="tableTypes">"B01","C01"...</param>
         /// <returns></returns>
-        List<string> GetLogData(List<string> tableTypes);
+        List<string> GetLogData(List<string> tableTypes,string debt);
 
         /// <summary>
         /// 

@@ -272,7 +272,7 @@ namespace Transfer.Controllers
         /// <param name="next"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult TransferToOther(string type, string date, string version, bool next)
+        public JsonResult TransferToOther(string type, string date, string version, bool next,string debt)
         {
             MSGReturnModel result = new MSGReturnModel();
 
@@ -296,13 +296,13 @@ namespace Transfer.Controllers
             {
                 case "All": //All 也是重B01開始 B01 => C01
                 case "B01":
-                    result = A4Repository.saveB01(version, dat, Debt_Type.B.ToString());
+                    result = A4Repository.saveB01(version, dat, debt);
                     tableName = Table_Type.B01.GetDescription();
                     bool B01Log = CommonFunction.saveLog("B01", tableName, fileName, proName, result.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
                     result.Datas = Json(transferMessage(next, "C01")); //回傳要不要做下一個transfer
                     break;
                 case "C01":
-                    result = A4Repository.saveC01(version, dat, Debt_Type.B.ToString());
+                    result = A4Repository.saveC01(version, dat, debt);
                     tableName = Table_Type.C01.GetDescription();
                     bool C01Log = CommonFunction.saveLog("C01", tableName, fileName, proName, result.RETURN_FLAG, startTime, DateTime.Now);
                     result.Datas = Json(transferMessage(false, string.Empty)); //目前到C01 而已
@@ -316,9 +316,9 @@ namespace Transfer.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult GetLogData()
+        public JsonResult GetLogData(string debt)
         {
-            List<string> logDatas = A4Repository.GetLogData(selects.ToList());
+            List<string> logDatas = A4Repository.GetLogData(selects.ToList(), debt);
             return Json(string.Join(",",logDatas));
         }
 
