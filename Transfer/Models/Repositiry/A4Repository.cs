@@ -54,13 +54,28 @@ namespace Transfer.Models.Repositiry
         /// get A41 data
         /// </summary>
         /// <returns></returns>
-        public Tuple<bool, List<A41ViewModel>> GetA41()
+        public Tuple<bool, List<A41ViewModel>> GetA41(string type, string value, DateTime date)
         {
             if (db.Bond_Account_Info.Count() > 0)
             {
-                return new Tuple<bool, List<A41ViewModel>>(true,
+                if ("Report".Equals(type))
+                {
+                    return new Tuple<bool, List<A41ViewModel>>(true,
                     (from q in db.Bond_Account_Info.AsEnumerable()
+                     .Where(x=>date.Equals(x.Report_Date) &&
+                               value.Equals(x.Version))
+                      .OrderBy(x => Convert.ToInt32(x.Reference_Nbr))
                      select DbToA41Model(q)).ToList());
+                }
+                if ("Bonds".Equals(type))
+                {
+                    return new Tuple<bool, List<A41ViewModel>>(true,
+                    (from q in db.Bond_Account_Info.AsEnumerable()
+                     .Where(x=> date.Equals(x.Origination_Date) &&
+                     value.Equals(x.Bond_Number))
+                     .OrderBy(x => Convert.ToInt32( x.Reference_Nbr))
+                     select DbToA41Model(q)).ToList());
+                }
             }
             return new Tuple<bool, List<A41ViewModel>>(false, new List<A41ViewModel>());
         }
@@ -141,7 +156,7 @@ namespace Transfer.Models.Repositiry
                     db.Bond_Account_Info.Add(
                     new Bond_Account_Info()
                     {
-                        Reference_Nbr = Convert.ToInt32(item.Reference_Nbr),
+                        Reference_Nbr = item.Reference_Nbr,
                         Bond_Number = item.Bond_Number,
                         Lots = item.Lots,
                         Segment_Name = item.Segment_Name,
@@ -237,7 +252,7 @@ namespace Transfer.Models.Repositiry
 
                         if (db.IFRS9_Main.Count() > 0)
                         {
-                            List<int> B01Ids = new List<int>();
+                            List<string> B01Ids = new List<string>();
                             B01Ids.AddRange(db.IFRS9_Main.AsEnumerable()
                             .Select(x => x.Reference_Nbr).ToList()); //抓取 B01 Reference_Nbr
                             addData = addData.Where(x =>
@@ -319,16 +334,109 @@ namespace Transfer.Models.Repositiry
                                    Payment_Frequency = transferPaymentFrequency(x.Payment_Frequency, type)
                                };
                            }));
+                        db.SaveChanges();
+                        result.RETURN_FLAG = true;
+                        result.DESCRIPTION = Message_Type
+                            .save_Success.GetDescription("B01");
                     }
                 }
                 if (Debt_Type.M.ToString().Equals(type)) //房貸
                 {
+                    if (db.Loan_IAS39_Info.Count() > 0 && db.Loan_Account_Info.Count() > 0)
+                    {
+                        List<Loan_IAS39_Info> IAS39Data =
+                            db.Loan_IAS39_Info.AsEnumerable()
+                            .Where(x => date.Equals(x.Report_Date)).ToList();
+                        List<Loan_Account_Info> AccountData =
+                            db.Loan_Account_Info.AsEnumerable()
+                            .Where(x => IAS39Data.Select(y => y.Reference_Nbr)
+                            .Contains(x.Reference_Nbr)).ToList();
 
+                        if((IAS39Data.Count == AccountData.Count) &&
+                            IAS39Data.Count > 0)
+                        {
+                            db.IFRS9_Main.AddRange(
+                                IAS39Data.Select(x =>
+                                {
+                                    return new IFRS9_Main()
+                                    {
+                                    //Reference_Nbr = ,//,
+                                    //Customer_Nbr = //
+                                    //Ead = //
+                                    Principal = x.Principal,
+                                        Interest_Receivable = x.Interest_Receivable,
+                                    //Principal_Payment_Method_Code =
+                                    //Total_Period = 
+                                    Current_Int_Rate =
+                                    transferCurrentIntRate(
+                                         getLoanAccountInfo(AccountData, x.Reference_Nbr).Current_Int_Rate,
+                                         x.EIR
+                                        ),
+                                    //Current_Pd
+                                    Current_Lgd = getLoanAccountInfo(AccountData, x.Reference_Nbr).Current_Lgd,
+                                    //Remaining_Month
+                                    Eir = x.EIR <= 0d ? 0.00001 : x.EIR / 100, //
+                                    //CPD_Segment_Code
+                                    //Processing_Date
+                                    Product_Code = "Loan01",
+                                    //Department
+                                    //PD_Model_Code
+                                    Current_Rating_Code = getLoanAccountInfo(AccountData, x.Reference_Nbr).Current_Rating_Code,
+                                    //Report_Date
+                                    Maturity_Date = TypeTransfer.stringToADDateTimeN(
+                                        getLoanAccountInfo(AccountData, x.Reference_Nbr).Lexp_Date),
+                                    //Account_Code
+                                    //BadCredit_Ind
+                                    //Charge_Off_Ind
+                                    Collateral_Legal_Action_Ind = x.Collateral_Legal_Action_Ind,
+                                    //Credit_Black_List_Ind = //
+                                    //Credit_Card_Block_code = //
+                                    //Credit_Review_Risk_Grade = //
+                                    //Current_External_Rating = string.Empty, //function 待code
+                                    //Current_External_Rating_1 = //
+                                    //Current_External_Rating_2 = //
+                                    //Current_External_Rating_3 = //
+                                    //Current_External_Rating_4 = //
+                                    //Current_External_Rating_On_Missing = //
+                                    //Current_Internal_Rating = //
+                                    //Default_Ind = //
+                                    Delinquent_Days = getLoanAccountInfo(AccountData, x.Reference_Nbr).Delinquent_Days,
+                                    //Early_Warning_Ind
+                                    //Five_Types_Delinquent_Category
+                                    Ias39_Impaire_Ind = x.IAS39_Impaire_Ind,
+                                    Ias39_Impaire_Desc = x.IAS39_Impaire_Desc,
+                                    //Industry_Average_Rating = //
+                                    //Manual_Identified_Impaire_Stage_Code = //
+                                    //Internal_Risk_Classification = //
+                                    //Off_Bs_Item_Paid_Amt = //
+                                    //Original_External_Rating = string.Empty, //function 待code
+                                    //Original_External_Rating_1 = //
+                                    //Original_External_Rating_2 = //
+                                    //Original_External_Rating_3 = //
+                                    //Original_External_Rating_4 = //
+                                    //Original_External_Rating_On_Missing = //
+                                    //Original_Internal_Rating = //
+                                    //Other_BadCredit_Ind = //
+                                    //Other_Lending_Max_Delinquent_Days = //
+                                    //Product_Average_Rating = //
+                                    Restructure_Ind = x.Restructure_Ind,
+                                    //Ten_Types_Delinquent_Category
+                                    //Watch_List_Ind
+                                    //Write_Off_Ind
+                                    //Version
+                                    //Lien_position
+                                    //Ori_Amount
+                                    //Payment_Frequency = getLoanAccountInfo(AccountData, x.Reference_Nbr).p
+                                    };
+                                }));
+                            db.SaveChanges();
+                            result.RETURN_FLAG = true;
+                            result.DESCRIPTION = Message_Type
+                                .save_Success.GetDescription("B01");
+                        }
+                    }
                 }
-                db.SaveChanges();
-                result.RETURN_FLAG = true;
-                result.DESCRIPTION = Message_Type
-                    .save_Success.GetDescription("B01");
+
             }
             catch (DbUpdateException ex)
             {
@@ -381,7 +489,7 @@ namespace Transfer.Models.Repositiry
 
                     if (db.EL_Data_In.Count() > 0)
                     {
-                        List<int> C01Ids = new List<int>();
+                        List<string> C01Ids = new List<string>();
                         C01Ids.AddRange(db.EL_Data_In.AsEnumerable()
                         .Select(x => x.Reference_Nbr).ToList()); //抓取 C01 Reference_Nbr
                         addData = addData.Where(x =>
@@ -524,7 +632,7 @@ namespace Transfer.Models.Repositiry
                 reader.Close();
                 int idNum = 0;
                 if (db.Bond_Account_Info.Count() > 0)
-                    idNum = db.Bond_Account_Info.AsEnumerable().Max(x => x.Reference_Nbr);
+                    idNum = db.Bond_Account_Info.AsEnumerable().Max(x => Convert.ToInt32(x.Reference_Nbr));
                 if (resultData.Tables[0].Rows.Count > 2) //判斷有無資料
                 {
                     dataModel = resultData.Tables[1].AsEnumerable().Skip(1) //第二頁籤第二行開始
@@ -627,7 +735,7 @@ namespace Transfer.Models.Repositiry
         {
             return new A41ViewModel()
             {
-                Reference_Nbr = data.Reference_Nbr.ToString(),
+                Reference_Nbr = data.Reference_Nbr.PadLeft(10,'0'),
                 Bond_Number = data.Bond_Number,
                 Lots = data.Lots,
                 Segment_Name = data.Segment_Name,
@@ -676,6 +784,12 @@ namespace Transfer.Models.Repositiry
         }
         #endregion
 
+        #region get 債券 B01 Product_Code
+        /// <summary>
+        /// get 債券 B01 Product_Code
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         private string transferProductCode(string value)
         {
 
@@ -693,10 +807,11 @@ namespace Transfer.Models.Repositiry
             }
             return value;
         }
+        #endregion
 
-        #region A41 Current_Int_Rate To B01
+        #region get Current_Int_Rate To B01
         /// <summary>
-        /// A41 Current_Int_Rate To B01
+        /// get Current_Int_Rate To B01
         /// </summary>
         /// <param name="currentIntRate"></param>
         /// <param name="Eir"></param>
@@ -769,9 +884,9 @@ namespace Transfer.Models.Repositiry
         }
         #endregion
 
-        #region Get Bonds C01 Impairment_Stage
+        #region Get 債券 C01 Impairment_Stage
         /// <summary>
-        /// Get Bonds C01 Impairment_Stage
+        /// Get 債券 C01 Impairment_Stage
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -784,6 +899,35 @@ namespace Transfer.Models.Repositiry
         }
         #endregion
 
+        #region get Loan_Account_Info
+        /// <summary>
+        /// get Loan_Account_Info
+        /// </summary>
+        /// <param name="datas"></param>
+        /// <param name="Reference_Nbr"></param>
+        /// <returns></returns>
+        private Loan_Account_Info getLoanAccountInfo(
+            List<Loan_Account_Info> datas, string Reference_Nbr)
+        {
+            Loan_Account_Info data = datas.FirstOrDefault(x =>
+            Reference_Nbr.Equals(x.Reference_Nbr));
+            if (data != null)
+                return data;
+            else
+                return new Loan_Account_Info();
+        }
+        #endregion
+
+        #region get 房貸 C01 Impairment_Stage
+        /// <summary>
+        /// get 房貸 C01 Impairment_Stage
+        /// </summary>
+        /// <param name="Collateral_Legal_Action_Ind"></param>
+        /// <param name="Delinquent_Days"></param>
+        /// <param name="Ias39_Impaire_Ind"></param>
+        /// <param name="Ias39_Impaire_Desc"></param>
+        /// <param name="Restructure_Ind"></param>
+        /// <returns></returns>
         private string getMortgageC01ImpairmentStage(
             string Collateral_Legal_Action_Ind,
             int? Delinquent_Days,
@@ -816,6 +960,7 @@ namespace Transfer.Models.Repositiry
                 return "1";
             return null;
         }
+        #endregion
 
         #endregion
     }

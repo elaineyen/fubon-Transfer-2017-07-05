@@ -162,6 +162,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Infrastructure\UserAuthAttribute.cs" />
     <Compile Include="Models\Bond_Account_Info.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
@@ -211,6 +212,12 @@
     <Compile Include="Models\Interface\ICacheProvider.cs" />
     <Compile Include="Models\Interface\ICommon.cs" />
     <Compile Include="Models\Interface\IDbEvent.cs" />
+    <Compile Include="Models\Loan_Account_Info.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Loan_IAS39_Info.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Moody_Monthly_PD_Info.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
@@ -411,6 +418,7 @@
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\toastr.js" />
     <Content Include="Scripts\toastr.min.js" />
+    <Content Include="Scripts\verification.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>

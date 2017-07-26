@@ -14,7 +14,7 @@ namespace Transfer.Models
     
     public partial class Bond_Account_Info
     {
-        public int Reference_Nbr { get; set; }
+        public string Reference_Nbr { get; set; }
         public string Bond_Number { get; set; }
         public string Lots { get; set; }
         public string Segment_Name { get; set; }

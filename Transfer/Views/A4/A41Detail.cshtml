@@ -1,13 +1,57 @@
 ﻿@{
     ViewBag.Manu = "A4Main";
-    ViewBag.SubManu = "A41SubMain";
+    ViewBag.SubManu = "A41Sub";
     ViewBag.Title = "A41(債券明細檔)";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="container" id="main" >
+<style>
+    .ui-datepicker-trigger {
+        border: none;
+        background: none;
+    }
+
+    .error {
+        /*border-color: red;*/
+        color: red;
+    }
+</style>
+<div class="container" id="main">
     <div class="row main_hand">
         <div class="col-md-12 main_hand_div">
-                <input type="button" class="btn btn-primary" value="A41查詢" id="btnA41Search" />
+            <form id="myFrom1">
+                <table width="100%">
+                    <tr>
+                        <td style="width:470px" class="form-group">
+                            <label>報導日 : </label>
+                            <input type="text" id="datepicker1" name="datepicker1">
+                        </td>
+                        <td style="width:400px; padding-top:8px">
+                            <label>版本 : </label>
+                            <input type="text" id="version" name="version">
+                        </td>
+                        <td>
+                            <input type="button" class="btn btn-primary" value="報導日資料查詢" id="btnA41ReportSearch" />
+                        </td>
+                    </tr>
+                </table>
+            </form>
+            <form id="myFrom2">
+                <table width="100%">
+                    <tr>
+                        <td style="width:470px" class="form-group">
+                            <label>債券購入日期 : </label>
+                            <input type="text" id="datepicker2" name="datepicker2">
+                        </td>
+                        <td style="width:400px; padding-top:8px">
+                            <label>債券編號 : </label>
+                            <input type="text" id="number" name="number">
+                        </td>
+                        <td>
+                            <input type="button" class="btn btn-primary" value="債券資料查詢" id="btnA41BondsSearch" />
+                        </td>
+                    </tr>
+                </table>
+            </form>
         </div>
     </div>
     <div class="row main_body" style="overflow:auto;height:100%">
@@ -19,36 +63,113 @@
         </div>
     </div>
 </div>
+
+<script src="~/Scripts/jquery-ui-1.10.0.min.js"></script> @*jquery-ui*@
+<script src="~/Scripts/i18n/datepicker-zh-TW.js"></script>  @*use datepicker*@
+<script src="~/Scripts/jquery.validate.min.js"></script> @*use validate*@
+<script src="~/Scripts/verification.js"></script> @*use validate*@
+
 <script type="text/javascript">
 
     $(function () {
-
         //#region 註冊URL
         var url = {};
         url.getData = '@Url.Action("GetData", "A4")';
         url.getDbData = '@Url.Action("GetCacheData", "A4")';
         //#endregion 註冊URL
 
+        //#region 產生datepicker
+        var d = new Date();
+        $("#datepicker1,#datepicker2").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: 'yy/mm/dd',
+            showOn: "both",
+            buttonText: '<i class="fa fa-calendar fa-2x toggle-btn"></i>',
+            onSelect: function (value) {
+                if (verified.isDate(value))
+                    $(this).parent().children().each(function () {
+                        if ($(this).is('label') && $(this).hasClass('error'))
+                            $(this).remove();
+                        if ($(this).is('input') && $(this).hasClass('error'))
+                            $(this).removeClass('error');
+                    })
+            }
+        }).datepicker('setDate', new Date(d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + 25));
+        //#endregion 
+
         //#region 註冊click事件
         $('input:button').each(function () {
             var id = $(this).attr('id');
             switch (id) {
-                case 'btnA41Search':
-                    $("#" + id).on('click', function () { showJqgrid('A41') });
+                case 'btnA41ReportSearch':
+                    $("#" + id).on('click', function () { ReportSearch() });
+                    break;
+                case 'btnA41BondsSearch':
+                    $("#" + id).on('click', function () { BondsSearch() });
                     break;
             }
         })
         //#endregion 註冊click事件
 
+        //#region 客製化驗證
+        $.validator.addMethod("dateFormate",
+        function (value, element, arg) {
+            return verified.isDate(value);
+        }, "日期格式為yyyy/mm/dd");
+        //#endregion
+
+        //#region ReportSearch
+        function ReportSearch() {           
+            var version = $('#version').val();
+            var date = $('#datepicker1').val();
+            $("#myFrom1").validate({
+                rules: {
+                    version: { required: true },
+                    datepicker1: { dateFormate: date }
+                },
+                messages: {
+                    version: "版本為必填!",
+                },
+                errorPlacement: function (error, element) {                    
+                    error.appendTo(element.parent());
+                }
+            })
+            if ($('#myFrom1').valid()) {
+                showJqgrid("A41", "Report", version,date)
+            }
+        }
+        //#endregion
+
+        //#region BondsSearch
+        function BondsSearch() {
+            var number = $('#number').val();
+            var date = $('#datepicker2').val();
+            $("#myFrom2").validate({
+                rules: {
+                    number: { required: true },
+                    datepicker2: { dateFormate: date }
+                },
+                messages: {
+                    number: "版本為必填!",
+                },
+                errorPlacement: function (error, element) {
+                    error.appendTo(element.parent());
+                }
+            })
+            if ($('#myFrom2').valid()) {
+                showJqgrid("A41", "Bonds", number, date)
+            }
+        }
+        //#endregion
+
         //#region 去controller 撈取資料並且用JqGrid套件顯示
-        function showJqgrid(type)
-        {
+        function showJqgrid(type,searchType,value,date) {
             clearJqgrid();
             var title = ''; //標頭
             var colNameArray = []; //每個欄位名稱要對應傳入資料屬性
-            var data ; // json Data 由Ajax 拿到
-            switch (type)
-            {
+            var data; // json Data 由Ajax 拿到
+            switch (type) {
                 case "A41":
                     title = 'Bond_Account_Info(A41)';
                     colNameArray = ['Reference_Nbr', 'Bond_Number', 'Lots',
@@ -73,7 +194,10 @@
             $.ajax({
                 type: "POST",
                 data: JSON.stringify({
-                    type: type
+                    type: type,
+                    searchType: searchType,
+                    value: value,
+                    date:date
                 }),
                 dataType: "json",
                 url: url.getData,
@@ -99,7 +223,7 @@
                          'M', 'M', 'M',
                          'M', 'M', 'M'
                         ];
-                    createJqgrid("list1", "pager1", colNameArray,widthArray, title);
+                    createJqgrid("list1", "pager1", colNameArray, widthArray, title);
                 }
                 else {
                     toastr.error(result.DESCRIPTION);
@@ -109,8 +233,7 @@
         //#endregion
 
         //#region clearJqgrid (清除JqGrid)
-        function clearJqgrid()
-        {
+        function clearJqgrid() {
             $('#jqgridDiv').children().remove();
         }
         //#endregion clearJqgrid

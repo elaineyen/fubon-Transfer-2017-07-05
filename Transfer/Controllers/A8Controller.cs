@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Web.Mvc;
+using Transfer.Infrastructure;
 using Transfer.Models;
 using Transfer.Models.Interface;
 using Transfer.Models.Repositiry;
@@ -28,6 +29,7 @@ namespace Transfer.Controllers
         /// A8(上傳檔案)
         /// </summary>
         /// <returns></returns>
+        [UserAuth("Index,A8")]
         public ActionResult Index()
         {
             return View();
@@ -37,6 +39,7 @@ namespace Transfer.Controllers
         /// A8(查詢(A81.A82.A83))
         /// </summary>
         /// <returns></returns>
+        [UserAuth("Detail,A8")]
         public ActionResult Detail()
         {
             return View();

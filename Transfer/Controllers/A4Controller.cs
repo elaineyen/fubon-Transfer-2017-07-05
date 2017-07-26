@@ -4,6 +4,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Web.Mvc;
+using Transfer.Infrastructure;
 using Transfer.Models;
 using Transfer.Models.Interface;
 using Transfer.Models.Repositiry;
@@ -34,6 +35,7 @@ namespace Transfer.Controllers
         /// A4(上傳檔案)
         /// </summary>
         /// <returns></returns>
+        [UserAuth("Index,A4")]
         public ActionResult Index()
         {
             return View();
@@ -43,16 +45,30 @@ namespace Transfer.Controllers
         /// A41(債券明細檔)
         /// </summary>
         /// <returns></returns>
+        [UserAuth("A41Detail,A4")]
         public ActionResult A41Detail()
         {
             return View();
         }
 
         /// <summary>
-        /// 
+        /// 執行減損計算 (債券)
         /// </summary>
         /// <returns></returns>
+        [UserAuth("A42Detail,A4")]
         public ActionResult A42Detail()
+        {
+            ViewBag.selectOption = new SelectList(
+                selects.Select(x => new { Text = x, Value = x }), "Value", "Text");
+            return View();
+        }
+
+        /// <summary>
+        /// 執行減損計算 (房貸)
+        /// </summary>
+        /// <returns></returns>
+        [UserAuth("A43Detail,A4")]
+        public ActionResult A43Detail()
         {
             ViewBag.selectOption = new SelectList(
                 selects.Select(x => new { Text = x, Value = x }), "Value", "Text");
@@ -229,29 +245,38 @@ namespace Transfer.Controllers
         /// <param name="type"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult GetData(string type)
+        public JsonResult GetData(string type,string searchType,string value,string date)
         {
             MSGReturnModel result = new MSGReturnModel();
             result.RETURN_FLAG = false;
             result.DESCRIPTION = Message_Type.not_Find_Any.GetDescription(type);
+
+            DateTime d = new DateTime();
+
+            if (!DateTime.TryParse(date, out d))
+            {
+                result.DESCRIPTION = Message_Type.parameter_Error.GetDescription();
+                return Json(result);
+            }
+                
             try
             {
                 switch (type)
                 {
                     case "A41": //Bond_Account_Info(A41)資料
-                        if (!Cache.IsSet("A41DbfileData") ||
-                            0.Equals(((List<A41ViewModel>)Cache.Get("A41DbfileData")).Count))
-                        //無Cache 設定 或Cache 資料為0筆
-                        {
-                            var A41Data = A4Repository.GetA41();
+                        //if (!Cache.IsSet("A41DbfileData") ||
+                        //    0.Equals(((List<A41ViewModel>)Cache.Get("A41DbfileData")).Count))
+                        ////無Cache 設定 或Cache 資料為0筆
+                        //{
+                            var A41Data = A4Repository.GetA41(searchType, value,d);
                             result.RETURN_FLAG = A41Data.Item1;
                             Cache.Invalidate("A41DbfileData"); //清除
                             Cache.Set("A41DbfileData", A41Data.Item2, 15); //把資料存到 Cache
-                        }
-                        else
-                        {
-                            result.RETURN_FLAG = true; //有Cache資料
-                        }
+                        //}
+                        //else
+                        //{
+                        //    result.RETURN_FLAG = true; //有Cache資料
+                        //}
                         break;
                 }
             }

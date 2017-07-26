@@ -15,11 +15,14 @@
     <ul class="sub-menu collapse" id=@item.Menu>
         @foreach (var sub in Model.menu_Sub.Where(x => x.Menu == item.Menu))
         {
-            <li id=@sub.Menu_Id>
-                <i class='fa @sub.Class fa-lg'></i>
-                <a href='@Url.Action(sub.Href.Split(',')[0],
+            if (sub.Href.Split(',').Length >= 2)
+            {
+                <li id=@sub.Menu_Id>
+                    <i class='fa @sub.Class fa-lg'></i>
+                    <a href='@Url.Action(sub.Href.Split(',')[0],
                         sub.Href.Split(',')[1], null)'>@sub.Menu_Detail</a>
-            </li>
+                </li>
+            }
         }
     </ul>
 }

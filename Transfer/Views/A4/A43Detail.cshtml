@@ -1,6 +1,6 @@
 ﻿@{
     ViewBag.Manu = "A4Main";
-    ViewBag.SubManu = "A43SubMain";
+    ViewBag.SubManu = "A43Sub";
     ViewBag.Title = "執行減損計算 (房貸)";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -116,7 +116,7 @@
        }
         //#endregion
 
-        var debt = @Transfer.Enum.Ref.Debt_Type.M.ToString(); //房貸
+        var debt = '@Transfer.Enum.Ref.Debt_Type.M.ToString()'; //房貸
         function callTransfer(type, version, date, next)
         {
             $.blockUI();

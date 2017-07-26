@@ -53,6 +53,34 @@ namespace Transfer.Utility
         }
         #endregion
 
+        #region 民國字串轉西元年
+        /// <summary>
+        /// 民國字串轉西元年
+        /// </summary>
+        /// <param name="value">1051119 to 2016/11/19</param>
+        /// <returns></returns>
+        public static DateTime? stringToADDateTimeN(string value)
+        {
+            if (!value.IsNullOrWhiteSpace() && value.Length > 6)
+            {
+                string y = value.Substring(0, value.Length - 4);
+                string m = value.Substring(value.Length - 4, 2);
+                string d = value.Substring(value.Length - 2, 2);
+
+                int ady = 0;
+                Int32.TryParse(y, out ady);
+                ady += 1911;
+                y = ady.ToString();
+
+                DateTime t = new DateTime();
+                if (DateTime.TryParse($"{y}/{m}/{d}", out t))
+                    return t;
+                return null;
+            }
+            return null;
+        }
+        #endregion
+
         #region Int? To String
         /// <summary>
         /// Int? 轉string (null 回傳 string.Empty)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Web.Mvc;
+using Transfer.Infrastructure;
 using Transfer.Models.Interface;
 using Transfer.Models.Repositiry;
 using Transfer.Utility;
@@ -23,27 +24,51 @@ namespace Transfer.Controllers
             this.CommonFunction = new Common();
         }
 
-        // GET: A7
+        /// <summary>
+        /// A7 (上傳檔案)
+        /// </summary>
+        /// <returns></returns>
+        [UserAuth("Index,A7")]
         public ActionResult Index()
         {
             return View();
         }
 
+        /// <summary>
+        /// 查詢A71 (轉移矩陣資料檔_Moody)
+        /// </summary>
+        /// <returns></returns>
+        [UserAuth("A71Detail,A7")]
         public ActionResult A71Detail()
         {
             return View();
         }
 
+        /// <summary>
+        /// 查詢A72 (轉移矩陣資料檔_調整後)
+        /// </summary>
+        /// <returns></returns>
+        [UserAuth("A72Detail,A7")]
         public ActionResult A72Detail()
         {
             return View();
         }
 
+        /// <summary>
+        /// 查詢A73 (等級違約率矩陣)
+        /// </summary>
+        /// <returns></returns>
+        [UserAuth("A73Detail,A7")]
         public ActionResult A73Detail()
         {
             return View();
         }
 
+        /// <summary>
+        /// 查詢A51 (信評主標尺對應檔)
+        /// </summary>
+        /// <returns></returns>
+        [UserAuth("A74Detail,A7")]
         public ActionResult A74Detail()
         {
             return View();

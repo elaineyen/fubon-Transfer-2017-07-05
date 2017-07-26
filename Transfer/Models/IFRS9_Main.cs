@@ -14,7 +14,7 @@ namespace Transfer.Models
     
     public partial class IFRS9_Main
     {
-        public int Reference_Nbr { get; set; }
+        public string Reference_Nbr { get; set; }
         public string Customer_Nbr { get; set; }
         public Nullable<double> Ead { get; set; }
         public Nullable<double> Principal { get; set; }

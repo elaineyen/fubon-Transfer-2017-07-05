@@ -116,8 +116,6 @@ namespace Transfer.Controllers
                 TempData["Login"] = "請輸入正確的帳號或密碼!";
                 return RedirectToAction("Login", "Account");
             }
-
-
         }
 
         public ActionResult Logout()

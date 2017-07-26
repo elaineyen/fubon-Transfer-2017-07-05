@@ -9,7 +9,7 @@
           <Key>
             <PropertyRef Name="Reference_Nbr" />
           </Key>
-          <Property Name="Reference_Nbr" Type="int" Nullable="false" />
+          <Property Name="Reference_Nbr" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Bond_Number" Type="varchar" MaxLength="40" />
           <Property Name="Lots" Type="varchar" MaxLength="4" />
           <Property Name="Segment_Name" Type="varchar" MaxLength="50" />
@@ -64,7 +64,7 @@
           <Property Name="Report_Date" Type="date" Nullable="false" />
           <Property Name="Processing_Date" Type="date" Nullable="false" />
           <Property Name="Product_Code" Type="varchar" MaxLength="64" Nullable="false" />
-          <Property Name="Reference_Nbr" Type="int" Nullable="false" />
+          <Property Name="Reference_Nbr" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Current_Rating_Code" Type="varchar" MaxLength="50" />
           <Property Name="Exposure" Type="float" />
           <Property Name="Actual_Year_To_Maturity" Type="float" />
@@ -111,7 +111,7 @@
           <Key>
             <PropertyRef Name="Reference_Nbr" />
           </Key>
-          <Property Name="Reference_Nbr" Type="int" Nullable="false" />
+          <Property Name="Reference_Nbr" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Customer_Nbr" Type="varchar" MaxLength="32" />
           <Property Name="Ead" Type="float" />
           <Property Name="Principal" Type="float" />
@@ -207,6 +207,59 @@
           </Key>
           <Property Name="User_Name" Type="varchar" MaxLength="30" Nullable="false" />
           <Property Name="User_Password" Type="varchar" MaxLength="30" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Loan_Account_Info">
+          <Key>
+            <PropertyRef Name="Reference_Nbr" />
+          </Key>
+          <Property Name="Reference_Nbr" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Seg_Name" Type="varchar" MaxLength="30" />
+          <Property Name="Delinquent_Days" Type="int" Nullable="false" />
+          <Property Name="Current_Rating_Code" Type="varchar" MaxLength="1" Nullable="false" />
+          <Property Name="Org_Amt" Type="float" />
+          <Property Name="Current_Int_Rate" Type="float" />
+          <Property Name="Mtr_Date" Type="varchar" MaxLength="10" />
+          <Property Name="Exp_Date" Type="varchar" MaxLength="10" />
+          <Property Name="Cur_Int" Type="float" />
+          <Property Name="Lorg_Date" Type="varchar" MaxLength="10" />
+          <Property Name="Lexp_Date" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Cf_Type" Type="varchar" MaxLength="30" />
+          <Property Name="Pay_Frq" Type="varchar" MaxLength="10" />
+          <Property Name="Init_Days" Type="int" />
+          <Property Name="Int_Type" Type="varchar" MaxLength="10" />
+          <Property Name="Obj_Impair" Type="varchar" MaxLength="1" />
+          <Property Name="Mdr_Month" Type="varchar" MaxLength="10" />
+          <Property Name="Org_Pd" Type="float" />
+          <Property Name="Org_Efint" Type="float" />
+          <Property Name="Currency" Type="varchar" MaxLength="10" />
+          <Property Name="Current_Lgd" Type="float" Nullable="false" />
+          <Property Name="Unpaid_Bal" Type="float" />
+          <Property Name="Nxt_Int_Dt" Type="varchar" MaxLength="10" />
+          <Property Name="Nxt_Int_Rt" Type="float" />
+          <Property Name="Tot_Trms" Type="int" />
+          <Property Name="Left_Trms" Type="int" />
+          <Property Name="Processing_Date" Type="date" />
+          <Property Name="Report_Date" Type="date" Nullable="false" />
+          <Property Name="Rating_Date" Type="varchar" MaxLength="10" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Loan_IAS39_Info">
+          <Key>
+            <PropertyRef Name="Reference_Nbr" />
+          </Key>
+          <Property Name="Reference_Nbr" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Mdr_Month" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="EIR" Type="float" Nullable="false" />
+          <Property Name="NO34RCV" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="IAS39_Impaire_Ind" Type="varchar" MaxLength="2" Nullable="false" />
+          <Property Name="IAS39_Impaire_Desc" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Principal" Type="float" Nullable="false" />
+          <Property Name="Interest_Receivable" Type="float" Nullable="false" />
+          <Property Name="Processing_Date" Type="date" />
+          <Property Name="Report_Date" Type="date" Nullable="false" />
+          <Property Name="Restructure_Ind" Type="varchar" MaxLength="1" />
+          <Property Name="Collateral_Legal_Action_Ind" Type="varchar" MaxLength="1" />
+          <Property Name="Bad_Debt_Ind" Type="varchar" MaxLength="1" />
+          <Property Name="Collection_Ind" Type="varchar" MaxLength="1" />
         </EntityType>
         <EntityType Name="Moody_Monthly_PD_Info">
           <Key>
@@ -316,6 +369,8 @@
           <EntitySet Name="IFRS9_Menu_Set" EntityType="Self.IFRS9_Menu_Set" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IFRS9_Menu_Sub" EntityType="Self.IFRS9_Menu_Sub" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IFRS9_User" EntityType="Self.IFRS9_User" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Loan_Account_Info" EntityType="Self.Loan_Account_Info" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Loan_IAS39_Info" EntityType="Self.Loan_IAS39_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Monthly_PD_Info" EntityType="Self.Moody_Monthly_PD_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Predit_PD_Info" EntityType="Self.Moody_Predit_PD_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Quartly_PD_Info" EntityType="Self.Moody_Quartly_PD_Info" Schema="dbo" store:Type="Tables" />
@@ -411,6 +466,8 @@
             <End Role="IFRS9_User" EntitySet="IFRS9_User" />
             <End Role="IFRS9_Menu_Set" EntitySet="IFRS9_Menu_Set" />
           </AssociationSet>
+          <EntitySet Name="Loan_Account_Info" EntityType="IFRS9Model.Loan_Account_Info" />
+          <EntitySet Name="Loan_IAS39_Info" EntityType="IFRS9Model.Loan_IAS39_Info" />
         </EntityContainer>
         <EntityType Name="Moody_Tm_YYYY">
           <Key>
@@ -456,7 +513,7 @@
           <Key>
             <PropertyRef Name="Reference_Nbr" />
           </Key>
-          <Property Name="Reference_Nbr" Type="Int32" Nullable="false" />
+          <Property Name="Reference_Nbr" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
           <Property Name="Bond_Number" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
           <Property Name="Lots" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
           <Property Name="Segment_Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
@@ -506,7 +563,7 @@
           <Key>
             <PropertyRef Name="Reference_Nbr" />
           </Key>
-          <Property Name="Reference_Nbr" Type="Int32" Nullable="false" />
+          <Property Name="Reference_Nbr" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
           <Property Name="Customer_Nbr" Type="String" MaxLength="32" FixedLength="false" Unicode="false" />
           <Property Name="Ead" Type="Double" />
           <Property Name="Principal" Type="Double" />
@@ -578,7 +635,7 @@
           <Property Name="Report_Date" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="Processing_Date" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="Product_Code" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="false" />
-          <Property Name="Reference_Nbr" Type="Int32" Nullable="false" />
+          <Property Name="Reference_Nbr" Type="String" Nullable="false" />
           <Property Name="Current_Rating_Code" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Exposure" Type="Double" />
           <Property Name="Actual_Year_To_Maturity" Type="Double" />
@@ -671,6 +728,59 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <EntityType Name="Loan_Account_Info">
+          <Key>
+            <PropertyRef Name="Reference_Nbr" />
+          </Key>
+          <Property Name="Reference_Nbr" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Seg_Name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Delinquent_Days" Type="Int32" Nullable="false" />
+          <Property Name="Current_Rating_Code" Type="String" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="Org_Amt" Type="Double" />
+          <Property Name="Current_Int_Rate" Type="Double" />
+          <Property Name="Mtr_Date" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Exp_Date" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Cur_Int" Type="Double" />
+          <Property Name="Lorg_Date" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Lexp_Date" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Cf_Type" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Pay_Frq" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Init_Days" Type="Int32" />
+          <Property Name="Int_Type" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Obj_Impair" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="Mdr_Month" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Org_Pd" Type="Double" />
+          <Property Name="Org_Efint" Type="Double" />
+          <Property Name="Currency" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Current_Lgd" Type="Double" Nullable="false" />
+          <Property Name="Unpaid_Bal" Type="Double" />
+          <Property Name="Nxt_Int_Dt" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Nxt_Int_Rt" Type="Double" />
+          <Property Name="Tot_Trms" Type="Int32" />
+          <Property Name="Left_Trms" Type="Int32" />
+          <Property Name="Processing_Date" Type="DateTime" Precision="0" />
+          <Property Name="Report_Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Rating_Date" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Loan_IAS39_Info">
+          <Key>
+            <PropertyRef Name="Reference_Nbr" />
+          </Key>
+          <Property Name="Reference_Nbr" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Mdr_Month" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="EIR" Type="Double" Nullable="false" />
+          <Property Name="NO34RCV" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="IAS39_Impaire_Ind" Type="String" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Name="IAS39_Impaire_Desc" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Principal" Type="Double" Nullable="false" />
+          <Property Name="Interest_Receivable" Type="Double" Nullable="false" />
+          <Property Name="Processing_Date" Type="DateTime" Precision="0" />
+          <Property Name="Report_Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Restructure_Ind" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="Collateral_Legal_Action_Ind" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="Bad_Debt_Ind" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="Collection_Ind" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -950,6 +1060,61 @@
               <MappingFragment StoreEntitySet="IFRS9_User">
                 <ScalarProperty Name="User_Password" ColumnName="User_Password" />
                 <ScalarProperty Name="User_Name" ColumnName="User_Name" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Loan_Account_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Loan_Account_Info">
+              <MappingFragment StoreEntitySet="Loan_Account_Info">
+                <ScalarProperty Name="Rating_Date" ColumnName="Rating_Date" />
+                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
+                <ScalarProperty Name="Left_Trms" ColumnName="Left_Trms" />
+                <ScalarProperty Name="Tot_Trms" ColumnName="Tot_Trms" />
+                <ScalarProperty Name="Nxt_Int_Rt" ColumnName="Nxt_Int_Rt" />
+                <ScalarProperty Name="Nxt_Int_Dt" ColumnName="Nxt_Int_Dt" />
+                <ScalarProperty Name="Unpaid_Bal" ColumnName="Unpaid_Bal" />
+                <ScalarProperty Name="Current_Lgd" ColumnName="Current_Lgd" />
+                <ScalarProperty Name="Currency" ColumnName="Currency" />
+                <ScalarProperty Name="Org_Efint" ColumnName="Org_Efint" />
+                <ScalarProperty Name="Org_Pd" ColumnName="Org_Pd" />
+                <ScalarProperty Name="Mdr_Month" ColumnName="Mdr_Month" />
+                <ScalarProperty Name="Obj_Impair" ColumnName="Obj_Impair" />
+                <ScalarProperty Name="Int_Type" ColumnName="Int_Type" />
+                <ScalarProperty Name="Init_Days" ColumnName="Init_Days" />
+                <ScalarProperty Name="Pay_Frq" ColumnName="Pay_Frq" />
+                <ScalarProperty Name="Cf_Type" ColumnName="Cf_Type" />
+                <ScalarProperty Name="Lexp_Date" ColumnName="Lexp_Date" />
+                <ScalarProperty Name="Lorg_Date" ColumnName="Lorg_Date" />
+                <ScalarProperty Name="Cur_Int" ColumnName="Cur_Int" />
+                <ScalarProperty Name="Exp_Date" ColumnName="Exp_Date" />
+                <ScalarProperty Name="Mtr_Date" ColumnName="Mtr_Date" />
+                <ScalarProperty Name="Current_Int_Rate" ColumnName="Current_Int_Rate" />
+                <ScalarProperty Name="Org_Amt" ColumnName="Org_Amt" />
+                <ScalarProperty Name="Current_Rating_Code" ColumnName="Current_Rating_Code" />
+                <ScalarProperty Name="Delinquent_Days" ColumnName="Delinquent_Days" />
+                <ScalarProperty Name="Seg_Name" ColumnName="Seg_Name" />
+                <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Loan_IAS39_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Loan_IAS39_Info">
+              <MappingFragment StoreEntitySet="Loan_IAS39_Info">
+                <ScalarProperty Name="Collection_Ind" ColumnName="Collection_Ind" />
+                <ScalarProperty Name="Bad_Debt_Ind" ColumnName="Bad_Debt_Ind" />
+                <ScalarProperty Name="Collateral_Legal_Action_Ind" ColumnName="Collateral_Legal_Action_Ind" />
+                <ScalarProperty Name="Restructure_Ind" ColumnName="Restructure_Ind" />
+                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
+                <ScalarProperty Name="Interest_Receivable" ColumnName="Interest_Receivable" />
+                <ScalarProperty Name="Principal" ColumnName="Principal" />
+                <ScalarProperty Name="IAS39_Impaire_Desc" ColumnName="IAS39_Impaire_Desc" />
+                <ScalarProperty Name="IAS39_Impaire_Ind" ColumnName="IAS39_Impaire_Ind" />
+                <ScalarProperty Name="NO34RCV" ColumnName="NO34RCV" />
+                <ScalarProperty Name="EIR" ColumnName="EIR" />
+                <ScalarProperty Name="Mdr_Month" ColumnName="Mdr_Month" />
+                <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -14,13 +14,15 @@
         <EntityTypeShape EntityType="IFRS9Model.Bond_Account_Info" Width="1.5" PointX="4.875" PointY="0.75" />
         <EntityTypeShape EntityType="IFRS9Model.IFRS9_Main" Width="1.5" PointX="7" PointY="0.75" />
         <EntityTypeShape EntityType="IFRS9Model.EL_Data_In" Width="1.5" PointX="9" PointY="0.75" />
-        <EntityTypeShape EntityType="IFRS9Model.IFRS9_Menu_Main" Width="1.5" PointX="9.375" PointY="7.125" />
-        <EntityTypeShape EntityType="IFRS9Model.IFRS9_Menu_Set" Width="1.5" PointX="13.875" PointY="7.125" />
-        <EntityTypeShape EntityType="IFRS9Model.IFRS9_Menu_Sub" Width="1.5" PointX="11.625" PointY="7" />
-        <EntityTypeShape EntityType="IFRS9Model.IFRS9_User" Width="1.5" PointX="11.625" PointY="4.25" />
+        <EntityTypeShape EntityType="IFRS9Model.IFRS9_Menu_Main" Width="1.5" PointX="9.125" PointY="7.375" />
+        <EntityTypeShape EntityType="IFRS9Model.IFRS9_Menu_Set" Width="1.5" PointX="11.25" PointY="9.875" />
+        <EntityTypeShape EntityType="IFRS9Model.IFRS9_Menu_Sub" Width="1.5" PointX="9.125" PointY="9.875" />
+        <EntityTypeShape EntityType="IFRS9Model.IFRS9_User" Width="1.5" PointX="11.25" PointY="7.625" />
         <AssociationConnector Association="IFRS9Model.fk_Menu" />
         <AssociationConnector Association="IFRS9Model.fk_Menu_Id" />
         <AssociationConnector Association="IFRS9Model.fk_User_Name" />
+        <EntityTypeShape EntityType="IFRS9Model.Loan_Account_Info" Width="1.5" PointX="11.25" PointY="0.75" />
+        <EntityTypeShape EntityType="IFRS9Model.Loan_IAS39_Info" Width="1.5" PointX="13.5" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

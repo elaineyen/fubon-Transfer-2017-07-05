@@ -20,7 +20,7 @@ namespace Transfer.Models.Interface
         /// get Db A41 data
         /// </summary>
         /// <returns></returns>
-        Tuple<bool, List<A41ViewModel>> GetA41();
+        Tuple<bool, List<A41ViewModel>> GetA41(string type,string value,DateTime date);
 
         /// <summary>
         /// save A41 To Db
