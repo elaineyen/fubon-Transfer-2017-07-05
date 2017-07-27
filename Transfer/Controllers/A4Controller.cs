@@ -291,10 +291,11 @@ namespace Transfer.Controllers
         /// <summary>
         /// 前端轉檔一系列動作
         /// </summary>
-        /// <param name="type"></param>
-        /// <param name="date"></param>
-        /// <param name="version"></param>
-        /// <param name="next"></param>
+        /// <param name="type">目前要轉檔的表名</param>
+        /// <param name="date">日期</param>
+        /// <param name="version">版本(房貸沒有)</param>
+        /// <param name="next">是否要執行下一項</param>
+        /// <param name="debt">M:房貸 B:債券</param>
         /// <returns></returns>
         [HttpPost]
         public JsonResult TransferToOther(string type, string date, string version, bool next,string debt)
@@ -302,18 +303,24 @@ namespace Transfer.Controllers
             MSGReturnModel result = new MSGReturnModel();
 
             result.RETURN_FLAG = false;
-            result.REASON_CODE = "傳入參數錯誤!";
+            result.DESCRIPTION = "傳入參數錯誤!";
 
             DateTime dat = DateTime.MinValue;
 
-            if (version.IsNullOrWhiteSpace() || !DateTime.TryParse(date, out dat))
+            if ((Debt_Type.M.ToString().Equals(debt) ? false : version.IsNullOrWhiteSpace()) //房貸沒有版本
+                || !DateTime.TryParse(date, out dat))
                 return Json(result);
 
             string tableName = string.Empty;
             string fileName = @"Data Requirements.xlsx"; //預設
-            string configFileName = ConfigurationManager.AppSettings["fileA4Name"];
-            if (!string.IsNullOrWhiteSpace(configFileName))
-                fileName = configFileName; //config 設定就取代
+            if (Debt_Type.B.ToString().Equals(debt))
+            {
+                string configFileName = ConfigurationManager.AppSettings["fileA4Name"];
+                if (!string.IsNullOrWhiteSpace(configFileName))
+                    fileName = configFileName; //config 設定就取代
+            }
+            if (Debt_Type.M.ToString().Equals(debt))
+                fileName = "A01-IAS39,A02";
 
             string proName = "Transfer";
             DateTime startTime = DateTime.Now;

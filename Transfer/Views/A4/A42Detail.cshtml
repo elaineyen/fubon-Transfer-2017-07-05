@@ -58,6 +58,7 @@
 <script src="~/Scripts/jquery-ui-1.10.0.min.js"></script>
 <script src="~/Scripts/i18n/datepicker-zh-TW.js"></script>
 <script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/verification.js"></script> @*use validate*@
 <script type="text/javascript">
     $(function () {
         var d = new Date();
@@ -68,8 +69,13 @@
             showOn: "both",
             buttonText: '<i class="fa fa-calendar fa-2x toggle-btn"></i>',
             onSelect: function (value) {
-                if (isDate(value))
-                    $('#myFrom').valid();
+                if (verified.isDate(value))
+                    $(this).parent().children().each(function () {
+                        if ($(this).is('label') && $(this).hasClass('error'))
+                            $(this).remove();
+                        if ($(this).is('input') && $(this).hasClass('error'))
+                            $(this).removeClass('error');
+                    })
             }
         }).datepicker('setDate', new Date(d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + 25));
 
@@ -97,8 +103,8 @@
             var type = $('#transferType').val();
             $.validator.addMethod("dateFormate",
                 function (value, element, arg) {
-                    return isDate(value);
-                }, "日期格式為yyyy/mm/dd");
+                    return verified.isDate(value);
+                }, "日期錯誤 (yyyy/mm/dd)");
             $("#myFrom").validate({
                 rules: {
                     version: { required: true },
@@ -106,6 +112,9 @@
                 },
                 messages: {
                     version: "版本為必填!",
+                },
+                errorPlacement: function (error, element) {
+                    error.appendTo(element.parent());
                 }
             })
             if ($('#myFrom').valid()) {
@@ -151,12 +160,6 @@
                     toastr.error("error => " + result.DESCRIPTION);
                 }
             });
-        }
-
-        function isDate(value) {
-            var dateFormat;
-            dateFormat = /^\d{4}\/(0[1-9]|1[012])\/(0[1-9]|[12][0-9]|3[01])$/;
-            return dateFormat.test(value);
         }
 
         getLog(debt);

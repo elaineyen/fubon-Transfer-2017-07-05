@@ -9,9 +9,7 @@
         border: none;
         background: none;
     }
-
     .error {
-        /*border-color: red;*/
         color: red;
     }
 </style>
@@ -116,7 +114,7 @@
         $.validator.addMethod("dateFormate",
         function (value, element, arg) {
             return verified.isDate(value);
-        }, "日期格式為yyyy/mm/dd");
+        }, "日期錯誤 (yyyy/mm/dd)");
         //#endregion
 
         //#region ReportSearch

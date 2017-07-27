@@ -352,8 +352,7 @@ namespace Transfer.Models.Repositiry
                             .Where(x => IAS39Data.Select(y => y.Reference_Nbr)
                             .Contains(x.Reference_Nbr)).ToList();
 
-                        if((IAS39Data.Count == AccountData.Count) &&
-                            IAS39Data.Count > 0)
+                        if(IAS39Data.Count > 0)
                         {
                             db.IFRS9_Main.AddRange(
                                 IAS39Data.Select(x =>
@@ -375,8 +374,8 @@ namespace Transfer.Models.Repositiry
                                         Current_Lgd = getLoanAccountInfo(AccountData, x.Reference_Nbr).Current_Lgd,
                                         //Remaining_Month
                                         Eir = x.EIR <= 0d ? 0.00001 : x.EIR / 100, //
-                                    //CPD_Segment_Code
-                                    //Processing_Date
+                                        //CPD_Segment_Code
+                                        //Processing_Date
                                         Product_Code = "Loan01",
                                         //Department
                                         //PD_Model_Code

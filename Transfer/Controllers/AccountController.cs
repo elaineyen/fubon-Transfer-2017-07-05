@@ -6,7 +6,6 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.Security;
 using Transfer.Models;
-using Transfer.Utility;
 
 namespace Transfer.Controllers
 {
@@ -31,14 +30,6 @@ namespace Transfer.Controllers
         // GET: Account
         public ActionResult Login()
         {
-            //if (TempData["Login"] != null)
-            //    ViewBag.Login = TempData["Login"].ToString();
-            //else
-            //    ViewBag.Login = string.Empty;
-            //if (TempData["User"] != null)
-            //    ViewBag.User = TempData["User"].ToString();
-            //if (TempData["Logout"] != null)
-            //    ViewBag.Logout = TempData["Logout"];
             return View();
         }
 
@@ -80,13 +71,9 @@ namespace Transfer.Controllers
                 var identity = httpContext.User.Identity.IsAuthenticated;
 
                 if (identity)
-                {
                     return httpContext.User.Identity.Name;
-                }
                 else
-                {
                     return string.Empty;
-                }
             }
         }
 
