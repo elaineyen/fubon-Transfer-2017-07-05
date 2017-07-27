@@ -95,6 +95,8 @@
   font-size: 12px;
 }
 
- .error
-    {background-color:#fee;border-color:#e99;}
+ .error{
+     background-color:#fee !important; 
+     border-color:#e99 !important;
+ }  
   

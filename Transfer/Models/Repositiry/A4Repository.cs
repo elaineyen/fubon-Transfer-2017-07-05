@@ -360,73 +360,72 @@ namespace Transfer.Models.Repositiry
                                 {
                                     return new IFRS9_Main()
                                     {
-                                    //Reference_Nbr = ,//,
-                                    //Customer_Nbr = //
-                                    //Ead = //
-                                    Principal = x.Principal,
+                                        Reference_Nbr = x.Reference_Nbr,//,
+                                        //Customer_Nbr = //
+                                        //Ead = //
+                                        Principal = x.Principal,
                                         Interest_Receivable = x.Interest_Receivable,
-                                    //Principal_Payment_Method_Code =
-                                    //Total_Period = 
-                                    Current_Int_Rate =
-                                    transferCurrentIntRate(
-                                         getLoanAccountInfo(AccountData, x.Reference_Nbr).Current_Int_Rate,
-                                         x.EIR
-                                        ),
-                                    //Current_Pd
-                                    Current_Lgd = getLoanAccountInfo(AccountData, x.Reference_Nbr).Current_Lgd,
-                                    //Remaining_Month
-                                    Eir = x.EIR <= 0d ? 0.00001 : x.EIR / 100, //
+                                        //Principal_Payment_Method_Code =
+                                        //Total_Period = 
+                                        Current_Int_Rate =
+                                        transferCurrentIntRate(
+                                        getLoanAccountInfo(AccountData, x.Reference_Nbr).Current_Int_Rate,
+                                        x.EIR),
+                                        //Current_Pd
+                                        Current_Lgd = getLoanAccountInfo(AccountData, x.Reference_Nbr).Current_Lgd,
+                                        //Remaining_Month
+                                        Eir = x.EIR <= 0d ? 0.00001 : x.EIR / 100, //
                                     //CPD_Segment_Code
                                     //Processing_Date
-                                    Product_Code = "Loan01",
-                                    //Department
-                                    //PD_Model_Code
-                                    Current_Rating_Code = getLoanAccountInfo(AccountData, x.Reference_Nbr).Current_Rating_Code,
-                                    //Report_Date
-                                    Maturity_Date = TypeTransfer.stringToADDateTimeN(
-                                        getLoanAccountInfo(AccountData, x.Reference_Nbr).Lexp_Date),
-                                    //Account_Code
-                                    //BadCredit_Ind
-                                    //Charge_Off_Ind
-                                    Collateral_Legal_Action_Ind = x.Collateral_Legal_Action_Ind,
-                                    //Credit_Black_List_Ind = //
-                                    //Credit_Card_Block_code = //
-                                    //Credit_Review_Risk_Grade = //
-                                    //Current_External_Rating = string.Empty, //function 待code
-                                    //Current_External_Rating_1 = //
-                                    //Current_External_Rating_2 = //
-                                    //Current_External_Rating_3 = //
-                                    //Current_External_Rating_4 = //
-                                    //Current_External_Rating_On_Missing = //
-                                    //Current_Internal_Rating = //
-                                    //Default_Ind = //
-                                    Delinquent_Days = getLoanAccountInfo(AccountData, x.Reference_Nbr).Delinquent_Days,
-                                    //Early_Warning_Ind
-                                    //Five_Types_Delinquent_Category
-                                    Ias39_Impaire_Ind = x.IAS39_Impaire_Ind,
-                                    Ias39_Impaire_Desc = x.IAS39_Impaire_Desc,
-                                    //Industry_Average_Rating = //
-                                    //Manual_Identified_Impaire_Stage_Code = //
-                                    //Internal_Risk_Classification = //
-                                    //Off_Bs_Item_Paid_Amt = //
-                                    //Original_External_Rating = string.Empty, //function 待code
-                                    //Original_External_Rating_1 = //
-                                    //Original_External_Rating_2 = //
-                                    //Original_External_Rating_3 = //
-                                    //Original_External_Rating_4 = //
-                                    //Original_External_Rating_On_Missing = //
-                                    //Original_Internal_Rating = //
-                                    //Other_BadCredit_Ind = //
-                                    //Other_Lending_Max_Delinquent_Days = //
-                                    //Product_Average_Rating = //
-                                    Restructure_Ind = x.Restructure_Ind,
-                                    //Ten_Types_Delinquent_Category
-                                    //Watch_List_Ind
-                                    //Write_Off_Ind
-                                    //Version
-                                    //Lien_position
-                                    //Ori_Amount
-                                    //Payment_Frequency = getLoanAccountInfo(AccountData, x.Reference_Nbr).p
+                                        Product_Code = "Loan01",
+                                        //Department
+                                        //PD_Model_Code
+                                        Current_Rating_Code = getLoanAccountInfo(AccountData, x.Reference_Nbr).Current_Rating_Code,
+                                        //Report_Date
+                                        Maturity_Date = TypeTransfer.stringToADDateTimeN(
+                                            getLoanAccountInfo(AccountData, x.Reference_Nbr).Lexp_Date),
+                                        //Account_Code
+                                        //BadCredit_Ind
+                                        //Charge_Off_Ind
+                                        Collateral_Legal_Action_Ind = x.Collateral_Legal_Action_Ind,
+                                        //Credit_Black_List_Ind = //
+                                        //Credit_Card_Block_code = //
+                                        //Credit_Review_Risk_Grade = //
+                                        //Current_External_Rating = string.Empty, //function 待code
+                                        //Current_External_Rating_1 = //
+                                        //Current_External_Rating_2 = //
+                                        //Current_External_Rating_3 = //
+                                        //Current_External_Rating_4 = //
+                                        //Current_External_Rating_On_Missing = //
+                                        //Current_Internal_Rating = //
+                                        //Default_Ind = //
+                                        Delinquent_Days = getLoanAccountInfo(AccountData, x.Reference_Nbr).Delinquent_Days,
+                                        //Early_Warning_Ind
+                                        //Five_Types_Delinquent_Category
+                                        Ias39_Impaire_Ind = x.IAS39_Impaire_Ind,
+                                        Ias39_Impaire_Desc = x.IAS39_Impaire_Desc,
+                                        //Industry_Average_Rating = //
+                                        //Manual_Identified_Impaire_Stage_Code = //
+                                        //Internal_Risk_Classification = //
+                                        //Off_Bs_Item_Paid_Amt = //
+                                        //Original_External_Rating = string.Empty, //function 待code
+                                        //Original_External_Rating_1 = //
+                                        //Original_External_Rating_2 = //
+                                        //Original_External_Rating_3 = //
+                                        //Original_External_Rating_4 = //
+                                        //Original_External_Rating_On_Missing = //
+                                        //Original_Internal_Rating = //
+                                        //Other_BadCredit_Ind = //
+                                        //Other_Lending_Max_Delinquent_Days = //
+                                        //Product_Average_Rating = //
+                                        Restructure_Ind = x.Restructure_Ind,
+                                        //Ten_Types_Delinquent_Category
+                                        //Watch_List_Ind
+                                        //Write_Off_Ind
+                                        //Version
+                                        //Lien_position
+                                        //Ori_Amount
+                                        //Payment_Frequency = getLoanAccountInfo(AccountData, x.Reference_Nbr).p
                                     };
                                 }));
                             db.SaveChanges();

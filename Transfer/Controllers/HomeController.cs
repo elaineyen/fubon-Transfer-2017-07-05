@@ -2,6 +2,7 @@
 
 namespace Transfer.Controllers
 {
+    [Authorize]
     public class HomeController : CommonController
     {
         public ActionResult Index()

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 using System.Web.Security;
 using Transfer.Models;
 using Transfer.Utility;
@@ -17,14 +18,27 @@ namespace Transfer.Controllers
 
     public class AccountController : Controller
     {
+        protected override void Initialize(RequestContext requestContext)
+        {
+            base.Initialize(requestContext);
+
+            requestContext.HttpContext.Response.Cache.SetCacheability(HttpCacheability.NoCache);
+            requestContext.HttpContext.Response.Cache.SetExpires(DateTime.MinValue);
+            requestContext.HttpContext.Response.Cache.SetNoStore();
+        }
+
         private IFRS9Entities db = new IFRS9Entities();
         // GET: Account
         public ActionResult Login()
         {
-            if (TempData.Count > 0 && TempData["Login"] != null)
-                ViewBag.Login = TempData["Login"].ToString();
-            else
-                ViewBag.Login = string.Empty;
+            //if (TempData["Login"] != null)
+            //    ViewBag.Login = TempData["Login"].ToString();
+            //else
+            //    ViewBag.Login = string.Empty;
+            //if (TempData["User"] != null)
+            //    ViewBag.User = TempData["User"].ToString();
+            //if (TempData["Logout"] != null)
+            //    ViewBag.Logout = TempData["Logout"];
             return View();
         }
 
@@ -113,6 +127,7 @@ namespace Transfer.Controllers
             }
             else
             {
+                TempData["User"] = userId;
                 TempData["Login"] = "請輸入正確的帳號或密碼!";
                 return RedirectToAction("Login", "Account");
             }
@@ -134,8 +149,8 @@ namespace Transfer.Controllers
             HttpCookie cookie2 = new HttpCookie("ASP.NET_SessionId", "");
             cookie2.Expires = DateTime.Now.AddYears(-1);
             Response.Cookies.Add(cookie2);
-
-            return RedirectToAction("Index", "Home");
+            TempData["Logout"] = "true";
+            return RedirectToAction("Login");
         }
 
         private void LoginProcess(string user, bool isRemeber)

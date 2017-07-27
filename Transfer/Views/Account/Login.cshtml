@@ -1,29 +1,36 @@
 ﻿@{
     Layout = null;
 }
-
 <!DOCTYPE html>
 <link rel="stylesheet" type="text/css" href="~/Content/Login.css" />
 <script src="~/Scripts/jquery-1.10.2.min.js"></script>
 <script src="~/Scripts/bootstrap.min.js"></script>
+<script src="~/Scripts/jquery.validate.min.js"></script>
+<script src="~/Scripts/toastr.js"></script>
+<link rel="stylesheet" href="~/Content/toastr.css" type="text/css" />
+<style>
+    #toast-container > div {
+        left :40%;
+    }
+</style>
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Login</title>
 </head>
 <body>
-    <div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="padding-top: 30px;">
+    <div class="modal fade" id="login-modal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" style="padding-top: 100px;">
         <div class="modal-dialog">
             <div class="loginmodal-container">
-                <h1>Login to Your AD Account</h1><br>
-                @using (Html.BeginForm("Logon", "Account",FormMethod.Post))
+                <h1>IFRS9 Login</h1><br>
+                @using (Html.BeginForm("Logon", "Account", FormMethod.Post, new { id = "loginFrom" }))
                 {
                     // 跨網站的偽造要求(CSRF)
                     @Html.AntiForgeryToken()
                     <input class="form-control" data-toggle="tooltip" title="請輸入帳號"
-                            type="text" name="userId" placeholder="Username">
+                            id="userName" type="text" name="userId" placeholder="Username">
                     <input class="form-control" data-toggle="tooltip" title="請輸入密碼"
-                            type="password" name="pwd" placeholder="Password">
+                            id="passWord" type="password" name="pwd" placeholder="Password">
                     <input type="submit" name="login" class="login loginmodal-submit"
                            value="Login">
                 }
@@ -37,28 +44,44 @@
 </html>
 <script>
     (function () {
-        var msg = '@ViewBag.Login';
-        if(msg !== "")
-        {
-            toastr.warning(msg);
-        }
-        // 表單驗證
+        var User = @Html.Raw(Json.Encode(TempData["User"]));
+        var Login = @Html.Raw(Json.Encode(TempData["Login"]));
+        if(User != null)
+            $('#userName').val(User);
+        if(Login != null && Login !== "")
+            toastr.warning(Login);        
+        $("#loginFrom").validate({
+            rules: {
+                userId: { required: true },
+                pwd: { required: true }
+            }
+        })
         $('form').submit(function () {
-            var isFormValid = true;
-            $(this).find('input').each(function () {
-                var $this = $(this);
-                // 使用 trim 把空白去除
-                if ($.trim($this.val()).length === 0) {
-                    $this.addClass('error');
-                    isFormValid = false;
-                } else {
-                    $this.removeClass('error');
-                }
-            });
-            if (!isFormValid)
-                toastr.warning("請輸入帳密!")
-            return isFormValid;
+            return $('#loginFrom').valid();
         });
+
+        // 表單驗證
+        //$('form').submit(function () {
+        //    var isFormValid = true;
+        //    $(this).find('input').each(function () {
+        //        var $this = $(this);
+        //        // 使用 trim 把空白去除
+        //        if ($.trim($this.val()).length === 0) {
+        //            $this.addClass('error');
+        //            isFormValid = false;
+        //        } else {
+        //            $this.removeClass('error');
+        //        }
+        //    });
+        //    if (!isFormValid)
+        //        toastr.warning("請輸入帳密!")
+        //    return isFormValid;
+        //});
+
+        //$('#userName,#passWord').keyup(function() {
+        //    if($(this).val().trim().length > 0)
+        //        $(this).removeClass('error');
+        //});
     })()
 
 </script>
