@@ -7,10 +7,10 @@
       <Diagram DiagramId="54f7a7fcf94d4a65a6e3add9113726b1" Name="Diagram1" ZoomLevel="80">
         <EntityTypeShape EntityType="IFRS9Model.IFRS9_Log" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
         <EntityTypeShape EntityType="IFRS9Model.Moody_Monthly_PD_Info" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="IFRS9Model.Moody_Predit_PD_Info" Width="1.5" PointX="0.75" PointY="8.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="IFRS9Model.Moody_Quartly_PD_Info" Width="1.5" PointX="0.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="IFRS9Model.Moody_Predit_PD_Info" Width="1.5" PointX="0.75" PointY="8.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="IFRS9Model.Moody_Quartly_PD_Info" Width="1.5" PointX="0.75" PointY="4.125" IsExpanded="true" />
         <EntityTypeShape EntityType="IFRS9Model.Moody_Tm_YYYY" Width="1.5" PointX="2.75" PointY="3.75" />
-        <EntityTypeShape EntityType="IFRS9Model.Grade_Moody_Info" Width="1.5" PointX="0.75" PointY="5.875" />
+        <EntityTypeShape EntityType="IFRS9Model.Grade_Moody_Info" Width="1.5" PointX="0.75" PointY="6.125" />
         <EntityTypeShape EntityType="IFRS9Model.Bond_Account_Info" Width="1.5" PointX="4.875" PointY="0.75" />
         <EntityTypeShape EntityType="IFRS9Model.IFRS9_Main" Width="1.5" PointX="7" PointY="0.75" />
         <EntityTypeShape EntityType="IFRS9Model.EL_Data_In" Width="1.5" PointX="9" PointY="0.75" />
@@ -20,7 +20,6 @@
         <EntityTypeShape EntityType="IFRS9Model.IFRS9_User" Width="1.5" PointX="11.25" PointY="7.625" />
         <AssociationConnector Association="IFRS9Model.fk_Menu" />
         <AssociationConnector Association="IFRS9Model.fk_Menu_Id" />
-        <AssociationConnector Association="IFRS9Model.fk_User_Name" />
         <EntityTypeShape EntityType="IFRS9Model.Loan_Account_Info" Width="1.5" PointX="11.25" PointY="0.75" />
         <EntityTypeShape EntityType="IFRS9Model.Loan_IAS39_Info" Width="1.5" PointX="13.5" PointY="0.75" />
       </Diagram>

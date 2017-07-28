@@ -186,25 +186,29 @@ namespace Transfer.Controllers
                 #region save Moody_Tm_YYYY(A71)
                 tableName = Table_Type.A71.GetDescription();
                 MSGReturnModel resultA71 = A7Repository.saveA71(dataModel); //save to DB
-                bool A71Log = CommonFunction.saveLog("A71",tableName, fileName, proName, resultA71.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                bool A71Log = CommonFunction.saveLog("A71",tableName, fileName, proName,
+                    resultA71.RETURN_FLAG,Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA71.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
                 #region save Tm_Adjust_YYYY(A72)
                 tableName = Table_Type.A72.GetDescription();
                 MSGReturnModel resultA72 = A7Repository.saveA72(); //save to DB
-                bool A72Log = CommonFunction.saveLog("A72",tableName, fileName, proName, resultA72.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                bool A72Log = CommonFunction.saveLog("A72",tableName, fileName, proName, 
+                    resultA72.RETURN_FLAG, Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA72.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
                 #region save GM_YYYY(A73)
                 tableName = Table_Type.A73.GetDescription();
                 MSGReturnModel resultA73 = A7Repository.saveA73(); //save to DB
-                bool A73Log = CommonFunction.saveLog("A73",tableName, fileName, proName, resultA73.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                bool A73Log = CommonFunction.saveLog("A73",tableName, fileName, proName, 
+                    resultA73.RETURN_FLAG, Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA73.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
                 #region save Grade_Moody_Info(A51)
                 tableName = Table_Type.A51.GetDescription();
                 MSGReturnModel resultA51 = A7Repository.saveA51(); //save to DB
-                bool A51Log = CommonFunction.saveLog("A51",tableName, fileName, proName, resultA51.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                bool A51Log = CommonFunction.saveLog("A51",tableName, fileName, proName,
+                    resultA51.RETURN_FLAG, Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA51.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 

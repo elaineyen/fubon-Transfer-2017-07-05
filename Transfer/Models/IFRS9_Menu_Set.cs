@@ -19,6 +19,5 @@ namespace Transfer.Models
         public string Menu_Id { get; set; }
     
         public virtual IFRS9_Menu_Sub IFRS9_Menu_Sub { get; set; }
-        public virtual IFRS9_User IFRS9_User { get; set; }
     }
 }

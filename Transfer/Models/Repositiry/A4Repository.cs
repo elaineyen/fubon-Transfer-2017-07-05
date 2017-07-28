@@ -81,7 +81,13 @@ namespace Transfer.Models.Repositiry
         }
         #endregion
 
-        #region 
+        #region  GetLogData
+        /// <summary>
+        /// get IFRS9_data
+        /// </summary>
+        /// <param name="tableTypes"></param>
+        /// <param name="debt"></param>
+        /// <returns></returns>
         public List<string> GetLogData(List<string> tableTypes, string debt)
         {
             List<string> result = new List<string>();
@@ -92,7 +98,8 @@ namespace Transfer.Models.Repositiry
                     foreach (string tableType in tableTypes)
                     {
                         var items = db.IFRS9_Log.AsEnumerable()
-                             .Where(x => tableType.Equals(x.Table_type)).ToList();
+                             .Where(x => tableType.Equals(x.Table_type) &&
+                             debt.Equals(x.Debt_Type)).ToList();
                         if (items.Count > 0)
                         {
                             var lastDate = items.Max(y => y.Create_date);
@@ -107,7 +114,6 @@ namespace Transfer.Models.Repositiry
                                       "Y".Equals(x.TYPE) ? "成功" : "失敗"
                                       );
                                 }));
-
                         }
                     }
                 }

@@ -106,6 +106,7 @@
           <Property Name="End_date" Type="varchar" MaxLength="8" />
           <Property Name="End_time" Type="varchar" MaxLength="8" />
           <Property Name="TYPE" Type="char" MaxLength="1" />
+          <Property Name="Debt_Type" Type="char" MaxLength="1" />
         </EntityType>
         <EntityType Name="IFRS9_Main">
           <Key>
@@ -347,18 +348,6 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-        <Association Name="fk_User_Name">
-          <End Role="IFRS9_User" Type="Self.IFRS9_User" Multiplicity="1" />
-          <End Role="IFRS9_Menu_Set" Type="Self.IFRS9_Menu_Set" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IFRS9_User">
-              <PropertyRef Name="User_Name" />
-            </Principal>
-            <Dependent Role="IFRS9_Menu_Set">
-              <PropertyRef Name="User_Name" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityContainer Name="IFRS9ModelStoreContainer">
           <EntitySet Name="Bond_Account_Info" EntityType="Self.Bond_Account_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EL_Data_In" EntityType="Self.EL_Data_In" Schema="dbo" store:Type="Tables" />
@@ -383,10 +372,6 @@
             <End Role="IFRS9_Menu_Sub" EntitySet="IFRS9_Menu_Sub" />
             <End Role="IFRS9_Menu_Set" EntitySet="IFRS9_Menu_Set" />
           </AssociationSet>
-          <AssociationSet Name="fk_User_Name" Association="Self.fk_User_Name">
-            <End Role="IFRS9_User" EntitySet="IFRS9_User" />
-            <End Role="IFRS9_Menu_Set" EntitySet="IFRS9_Menu_Set" />
-          </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
     <!-- CSDL content -->
@@ -406,6 +391,7 @@
           <Property Name="End_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
           <Property Name="TYPE" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
           <Property Name="Table_type" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Debt_Type" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
         </EntityType>
         <EntityType Name="Moody_Monthly_PD_Info">
           <Key>
@@ -460,10 +446,6 @@
           </AssociationSet>
           <AssociationSet Name="fk_Menu_Id" Association="IFRS9Model.fk_Menu_Id">
             <End Role="IFRS9_Menu_Sub" EntitySet="IFRS9_Menu_Sub" />
-            <End Role="IFRS9_Menu_Set" EntitySet="IFRS9_Menu_Set" />
-          </AssociationSet>
-          <AssociationSet Name="fk_User_Name" Association="IFRS9Model.fk_User_Name">
-            <End Role="IFRS9_User" EntitySet="IFRS9_User" />
             <End Role="IFRS9_Menu_Set" EntitySet="IFRS9_Menu_Set" />
           </AssociationSet>
           <EntitySet Name="Loan_Account_Info" EntityType="IFRS9Model.Loan_Account_Info" />
@@ -635,7 +617,7 @@
           <Property Name="Report_Date" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="Processing_Date" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="Product_Code" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="false" />
-          <Property Name="Reference_Nbr" Type="String" Nullable="false" />
+          <Property Name="Reference_Nbr" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
           <Property Name="Current_Rating_Code" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Exposure" Type="Double" />
           <Property Name="Actual_Year_To_Maturity" Type="Double" />
@@ -670,7 +652,6 @@
           <Property Name="User_Name" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
           <Property Name="Menu_Id" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="IFRS9_Menu_Sub" Relationship="IFRS9Model.fk_Menu_Id" FromRole="IFRS9_Menu_Set" ToRole="IFRS9_Menu_Sub" />
-          <NavigationProperty Name="IFRS9_User" Relationship="IFRS9Model.fk_User_Name" FromRole="IFRS9_Menu_Set" ToRole="IFRS9_User" />
         </EntityType>
         <EntityType Name="IFRS9_Menu_Sub">
           <Key>
@@ -690,7 +671,6 @@
           </Key>
           <Property Name="User_Name" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
           <Property Name="User_Password" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="IFRS9_Menu_Set" Relationship="IFRS9Model.fk_User_Name" FromRole="IFRS9_User" ToRole="IFRS9_Menu_Set" />
         </EntityType>
         <Association Name="fk_Menu">
           <End Type="IFRS9Model.IFRS9_Menu_Main" Role="IFRS9_Menu_Main" Multiplicity="1" />
@@ -713,18 +693,6 @@
             </Principal>
             <Dependent Role="IFRS9_Menu_Set">
               <PropertyRef Name="Menu_Id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="fk_User_Name">
-          <End Type="IFRS9Model.IFRS9_User" Role="IFRS9_User" Multiplicity="1" />
-          <End Type="IFRS9Model.IFRS9_Menu_Set" Role="IFRS9_Menu_Set" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IFRS9_User">
-              <PropertyRef Name="User_Name" />
-            </Principal>
-            <Dependent Role="IFRS9_Menu_Set">
-              <PropertyRef Name="User_Name" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -790,6 +758,7 @@
           <EntitySetMapping Name="IFRS9_Log">
             <EntityTypeMapping TypeName="IFRS9Model.IFRS9_Log">
               <MappingFragment StoreEntitySet="IFRS9_Log">
+                <ScalarProperty Name="Debt_Type" ColumnName="Debt_Type" />
                 <ScalarProperty Name="Table_type" ColumnName="Table_type" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="Table_name" ColumnName="Table_name" />

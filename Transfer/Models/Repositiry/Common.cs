@@ -11,10 +11,12 @@ namespace Transfer.Models.Repositiry
         /// <summary>
         /// Log資料存到Sql(IFRS9_Log)
         /// </summary>
+        /// <param name="tableType">table簡寫</param>
         /// <param name="tableName">table名</param>
         /// <param name="fileName">檔案名</param>
         /// <param name="programName">專案名</param>
         /// <param name="falg">成功失敗</param>
+        /// <param name="deptType">B:債券 M:房貸 (共用同一table時做區分)</param>
         /// <param name="start">開始時間</param>
         /// <param name="end">結束時間</param>
         /// <returns>回傳成功或失敗</returns>
@@ -24,6 +26,7 @@ namespace Transfer.Models.Repositiry
             string fileName,
             string programName,
             bool falg,
+            string deptType,
             DateTime start,
             DateTime end)
         {
@@ -46,7 +49,8 @@ namespace Transfer.Models.Repositiry
                     Create_time = start.ToString("HH:mm:ss"),
                     End_date = end.ToString("yyyyMMdd"),
                     End_time = end.ToString("HH:mm:ss"),
-                    TYPE = falg ? "Y" : "N"
+                    TYPE = falg ? "Y" : "N",
+                    Debt_Type = deptType
                 });
                 db.SaveChanges(); //DB SAVE
             }

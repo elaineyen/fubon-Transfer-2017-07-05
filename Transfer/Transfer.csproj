@@ -150,6 +150,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\A7Controller.cs" />
     <Compile Include="Controllers\A4Controller.cs" />
+    <Compile Include="Controllers\SystemController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -206,6 +207,7 @@
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Interface\IA4Repository.cs" />
+    <Compile Include="Models\Interface\ISystemRepository.cs" />
     <Compile Include="Models\Interface\IA5Repository.cs" />
     <Compile Include="Models\Interface\IA7Repository.cs" />
     <Compile Include="Models\Interface\IA8Repository.cs" />
@@ -231,6 +233,7 @@
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Repositiry\A4Repository.cs" />
+    <Compile Include="Models\Repositiry\SystemRepository.cs" />
     <Compile Include="Models\Repositiry\A8Repository.cs" />
     <Compile Include="Models\Repositiry\A5Repository.cs" />
     <Compile Include="Models\Repositiry\A7Repository.cs" />
@@ -447,6 +450,8 @@
     <Content Include="Views\A4\A42Detail.cshtml" />
     <Content Include="Views\Account\Menu.cshtml" />
     <Content Include="Views\A4\A43Detail.cshtml" />
+    <Content Include="Views\System\Index.cshtml" />
+    <Content Include="Views\System\SetMenu.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

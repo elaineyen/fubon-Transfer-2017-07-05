@@ -157,21 +157,24 @@ namespace Transfer.Controllers
                 #region save Moody_Monthly_PD_Info(A81)
                 tableName = Table_Type.A81.GetDescription();
                 MSGReturnModel resultA81 = A8Repository.SaveA8("A81",dataModel); //save to DB
-                bool A81Log = CommonFunction.saveLog("A81",tableName, fileName, proName, resultA81.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                bool A81Log = CommonFunction.saveLog("A81",tableName, fileName, proName, 
+                    resultA81.RETURN_FLAG, Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA81.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
                 #region save Moody_Quartly_PD_Info(A82)
                 tableName = Table_Type.A82.GetDescription();
                 MSGReturnModel resultA82 = A8Repository.SaveA8("A82",dataModel); //save to DB
-                bool A82Log = CommonFunction.saveLog("A82",tableName, fileName, proName, resultA82.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                bool A82Log = CommonFunction.saveLog("A82",tableName, fileName, proName,
+                    resultA82.RETURN_FLAG, Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA82.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
                 #region save Moody_Predit_PD_Info(A83)
                 tableName = Table_Type.A83.GetDescription();
                 MSGReturnModel resultA83 = A8Repository.SaveA8("A83",dataModel); //save to DB
-                bool A83Log = CommonFunction.saveLog("A83",tableName, fileName, proName, resultA83.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                bool A83Log = CommonFunction.saveLog("A83",tableName, fileName, proName,
+                    resultA83.RETURN_FLAG, Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA83.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 

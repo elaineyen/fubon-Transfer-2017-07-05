@@ -14,16 +14,7 @@ namespace Transfer.Models
     
     public partial class IFRS9_User
     {
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
-        public IFRS9_User()
-        {
-            this.IFRS9_Menu_Set = new HashSet<IFRS9_Menu_Set>();
-        }
-    
         public string User_Name { get; set; }
         public string User_Password { get; set; }
-    
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<IFRS9_Menu_Set> IFRS9_Menu_Set { get; set; }
     }
 }

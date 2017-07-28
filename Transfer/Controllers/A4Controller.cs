@@ -218,7 +218,8 @@ namespace Transfer.Controllers
                 tableName = table.GetDescription() ;
                 MSGReturnModel resultA41 = A4Repository.saveA41(dataModel); //save to DB
                 bool A41Log = CommonFunction.saveLog(table.ToString(),tableName,
-                    fileName, proName, resultA41.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                    fileName, proName, resultA41.RETURN_FLAG,
+                    Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA41.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
@@ -263,11 +264,7 @@ namespace Transfer.Controllers
             {
                 switch (type)
                 {
-                    case "A41": //Bond_Account_Info(A41)資料
-                        //if (!Cache.IsSet("A41DbfileData") ||
-                        //    0.Equals(((List<A41ViewModel>)Cache.Get("A41DbfileData")).Count))
-                        ////無Cache 設定 或Cache 資料為0筆
-                        //{
+                    case "A41":
                             var A41Data = A4Repository.GetA41(searchType, value,d);
                             result.RETURN_FLAG = A41Data.Item1;
                             Cache.Invalidate("A41DbfileData"); //清除
@@ -330,13 +327,15 @@ namespace Transfer.Controllers
                 case "B01":
                     result = A4Repository.saveB01(version, dat, debt);
                     tableName = Table_Type.B01.GetDescription();
-                    bool B01Log = CommonFunction.saveLog("B01", tableName, fileName, proName, result.RETURN_FLAG, startTime, DateTime.Now); //寫sql Log
+                    bool B01Log = CommonFunction.saveLog("B01", tableName, fileName, proName, 
+                        result.RETURN_FLAG, debt, startTime, DateTime.Now); //寫sql Log
                     result.Datas = Json(transferMessage(next, "C01")); //回傳要不要做下一個transfer
                     break;
                 case "C01":
                     result = A4Repository.saveC01(version, dat, debt);
                     tableName = Table_Type.C01.GetDescription();
-                    bool C01Log = CommonFunction.saveLog("C01", tableName, fileName, proName, result.RETURN_FLAG, startTime, DateTime.Now);
+                    bool C01Log = CommonFunction.saveLog("C01", tableName, fileName, proName, 
+                        result.RETURN_FLAG, debt, startTime, DateTime.Now); //寫sql Log
                     result.Datas = Json(transferMessage(false, string.Empty)); //目前到C01 而已
                     break;
             }
