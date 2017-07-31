@@ -23,6 +23,20 @@ namespace Transfer.Utility
         }
         #endregion
 
+        #region String To Double 
+        /// <summary>
+        /// string 轉 Double
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static double stringToDouble(string value)
+        {
+            double d = 0d;
+            double.TryParse(value, out d);
+            return d;
+        }
+        #endregion
+
         #region String To Double?
         /// <summary>
         /// string 轉 Double?
@@ -34,6 +48,23 @@ namespace Transfer.Utility
             double d = 0d;
             if (double.TryParse(value, out d))
                 return d;
+            return null;
+        }
+        #endregion
+
+        #region string (XX.XX%) To Double?
+        /// <summary>
+        /// string (XX.XX%) To Double?
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static double? stringToDoubleNByP(string value)
+        {
+            double d = 0d;
+            if (!value.IsNullOrWhiteSpace() &&
+                value.EndsWith("%") &&
+                double.TryParse(value.Split('%')[0], out d))
+                return d / 100;
             return null;
         }
         #endregion
@@ -162,6 +193,38 @@ namespace Transfer.Utility
             if (value != null)
                 return value.ToString();
             return string.Empty;
+        }
+        #endregion
+
+        #region obj To double
+        /// <summary>
+        /// object 轉 double
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static double objToDouble(object value)
+        {
+            double d = 0d;
+            if (value != null)
+                double.TryParse(value.ToString(), out d);
+            return d;
+        }
+        #endregion
+
+        #region  obj To double?  (轉string包含%)
+        /// <summary>
+        /// object 轉 double? (轉string包含%)
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static double? objToDoubleNByP(object value)
+        {
+            double d = 0d;
+            if (value != null)
+                if (value.ToString().EndsWith("%"))
+                    if (double.TryParse(value.ToString().Split('%')[0], out d))
+                        return d/100;
+            return null;
         }
         #endregion
 

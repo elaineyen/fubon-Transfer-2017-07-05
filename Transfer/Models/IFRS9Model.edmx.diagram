@@ -22,6 +22,7 @@
         <AssociationConnector Association="IFRS9Model.fk_Menu_Id" />
         <EntityTypeShape EntityType="IFRS9Model.Loan_Account_Info" Width="1.5" PointX="11.25" PointY="0.75" />
         <EntityTypeShape EntityType="IFRS9Model.Loan_IAS39_Info" Width="1.5" PointX="13.5" PointY="0.75" />
+        <EntityTypeShape EntityType="IFRS9Model.Moody_LGD_Info" Width="1.5" PointX="2.75" PointY="9.5" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

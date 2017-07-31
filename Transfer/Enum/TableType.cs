@@ -20,6 +20,18 @@ namespace Transfer.Enum
             A51,
 
             /// <summary>
+            /// Moody_Recovery_Info
+            /// </summary>
+            [Description("Moody_Recovery_Info")]
+            A61,
+
+            /// <summary>
+            /// Moody_LGD_Info
+            /// </summary>
+            [Description("Moody_LGD_Info")]
+            A62,
+
+            /// <summary>
             /// Moody_Tm_YYYY
             /// </summary>
             [Description("Moody_Tm_YYYY")]

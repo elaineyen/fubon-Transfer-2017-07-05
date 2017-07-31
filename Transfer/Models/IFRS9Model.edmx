@@ -262,6 +262,16 @@
           <Property Name="Bad_Debt_Ind" Type="varchar" MaxLength="1" />
           <Property Name="Collection_Ind" Type="varchar" MaxLength="1" />
         </EntityType>
+        <EntityType Name="Moody_LGD_Info">
+          <Key>
+            <PropertyRef Name="Data_Year" />
+            <PropertyRef Name="Lien_Position" />
+          </Key>
+          <Property Name="Data_Year" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Lien_Position" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="Recovery_Rate" Type="float" />
+          <Property Name="LGD" Type="float" />
+        </EntityType>
         <EntityType Name="Moody_Monthly_PD_Info">
           <Key>
             <PropertyRef Name="Id" />
@@ -360,6 +370,7 @@
           <EntitySet Name="IFRS9_User" EntityType="Self.IFRS9_User" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Loan_Account_Info" EntityType="Self.Loan_Account_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Loan_IAS39_Info" EntityType="Self.Loan_IAS39_Info" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Moody_LGD_Info" EntityType="Self.Moody_LGD_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Monthly_PD_Info" EntityType="Self.Moody_Monthly_PD_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Predit_PD_Info" EntityType="Self.Moody_Predit_PD_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Quartly_PD_Info" EntityType="Self.Moody_Quartly_PD_Info" Schema="dbo" store:Type="Tables" />
@@ -450,6 +461,7 @@
           </AssociationSet>
           <EntitySet Name="Loan_Account_Info" EntityType="IFRS9Model.Loan_Account_Info" />
           <EntitySet Name="Loan_IAS39_Info" EntityType="IFRS9Model.Loan_IAS39_Info" />
+          <EntitySet Name="Moody_LGD_Info" EntityType="IFRS9Model.Moody_LGD_Info" />
         </EntityContainer>
         <EntityType Name="Moody_Tm_YYYY">
           <Key>
@@ -748,6 +760,16 @@
           <Property Name="Collateral_Legal_Action_Ind" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
           <Property Name="Bad_Debt_Ind" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
           <Property Name="Collection_Ind" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Moody_LGD_Info">
+          <Key>
+            <PropertyRef Name="Data_Year" />
+            <PropertyRef Name="Lien_Position" />
+          </Key>
+          <Property Name="Data_Year" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Lien_Position" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Recovery_Rate" Type="Double" />
+          <Property Name="LGD" Type="Double" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1084,6 +1106,16 @@
                 <ScalarProperty Name="EIR" ColumnName="EIR" />
                 <ScalarProperty Name="Mdr_Month" ColumnName="Mdr_Month" />
                 <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Moody_LGD_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Moody_LGD_Info">
+              <MappingFragment StoreEntitySet="Moody_LGD_Info">
+                <ScalarProperty Name="LGD" ColumnName="LGD" />
+                <ScalarProperty Name="Recovery_Rate" ColumnName="Recovery_Rate" />
+                <ScalarProperty Name="Lien_Position" ColumnName="Lien_Position" />
+                <ScalarProperty Name="Data_Year" ColumnName="Data_Year" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

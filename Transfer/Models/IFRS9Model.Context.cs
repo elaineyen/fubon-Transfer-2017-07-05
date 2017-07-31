@@ -40,5 +40,6 @@ namespace Transfer.Models
         public virtual DbSet<IFRS9_User> IFRS9_User { get; set; }
         public virtual DbSet<Loan_Account_Info> Loan_Account_Info { get; set; }
         public virtual DbSet<Loan_IAS39_Info> Loan_IAS39_Info { get; set; }
+        public virtual DbSet<Moody_LGD_Info> Moody_LGD_Info { get; set; }
     }
 }

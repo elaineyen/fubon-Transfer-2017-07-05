@@ -148,6 +148,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\A6Controller.cs" />
     <Compile Include="Controllers\A7Controller.cs" />
     <Compile Include="Controllers\A4Controller.cs" />
     <Compile Include="Controllers\SystemController.cs" />
@@ -207,6 +208,7 @@
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Interface\IA4Repository.cs" />
+    <Compile Include="Models\Interface\IA6Repository.cs" />
     <Compile Include="Models\Interface\ISystemRepository.cs" />
     <Compile Include="Models\Interface\IA5Repository.cs" />
     <Compile Include="Models\Interface\IA7Repository.cs" />
@@ -218,6 +220,9 @@
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Loan_IAS39_Info.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Moody_LGD_Info.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Moody_Monthly_PD_Info.cs">
@@ -233,6 +238,7 @@
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Repositiry\A4Repository.cs" />
+    <Compile Include="Models\Repositiry\A6Repository.cs" />
     <Compile Include="Models\Repositiry\SystemRepository.cs" />
     <Compile Include="Models\Repositiry\A8Repository.cs" />
     <Compile Include="Models\Repositiry\A5Repository.cs" />
@@ -250,6 +256,7 @@
     <Compile Include="Utility\Utility.cs" />
     <Compile Include="ViewModels\A81ViewModel.cs" />
     <Compile Include="ViewModels\A41ViewModel.cs" />
+    <Compile Include="ViewModels\Exhibit7Model.cs" />
     <Compile Include="ViewModels\Exhibit29Model.cs" />
     <Compile Include="ViewModels\Exhibit10Model.cs" />
     <Compile Include="ViewModels\ValidateFiles.cs" />
@@ -452,6 +459,8 @@
     <Content Include="Views\A4\A43Detail.cshtml" />
     <Content Include="Views\System\Index.cshtml" />
     <Content Include="Views\System\SetMenu.cshtml" />
+    <Content Include="Views\A6\Index.cshtml" />
+    <Content Include="Views\A6\A62Detail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
