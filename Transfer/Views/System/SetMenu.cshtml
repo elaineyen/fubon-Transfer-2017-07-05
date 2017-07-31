@@ -1,19 +1,37 @@
-﻿@{
+﻿@using Transfer.Utility
+@{
     ViewBag.Manu = "SystemMain";
     ViewBag.SubManu = "System1Sub";
     ViewBag.Title = "設定";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="container" id="main" >
+<style>
+    fieldset.scheduler-border {
+    border: 1px groove #ddd !important;
+    padding: 0 1.4em 1.4em 1.4em !important;
+    margin: 0 0 1.5em 0 !important;
+    -webkit-box-shadow:  0px 0px 0px 0px #000;
+            box-shadow:  0px 0px 0px 0px #000;
+}
+    legend.scheduler-border {
+    width:inherit; /* Or auto */
+    padding:0 10px; /* To give a bit of padding on the left and right */
+    border-bottom:none;
+}
+</style>
+<div class="container" id="main">
     <div class="row main_hand">
         <div class="col-md-12 main_hand_div">
             <table>
                 <tr>
-                    <td>
-
+                    <td width="450px">
+                        <label>帳號設定 : </label>
+                        @Html.DropDownList("setUser",
+                           (SelectList)ViewBag.users,
+                            new { @class = "form-control", @style = "display:inline-block" })
                     </td>
                     <td>
-
+                        <input type="button" class="btn btn-primary" value="儲存設定" id="btnMenuSave" />
                     </td>
                 </tr>
             </table>
@@ -21,12 +39,90 @@
     </div>
     <div class="row main_body" style="overflow:auto;height:100%">
         <div class="col-md-12">
+            <div id="menuCheckbox">
+
+            </div>
 
         </div>
     </div>
 </div>
 <script type="text/javascript">
     $(function () {
+        //#region 註冊URL
+        var url = {};
+        url.user = '@Url.Action("GetUser", "System")';
+        url.saveMenu = '@Url.Action("SaveMenu", "System")';
+        //#endregion 註冊URL
 
+        //#region user change 事件
+        $('#setUser').on('change', function (date) {
+            var selectValue = $('#setUser').val().trim();
+            if (selectValue.length > 0) {
+                $.ajax({
+                    type: "POST",
+                    data: JSON.stringify({
+                        name: selectValue
+                    }),
+                    dataType: "json",
+                    url: url.user,
+                    contentType: 'application/json'
+                })
+                .done(function (result) {
+                    if (result.RETURN_FLAG) {
+                        $("#menuCheckbox").children().remove();
+                        $('#menuCheckbox').append(
+                            '<fieldset class="scheduler-border">' +
+                                '<legend class="scheduler-border">Menu</legend>' +
+                                '<div class="control-group">' +
+                                result.Datas.Data +
+                                '</div>' +
+                            '</fieldset>'
+                        );
+                    }
+                    else {
+                        toastr.error(result.DESCRIPTION);
+                    }
+                });
+            }
+            else
+                $("#menuCheckbox").children().remove();
+        })
+        //#endregion
+
+        //#region save Menu
+        $('#btnMenuSave').on('click', function () {
+            var data = [];
+            $('input[name="menuSet"]').each(function (i,v) {               
+                data.push(CheckBoxListInfo(v.value, v.checked))
+            });            
+            $.ajax({
+                type: "POST",
+                data: JSON.stringify({
+                    data: data,
+                    userName: $('#setUser').val().trim()
+                }),
+                dataType: "json",
+                url: url.saveMenu,
+                contentType: 'application/json'
+            })
+            .done(function (result) {
+                if (result.RETURN_FLAG)
+                    toastr.success(result.DESCRIPTION);
+                else
+                    toastr.error(result.DESCRIPTION);
+            });
+        });
+        //#endregion save Menu
+
+        function CheckBoxListInfo(
+        Value,
+        IsChecked
+        ) {
+            var obj = {};
+            obj['Value'] = Value;
+            obj['IsChecked'] = IsChecked;
+            obj['DisplayText'] = null;
+            return obj;
+        }
     });
 </script>

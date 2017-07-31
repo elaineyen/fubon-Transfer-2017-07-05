@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.Serialization;
 using System.Text;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 
@@ -9,18 +11,9 @@ namespace Transfer.Utility
 {
     public class CheckBoxListInfo
     {
-        //public string Value { get; private set; }
-        //public string DisplayText { get; private set; }
-        //public bool IsChecked { get; private set; }
         public string Value { get; set; }
         public string DisplayText { get; set; }
         public bool IsChecked { get; set; }
-        public CheckBoxListInfo(string value, string displayText, bool isChecked)
-        {
-            this.Value = value;
-            this.DisplayText = displayText;
-            this.IsChecked = isChecked;
-        }
     }
     public static class Extension
     {
@@ -139,7 +132,7 @@ namespace Transfer.Utility
         /// <param name="listInfo">CheckBoxListInfo.</param>
         /// <param name="htmlAttributes">The HTML attributes.</param>
         /// <returns></returns>
-        public static string CheckBoxList(this HtmlHelper htmlHelper, string name, List<CheckBoxListInfo> listInfo, object htmlAttributes)
+        public static IHtmlString CheckBoxList(this HtmlHelper htmlHelper, string name, List<CheckBoxListInfo> listInfo, object htmlAttributes)
         {
             return htmlHelper.CheckBoxList
             (
@@ -149,7 +142,7 @@ namespace Transfer.Utility
                 0
             );
         }
- 
+
         /// <summary>
         /// CheckBoxList.
         /// </summary>
@@ -160,7 +153,7 @@ namespace Transfer.Utility
         /// <param name="direction">The direction.</param>
         /// <param name="number">每個Row的顯示個數.</param>
         /// <returns></returns>
-        public static string CheckBoxList(this HtmlHelper htmlHelper, string name, List<CheckBoxListInfo> listInfo, 
+        public static IHtmlString CheckBoxList(this HtmlHelper htmlHelper, string name, List<CheckBoxListInfo> listInfo, 
             IDictionary<string, object> htmlAttributes, int number)
         {
             if (String.IsNullOrEmpty(name))
@@ -169,14 +162,24 @@ namespace Transfer.Utility
             }
             if (listInfo == null)
             {
+                //return htmlHelper.Raw(string.Empty);
                 throw new ArgumentNullException("必須要給List<CheckBoxListInfo> listInfo");
             }
             if (listInfo.Count < 1)
             {
                 throw new ArgumentException("List<CheckBoxListInfo> listInfo 至少要有一組資料", "listInfo");
             }
+            StringBuilder sb = CheckBoxString(name, listInfo, htmlAttributes, number);
+            return htmlHelper.Raw(sb.ToString());
+        }
+        #endregion
+
+        public static StringBuilder CheckBoxString(string name, List<CheckBoxListInfo> listInfo,
+            IDictionary<string, object> htmlAttributes, int number)
+        {
             StringBuilder sb = new StringBuilder();
             int lineNumber = 0;
+            sb.Append("<table><tr>");
             foreach (CheckBoxListInfo info in listInfo)
             {
                 lineNumber++;
@@ -190,18 +193,26 @@ namespace Transfer.Utility
                 builder.MergeAttribute("value", info.Value);
                 builder.MergeAttribute("name", name);
                 builder.InnerHtml = string.Format(" {0} ", info.DisplayText);
-                sb.Append(builder.ToString(TagRenderMode.Normal));
+                sb.Append(
+                    string.Format("<td>{0}</td>",
+                    builder.ToString(TagRenderMode.Normal)));
                 if (number == 0)
                 {
-                    sb.Append("<br />");
+                    //sb.Append("<br />");
+                    sb.Append("</tr><tr>");
                 }
                 else if (lineNumber % number == 0)
                 {
-                    sb.Append("<br />");
+                    //sb.Append("<br />");
+                    sb.Append("</tr><tr>");
                 }
             }
-            return sb.ToString();
+            if (number == 0 || lineNumber % number == 0)
+                sb.Remove(sb.Length - 4, 4);
+            else
+                sb.Append("</tr>");
+            sb.Append("</table>");
+            return sb;
         }
-        #endregion
     }
 }
