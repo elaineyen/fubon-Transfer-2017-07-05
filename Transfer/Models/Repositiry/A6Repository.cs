@@ -105,8 +105,18 @@ namespace Transfer.Models.Repositiry
         #endregion
 
         #region Save Db
+
         /// <summary>
-        /// save A6
+        /// save A61
+        /// </summary>
+        /// <returns></returns>
+        public MSGReturnModel saveA61()
+        {
+            return new MSGReturnModel();
+        }
+
+        /// <summary>
+        /// save A62
         /// </summary>
         /// <param name="dataModel">Exhibit7Model</param>
         /// <returns></returns>

@@ -231,7 +231,8 @@ namespace Transfer.Controllers
                     if (!resultA51.RETURN_FLAG)
                         errs.Add(resultA51.DESCRIPTION);
 
-                    result.DESCRIPTION = string.Join("\n", errs);
+                    result.DESCRIPTION = Message_Type.save_Fail
+                        .GetDescription(null, string.Join("\n", errs));
                 }
                 #endregion
             }

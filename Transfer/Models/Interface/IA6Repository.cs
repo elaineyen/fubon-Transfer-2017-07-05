@@ -16,6 +16,11 @@ namespace Transfer.Models.Interface
         /// <returns></returns>
         List<Exhibit7Model> getExcel(string pathType, Stream stream);
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        MSGReturnModel saveA61();
 
         /// <summary>
         /// save A62 To Db

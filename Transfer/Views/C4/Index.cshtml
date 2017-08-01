@@ -1,0 +1,242 @@
+﻿@{
+    ViewBag.Manu = "C4Main";
+    ViewBag.SubManu = "C40Sub";
+    ViewBag.Title = "C4";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="container" id="main" >
+    <div class="row main_hand">
+        <div class="col-md-12 main_hand_div">
+            <table>
+                <tr>
+                    <td>
+                        @*@using (Ajax.BeginForm("Upload", "C4",
+                                new AjaxOptions { HttpMethod = "POST" },
+                                new { enctype = "multipart/form-data", @id = "form0" }))
+                        {
+                            <label for="file" class="filestyle">轉檔檔案:</label>
+                            <input type="file" name="file" />
+                        }*@
+                    </td>
+                    <td>
+                        @*<input type="button" class="btn btn-primary" style="margin-right:10px" value="資料上傳" id="fileSubmit" />*@
+                        <input type="button" class="btn btn-primary" value="轉檔" id="btnTransfer"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="row main_body" style="overflow:auto;height:100%">
+        <div class="col-md-12">
+            <div class="viewDetail">
+                <div id="jqgridDiv" class="jqd">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+    $(function () {
+
+        //#region 註冊URL
+        var url = {};
+        url.transfer = '@Url.Action("Transfer", "C4")';
+        url.getExcelData = '@Url.Action("GetCacheData", "C4")';
+        //#endregion 註冊URL
+
+        //#region 註冊click事件
+        $('input:button').each(function () {
+            var id = $(this).attr('id');
+            switch (id) {
+                case 'fileSubmit':
+                    $("#" + id).click(fileSubmitFunction);
+                    break;
+                case 'btnTransfer':
+                    $("#" + id).click(transfer);
+                    break;
+            }
+        })
+        //#endregion 註冊click事件
+
+        //#region 資料上傳(Excel 資料寫入 local sql)
+        function transfer()
+        {
+            $.blockUI(); //畫面鎖起來
+            $.ajax({
+                type: "POST",
+                url: url.transfer,
+                contentType: 'application/json'
+            })
+            .done(function (result) {
+                $.unblockUI(); //畫面打開
+                if (result.RETURN_FLAG)
+                    toastr.success(result.DESCRIPTION);
+                else
+                    toastr.error(result.DESCRIPTION);
+            })
+        }
+        //#endregion 資料上傳(Excel 資料寫入 local sql)
+
+        //#region fileSubmitFunction (把檔案上傳到指定資料夾)
+        function fileSubmitFunction()
+        {
+            $.blockUI();
+            var dataString;
+            var action = $("#form0").attr("action");
+            if ($("#form0").attr("enctype") == "multipart/form-data") {
+                dataString = new FormData($("#form0").get(0));
+                processData = false;
+            }
+            else {
+                // regular form, do your own thing if you need it
+            }
+            clearJqgrid();
+            $.ajax({
+                type: "POST",
+                url: action,
+                data: dataString,
+                dataType: "json", //change to your own, else read my note above on enabling the JsonValueProviderFactory in MVC
+                contentType: false,
+                processData: false,
+                success: function (result) {                    
+                    $.unblockUI();
+                    if (result.RETURN_FLAG) {
+                        var colNameArray =
+                            ['Reference_Nbr', 'Bond_Number', 'Lots',
+                             'Segment_Name', 'Curr_Sp_Issuer', "Curr_Moodys_Issuer",
+                             'Curr_Fitch_Issuer', 'Curr_Tw_Issuer', 'Curr_Sp_Issue',
+                             "Curr_Moodys_Issue", 'Curr_Fitch_Issue', 'Curr_Tw_Issue',
+                             'Ori_Amount', 'Current_Int_Rate', 'Origination_Date',
+                             'Maturity_Date', 'Principal_Payment_Method_Code', 'Payment_Frequency',
+                             'Balloon_Date', 'Issuer_Area', 'Industry_Sector',
+                             'Product', 'Finance_Instruments',
+                             'Ias39_Category', 'Principal',
+                             'Amort_Amt_Tw', 'Interest_Receivable',
+                             'Interest_Receivable_tw', 'Interest_Rate_Type', 'Impair_Yn',
+                             'Eir', 'Currency_Code', 'Report_Date',
+                             'Issuer', 'Country_Risk', 'Ex_rate',
+                             'Lien_position', 'Portfolio', 'Dept',
+                             'Asset_Seg', 'Ori_Ex_rate', 'Bond_Type',
+                             'Assessment_Sub_Kind', 'Processing_Date', 'Version'
+                            ];
+                        var widthArray = 
+                            ['L', 'M', 'M',
+                             'M', 'M', "M",
+                             'M', 'M', 'M',
+                             "M", 'M', 'M',
+                             'M', 'M', 'M',
+                             'M', 'M', 'M',
+                             'L', 'M', 'M',
+                             'L', 'L',
+                             'M', 'L',
+                             'L', 'M',
+                             'M', 'M', 'M',
+                             'L', 'M', 'M',
+                             'M', 'M', 'M',
+                             'M', 'M', 'M',
+                             'M', 'M', 'M',
+                             'M', 'M', 'M'
+                            ];
+                        createJqgrid("list1", "pager1", colNameArray, widthArray,"");
+                        $('#btnTransfer').prop('disabled', false);
+                    }
+                    else {
+                        toastr.warning(result.DESCRIPTION);
+                    }
+                },
+                error: function (result) {                    
+                    $.unblockUI();
+                    toastr.error(result.DESCRIPTION);
+                }
+            });
+        }
+        //#endregion fileSubmitFunction
+
+        //#region clearJqgrid (清除JqGrid)
+        function clearJqgrid()
+        {
+            $('#jqgridDiv').children().remove();
+        }
+        //#endregion clearJqgrid
+
+        //#region createJqgrid (建立JqGrid套件)
+        //listId (Jqgrid產生table的ID)
+        //pagerId (下方產生筆數的ID)
+        //colNameArray (設定上方Title *要與Data 傳入Json 屬性相對應)
+        //widthArray (寬度設定 L=> 250 M=>120)
+        //title (標題)
+        function createJqgrid(listId, pagerId, colNameArray, widthArray,title)
+        {
+            var colModelArray = [];
+            var jagridLWidth = 250;
+            var jagridMWidth = 120;
+            if (colNameArray.length > 0 && colNameArray.length === widthArray.length)
+            {
+                for (let i = 0; i < colNameArray.length; i++)
+                {
+                    var obj = {
+                        name: colNameArray[i],
+                        index: colNameArray[i],
+                        width: widthArray[i] === 'L' ? jagridLWidth : jagridMWidth
+                    }
+                    colModelArray.push(obj);
+                }
+                colNameArray =
+                            ['帳戶編號/群組編號', '債券編號', 'Lots',
+                             '債券(資產)名稱', 'S&P Issuer', "Moody's Issuer",
+                             'Fitch Issuer', 'TW Rating Issuer', 'S&P Issue',
+                             "Moody's Issue", 'Fitch Issue', 'TW Rating Issue',
+                             '原始金額', '原始利率(票面利率)', '債券購入(認列)日期',
+                             '債券到期日', '現金流類型', '票面利率週期',
+                             '贖回日期(本金一次贖回)', 'Issuer所屬區域', '對手產業別',
+                             '債券產品別(揭露使用)', '金融工具類型(金融資產/放款/金融保證)',
+                             '原公報分類', '金融資產餘額攤銷後之成本數(原幣)',
+                             '金融資產餘額(台幣)攤銷後之成本數(台幣)', '應收利息',
+                             '應收利息(台幣)', '利率類型(Fix, Float)', '是否有客觀減損證據',
+                             '原始有效利率(買入殖利率)', '債券幣別', '資料日期(MDR)',
+                             'Issuer', 'Country_Risk', '月底匯率',
+                             '債券擔保順位', 'Portfolio', '部門',
+                             '資產區隔', '成本匯率', '債券種類',
+                             'Stage評估次分類', '資料處理日期', '資料版本'
+                            ];
+                $('#jqgridDiv').append('<table id="' + listId + '"></table>');
+                $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');
+                $("#" + listId).jqGrid({
+                    url: url.getExcelData,
+                    datatype: "json",
+                    mtype: "POST",
+                    postData:
+                    {
+                        type: "Excel",
+                    },
+                    jsonReader:
+                    {
+                        repeatitems: false,
+                    },
+                    colNames: colNameArray,
+                    colModel: colModelArray,
+                    rowNum: 10, //一頁筆數
+                    rowList: [10, 20, 30], //設定一頁幾筆
+                    pager: '#' + pagerId,
+                    height: '237',
+                    width: '1030',
+                    //sortname: 'id',
+                    //viewrecords: true,
+                    //sortorder: "desc",
+                    caption: title, //標題
+                    //resizable: false,
+                    shrinkToFit: false,
+                    //autoencode: true,
+                    //viewsortcols: [true, 'vertical', true],
+                    contentType: "application/json",
+                    //ajaxRowOptions: { contentType: "application/json" },
+                    //serializeRowData: function (data) {
+                    //    return JSON.stringify(data);
+                    //},
+                });
+                $("#" + listId).jqGrid('navGrid', '#' + pagerId, { edit: false, add: false, del: false });
+            }
+        }
+        //#endregion createJqgrid
+    });
+</script>

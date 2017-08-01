@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using Transfer.Models.Interface;
 
 namespace Transfer.Models.Repositiry
@@ -88,6 +90,44 @@ namespace Transfer.Models.Repositiry
 
             string pureSqlConnection = efstr.Substring(start, length);
             return pureSqlConnection;
+        }
+
+        private int _interval = 10000;
+
+        public int Interval
+        {
+            get { return _interval; }
+            set { _interval = value; }
+        }
+        public bool IsRunning { get; internal set; }
+
+        public void Start<T>(Func<T> fun) 
+        {
+
+            if (this.IsRunning)
+            {
+                return;
+            }
+
+            this.IsRunning = true;
+
+            Task.Factory.StartNew(() =>
+            {
+                while (this.IsRunning)
+                {
+                    SpinWait.SpinUntil(() => !this.IsRunning, this.Interval);
+                    fun();
+                }
+            });
+        }
+
+        public void Stop()
+        {
+            if (!this.IsRunning)
+            {
+                return;
+            }
+            this.IsRunning = false;
         }
     }
 }

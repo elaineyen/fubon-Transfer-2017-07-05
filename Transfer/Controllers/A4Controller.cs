@@ -21,7 +21,6 @@ namespace Transfer.Controllers
         private string[] selects = { "All", "B01","C01" };
         private IA4Repository A4Repository;
         private ICommon CommonFunction;
-        private IFRS9Entities db = new IFRS9Entities();
         public ICacheProvider Cache { get; set; }
 
         public A4Controller()
