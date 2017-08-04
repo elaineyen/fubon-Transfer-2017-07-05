@@ -123,7 +123,7 @@ namespace Transfer.Models.Repositiry
                     sw.Close();
                 }
                 common.Interval = 10000;
-                Func<object> f = () => putSFTPFile(filePath, fileName);
+                Action f = () => putSFTPFile(filePath, fileName);
                 common.Start(f);
             }
             catch
@@ -132,10 +132,10 @@ namespace Transfer.Models.Repositiry
             }
 
         }
-        private string putSFTPFile(string filePath, string fileName)
+        private void putSFTPFile(string filePath, string fileName)
         {
-            string _ErrorInfo = null;
-            _ErrorInfo = "HIHITEST";
+            //string _ErrorInfo = null;
+            //_ErrorInfo = "HIHITEST";
             //string ip = "";
             //string account = "";
             //string password = "";
@@ -153,7 +153,7 @@ namespace Transfer.Models.Repositiry
             //    //MessageBox.Show("SFTP 上傳成功");
             //}
             File.AppendAllText(Path.Combine(filePath , (fileName + "2.req")), "123" );
-            return _ErrorInfo;
+            //return _ErrorInfo;
         }
 
         #endregion

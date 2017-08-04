@@ -162,7 +162,7 @@ namespace Transfer.Controllers
                 #region save Moody_Recovery_Info(A61)
                 tableName = Table_Type.A61.GetDescription();
                 MSGReturnModel resultA61 = A6Repository.saveA61(); //傳入參數自行調整帶想要帶入的
-                bool A61Log = CommonFunction.saveLog("A62", tableName, fileName, proName,
+                bool A61Log = CommonFunction.saveLog("A61", tableName, fileName, proName,
                   resultA61.RETURN_FLAG, Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA61.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion

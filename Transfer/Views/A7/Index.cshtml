@@ -80,7 +80,7 @@
         //#region fileSubmitFunction (把檔案上傳到指定資料夾)
         function fileSubmitFunction()
         {
-            $.blockUI();
+            //$.blockUI();
             var dataString;
             var action = $("#form0").attr("action");
             if ($("#form0").attr("enctype") == "multipart/form-data") {
@@ -99,7 +99,7 @@
                 contentType: false,
                 processData: false,
                 success: function (result) {
-                    $.unblockUI();
+                    //$.unblockUI();
                     if (result.RETURN_FLAG) {
                         var colNameArray =
                             ['From_To','Aaa', 'Aa1', 'Aa2',
@@ -118,7 +118,7 @@
                     }
                 },
                 error: function (result) {
-                    $.unblockUI();
+                    //$.unblockUI();
                     toastr.error(result.DESCRIPTION);
                 }
             });

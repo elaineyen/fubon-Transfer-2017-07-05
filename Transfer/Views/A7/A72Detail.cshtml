@@ -46,7 +46,6 @@
         //#region 下載Excel 檔案
         function dlExcel(type)
         {
-            $.blockUI();
             $.ajax({
                 type: "POST",
                 data: JSON.stringify({
@@ -57,7 +56,6 @@
                 contentType: 'application/json'
             })
             .done(function (result) {
-                $.unblockUI();
                 if (result.RETURN_FLAG)
                     toastr.success(result.DESCRIPTION);
                 else

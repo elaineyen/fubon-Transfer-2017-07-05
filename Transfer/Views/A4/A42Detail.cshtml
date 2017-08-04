@@ -125,7 +125,6 @@
 
         var debt = '@Transfer.Enum.Ref.Debt_Type.B.ToString()'; //債券
         function callTransfer(type, version, date, next) {
-            $.blockUI();
             $.ajax({
                 type: "POST",
                 data: JSON.stringify({

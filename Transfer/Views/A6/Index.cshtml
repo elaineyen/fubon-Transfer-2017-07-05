@@ -61,14 +61,12 @@
         //#region 資料上傳(Excel 資料寫入 local sql)
         function transfer()
         {
-            $.blockUI(); //畫面鎖起來
             $.ajax({
                 type: "POST",
                 url: url.transfer,
                 contentType: 'application/json'
             })
             .done(function (result) {
-                $.unblockUI(); //畫面打開
                 if (result.RETURN_FLAG)
                     toastr.success(result.DESCRIPTION);
                 else
@@ -80,7 +78,6 @@
         //#region fileSubmitFunction (把檔案上傳到指定資料夾)
         function fileSubmitFunction()
         {
-            $.blockUI();
             var dataString;
             var action = $("#form0").attr("action");
             if ($("#form0").attr("enctype") == "multipart/form-data") {
@@ -99,7 +96,6 @@
                 contentType: false,
                 processData: false,
                 success: function (result) {
-                    $.unblockUI();
                     if (result.RETURN_FLAG) {
                         var colNameArray =
                         colNameArray = ['Data_Year', 'Lien_Position',
@@ -113,7 +109,6 @@
                     }
                 },
                 error: function (result) {
-                    $.unblockUI();
                     toastr.error(result.DESCRIPTION);
                 }
             });

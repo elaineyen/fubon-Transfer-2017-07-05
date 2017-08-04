@@ -18,6 +18,8 @@ namespace Transfer.Models
         public IFRS9Entities()
             : base("name=IFRS9Entities")
         {
+            Database.Connection.ConnectionString = 
+                Database.Connection.ConnectionString.Replace("XXXXX", "1qaz@WSX");
         }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

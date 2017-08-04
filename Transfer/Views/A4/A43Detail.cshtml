@@ -121,7 +121,6 @@
         var debt = '@Transfer.Enum.Ref.Debt_Type.M.ToString()'; //房貸
         function callTransfer(type, version, date, next)
         {
-            $.blockUI();
             $.ajax({
                 type: "POST",
                 data: JSON.stringify({
@@ -136,7 +135,6 @@
                 contentType: 'application/json'
             })
             .done(function (result) {
-                $.unblockUI();
                 getLog(debt);
                 if (result.RETURN_FLAG)
                 {

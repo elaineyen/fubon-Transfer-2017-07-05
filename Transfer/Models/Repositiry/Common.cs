@@ -89,7 +89,7 @@ namespace Transfer.Models.Repositiry
             int length = end - start;
 
             string pureSqlConnection = efstr.Substring(start, length);
-            return pureSqlConnection;
+            return pureSqlConnection.Replace("XXXXX", "1qaz@WSX");
         }
 
         private int _interval = 10000;
@@ -101,7 +101,7 @@ namespace Transfer.Models.Repositiry
         }
         public bool IsRunning { get; internal set; }
 
-        public void Start<T>(Func<T> fun) 
+        public void Start(Action fun) 
         {
 
             if (this.IsRunning)

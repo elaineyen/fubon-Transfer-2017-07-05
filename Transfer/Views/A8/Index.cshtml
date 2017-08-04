@@ -63,7 +63,6 @@
         //#region 資料上傳(Excel 資料寫入 local sql)
         function transfer()
         {
-            $.blockUI(); //畫面鎖起來
             $.ajax({
                 type: "POST",
                 url: url.transfer,
@@ -83,7 +82,6 @@
         //#region fileSubmitFunction (把檔案上傳到指定資料夾)
         function fileSubmitFunction()
         {
-            $.blockUI();
             var dataString;
             var action = $("#form0").attr("action");
             if ($("#form0").attr("enctype") == "multipart/form-data") {

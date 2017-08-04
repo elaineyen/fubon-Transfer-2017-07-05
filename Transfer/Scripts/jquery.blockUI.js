@@ -615,7 +615,10 @@
       define(['jquery'], setup);
    } else {
       setup(jQuery);
-   }
+   }  
 
+   //default settings and have the UI blocked for all ajax requests
+   $(document).ajaxStart($.blockUI)
+       .ajaxStop($.unblockUI);
 })();
 
