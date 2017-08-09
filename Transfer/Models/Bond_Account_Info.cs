@@ -59,5 +59,13 @@ namespace Transfer.Models
         public string Assessment_Sub_Kind { get; set; }
         public Nullable<System.DateTime> Processing_Date { get; set; }
         public string Version { get; set; }
+        public string Bond_Aera { get; set; }
+        public string Asset_Type { get; set; }
+        public string IH_OS { get; set; }
+        public Nullable<double> Amount_TW_Ori_Ex_rate { get; set; }
+        public Nullable<double> Amort_Amt_Ori_Tw { get; set; }
+        public Nullable<double> Market_Value_Ori { get; set; }
+        public Nullable<double> Market_Value_TW { get; set; }
+        public Nullable<System.DateTime> Value_date { get; set; }
     }
 }

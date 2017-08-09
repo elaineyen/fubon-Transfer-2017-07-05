@@ -56,23 +56,23 @@ namespace Transfer.Models.Repositiry
         /// <returns></returns>
         public Tuple<bool, List<A41ViewModel>> GetA41(string type, string value, DateTime date)
         {
-            if (db.Bond_Account_Info.Count() > 0)
+            if (db.Bond_Account_Info.Any())
             {
                 if ("Report".Equals(type))
                 {
                     return new Tuple<bool, List<A41ViewModel>>(true,
-                    (from q in db.Bond_Account_Info.AsEnumerable()
-                     .Where(x=>date.Equals(x.Report_Date) &&
-                               value.Equals(x.Version))
+                    (from q in db.Bond_Account_Info
+                     .Where(x => date == x.Report_Date &&
+                               value.Trim().Equals(x.Version)).AsEnumerable()
                       .OrderBy(x => Convert.ToInt32(x.Reference_Nbr))
                      select DbToA41Model(q)).ToList());
                 }
                 if ("Bonds".Equals(type))
                 {
                     return new Tuple<bool, List<A41ViewModel>>(true,
-                    (from q in db.Bond_Account_Info.AsEnumerable()
-                     .Where(x=> date.Equals(x.Origination_Date) &&
-                     value.Equals(x.Bond_Number))
+                    (from q in db.Bond_Account_Info
+                     .Where(x=> date == x.Origination_Date &&
+                                value.Trim().Equals(x.Bond_Number)).AsEnumerable()
                      .OrderBy(x => Convert.ToInt32( x.Reference_Nbr))
                      select DbToA41Model(q)).ToList());
                 }
@@ -93,14 +93,15 @@ namespace Transfer.Models.Repositiry
             List<string> result = new List<string>();
             try
             {
-                if (db.IFRS9_Log.Count() > 0 && tableTypes.Count > 0)
+                if (db.IFRS9_Log.Any() && tableTypes.Any())
                 {
                     foreach (string tableType in tableTypes)
                     {
-                        var items = db.IFRS9_Log.AsEnumerable()
+                        var items = db.IFRS9_Log
+                            //.AsEnumerable()
                              .Where(x => tableType.Equals(x.Table_type) &&
                              debt.Equals(x.Debt_Type)).ToList();
-                        if (items.Count > 0)
+                        if (items.Any())
                         {
                             var lastDate = items.Max(y => y.Create_date);
                             result.AddRange(items.Where(x => lastDate.Equals(x.Create_date))
@@ -140,15 +141,16 @@ namespace Transfer.Models.Repositiry
             MSGReturnModel result = new MSGReturnModel();
             try
             {
-                if (0.Equals(dataModel.Count))
+                if (!dataModel.Any())
                 {
                     result.RETURN_FLAG = false;
                     result.DESCRIPTION = "No Save Data!";
                     return result;
                 }
-                if (db.Bond_Account_Info.Count() > 0 &&
-                    db.Bond_Account_Info.AsEnumerable().
-                    FirstOrDefault(x => x.Report_Date != null
+                if (db.Bond_Account_Info.Any() &&
+                    db.Bond_Account_Info
+                    //.AsEnumerable()
+                    .FirstOrDefault(x => x.Report_Date != null
                     && x.Report_Date.Value.ToString("yyyy/MM/dd")
                     .Equals(dataModel.First().Report_Date)) != null)
                 //資料裡面已經有相同的 Report_Date ?? 是否需加入 version
@@ -206,7 +208,17 @@ namespace Transfer.Models.Repositiry
                         Bond_Type = item.Bond_Type,
                         Assessment_Sub_Kind = item.Assessment_Sub_Kind,
                         Processing_Date = TypeTransfer.stringToDateTimeN(item.Processing_Date),
-                        Version = item.Version
+                        Version = item.Version,
+                        Bond_Aera = "NTD".Equals(item.Currency_Code) ? "國內":"國外",
+                        //IH_OS  //IH->自操，OS->委外
+                        Amount_TW_Ori_Ex_rate = TypeTransfer.DoubleNMultip(
+                            TypeTransfer.stringToDoubleN(item.Ori_Amount),
+                            TypeTransfer.stringToDoubleN(item.Ori_Ex_rate)),
+                        Amort_Amt_Ori_Tw = TypeTransfer.DoubleNMultip(
+                            TypeTransfer.stringToDoubleN(item.Principal),
+                            TypeTransfer.stringToDoubleN(item.Ori_Ex_rate)),
+                        //Market_Value_Ori = //需為已乘上單位數的市價
+                        //Market_Value_TW = //(57)Market_Value_Ori*(41)Ex_rate
                     });
                 }
                 db.SaveChanges(); //Save
@@ -242,21 +254,21 @@ namespace Transfer.Models.Repositiry
                     .not_Find_Any.GetDescription("B01");
                 if (Debt_Type.B.ToString().Equals(type)) //債券
                 {
-                    if (db.Bond_Account_Info.Count() > 0)
+                    if (db.Bond_Account_Info.Any())
                     {
                         List<Bond_Account_Info> addData = //這次要新增的資料
                             db.Bond_Account_Info.AsEnumerable()
                             .Where(x => x.Report_Date != null &&
                             date.Equals(x.Report_Date.Value) //抓取相同的Report_date
                             && version.Equals(x.Version)).ToList();  //抓取相同的 Verison
-                        if (0.Equals(addData.Count))
+                        if (!addData.Any())
                         {
                             result.DESCRIPTION = Message_Type
                                 .query_Not_Find.GetDescription("B01");
                             return result;
                         }
 
-                        if (db.IFRS9_Main.Count() > 0)
+                        if (db.IFRS9_Main.Any())
                         {
                             List<string> B01Ids = new List<string>();
                             B01Ids.AddRange(db.IFRS9_Main.AsEnumerable()
@@ -265,7 +277,7 @@ namespace Transfer.Models.Repositiry
                             !B01Ids.Contains(x.Reference_Nbr)).ToList(); //排除 save 重複資料
                         }
 
-                        if (0.Equals(addData.Count))
+                        if (!addData.Any())
                         {
                             result.DESCRIPTION = Message_Type
                                 .already_Save.GetDescription("B01");
@@ -348,17 +360,19 @@ namespace Transfer.Models.Repositiry
                 }
                 if (Debt_Type.M.ToString().Equals(type)) //房貸
                 {
-                    if (db.Loan_IAS39_Info.Count() > 0 && db.Loan_Account_Info.Count() > 0)
+                    if (db.Loan_IAS39_Info.Any() && db.Loan_Account_Info.Any())
                     {
                         List<Loan_IAS39_Info> IAS39Data =
-                            db.Loan_IAS39_Info.AsEnumerable()
+                            db.Loan_IAS39_Info
+                            //.AsEnumerable()
                             .Where(x => date.Equals(x.Report_Date)).ToList();
                         List<Loan_Account_Info> AccountData =
-                            db.Loan_Account_Info.AsEnumerable()
+                            db.Loan_Account_Info
+                            //.AsEnumerable()
                             .Where(x => IAS39Data.Select(y => y.Reference_Nbr)
                             .Contains(x.Reference_Nbr)).ToList();
 
-                        if(IAS39Data.Count > 0)
+                        if(IAS39Data.Any())
                         {
                             db.IFRS9_Main.AddRange(
                                 IAS39Data.Select(x =>
@@ -377,7 +391,7 @@ namespace Transfer.Models.Repositiry
                                         getLoanAccountInfo(AccountData, x.Reference_Nbr).Current_Int_Rate,
                                         x.EIR),
                                         //Current_Pd
-                                        Current_Lgd = getLoanAccountInfo(AccountData, x.Reference_Nbr).Current_Lgd,
+                                        Current_Lgd = getLoanAccountInfo(AccountData, x.Reference_Nbr).Current_Lgd, //?
                                         //Remaining_Month
                                         Eir = x.EIR <= 0d ? 0.00001 : x.EIR / 100, //
                                         //CPD_Segment_Code
@@ -470,7 +484,7 @@ namespace Transfer.Models.Repositiry
                     .not_Find_Any.GetDescription("C01");
             try
             {
-                if (db.IFRS9_Main.Count() > 0)
+                if (db.IFRS9_Main.Any())
                 {
                     List<string> reportCodes = new List<string>();
                     if (Debt_Type.M.ToString().Equals(type)) //房貸
@@ -478,29 +492,31 @@ namespace Transfer.Models.Repositiry
                     if (Debt_Type.B.ToString().Equals(type)) //債券
                         reportCodes = new List<string> { "Bond_A", "Bond_B", "Bond_P" };
                     List<IFRS9_Main> addData = //這次要新增的資料
-                    db.IFRS9_Main.AsEnumerable()
+                    db.IFRS9_Main
+                    //.AsEnumerable()
                     .Where(x => x.Report_Date != null &&
                     date.Equals(x.Report_Date.Value) //抓取相同的Report_date
                     && version.Equals(x.Version) //抓取相同的 Verison
                     && reportCodes.Contains(x.Product_Code)).ToList();  //抓取符合的 Product_Code
 
-                    if (0.Equals(addData.Count))
+                    if (!addData.Any())
                     {
                         result.DESCRIPTION = Message_Type
                             .query_Not_Find.GetDescription("C01");
                         return result;
                     }
 
-                    if (db.EL_Data_In.Count() > 0)
+                    if (db.EL_Data_In.Any())
                     {
                         List<string> C01Ids = new List<string>();
-                        C01Ids.AddRange(db.EL_Data_In.AsEnumerable()
+                        C01Ids.AddRange(db.EL_Data_In
+                            //.AsEnumerable()
                         .Select(x => x.Reference_Nbr).ToList()); //抓取 C01 Reference_Nbr
                         addData = addData.Where(x =>
                         !C01Ids.Contains(x.Reference_Nbr)).ToList(); //排除 save 重複資料
                     }
 
-                    if (0.Equals(addData.Count))
+                    if (!addData.Any())
                     {
                         result.DESCRIPTION = Message_Type
                             .already_Save.GetDescription("C01");
@@ -635,14 +651,16 @@ namespace Transfer.Models.Repositiry
                 resultData = reader.AsDataSet();
                 reader.Close();
                 int idNum = 0;
-                if (db.Bond_Account_Info.Count() > 0)
-                    idNum = db.Bond_Account_Info.AsEnumerable().Max(x => Convert.ToInt32(x.Reference_Nbr));
+                if (db.Bond_Account_Info.Any())
+                    idNum = db.Bond_Account_Info
+                        //.AsEnumerable()
+                        .Max(x => Convert.ToInt32(x.Reference_Nbr));
                 if (resultData.Tables[0].Rows.Count > 2) //判斷有無資料
                 {
                     dataModel = resultData.Tables[1].AsEnumerable().Skip(1) //第二頁籤第二行開始
                         .Select((x, y) =>
                         {
-                            return getA41Model(x, (y + 1 + idNum).ToString());
+                            return getA41Model(x, (y + 1 + idNum).ToString().PadLeft(10, '0'));
                         }
                         ).ToList();
 
@@ -783,7 +801,15 @@ namespace Transfer.Models.Repositiry
                 Bond_Type = data.Bond_Type,
                 Assessment_Sub_Kind = data.Assessment_Sub_Kind,
                 Processing_Date = TypeTransfer.dateTimeNToString(data.Processing_Date),
-                Version = data.Version
+                Version = data.Version,
+                Bond_Aera = data.Bond_Aera,
+                Asset_Type = data.Asset_Type,
+                IH_OS = data.IH_OS,
+                Amount_TW_Ori_Ex_rate = TypeTransfer.doubleNToString(data.Amount_TW_Ori_Ex_rate),
+                Amort_Amt_Ori_Tw = TypeTransfer.doubleNToString(data.Amort_Amt_Ori_Tw),
+                Market_Value_Ori = TypeTransfer.doubleNToString(data.Market_Value_Ori),
+                Market_Value_TW = TypeTransfer.doubleNToString(data.Market_Value_TW),
+                Value_date = TypeTransfer.dateTimeNToString(data.Value_date)
             };
         }
         #endregion
@@ -963,7 +989,7 @@ namespace Transfer.Models.Repositiry
             if (d < 30)
                 return "1";
             return null;
-        }
+}
         #endregion
 
         #endregion

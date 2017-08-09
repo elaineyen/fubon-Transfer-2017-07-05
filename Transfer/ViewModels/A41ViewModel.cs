@@ -104,5 +104,21 @@ namespace Transfer.ViewModels
         public string Processing_Date { get; set; }
         [DataMember]
         public string Version { get; set; }
+        [DataMember]
+        public string Bond_Aera { get; set; }
+        [DataMember]
+        public string Asset_Type { get; set; }
+        [DataMember]
+        public string IH_OS { get; set; }
+        [DataMember]
+        public string Amount_TW_Ori_Ex_rate { get; set; }
+        [DataMember]
+        public string Amort_Amt_Ori_Tw { get; set; }
+        [DataMember]
+        public string Market_Value_Ori { get; set; }
+        [DataMember]
+        public string Market_Value_TW { get; set; }
+        [DataMember]
+        public string Value_date { get; set; }
     }
 }

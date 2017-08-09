@@ -244,5 +244,16 @@ namespace Transfer.Utility
             return new JavaScriptSerializer().Serialize(datas);
         }
         #endregion
+
+        #region DoubleN multiplication
+        public static double? DoubleNMultip(double? d1, double? d2)
+        {
+            if (d1.HasValue && d2.HasValue)
+            {
+                return d1.Value * d2.Value;
+            }
+            return null;
+        }
+        #endregion
     }
 }

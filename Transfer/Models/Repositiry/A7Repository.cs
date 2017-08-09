@@ -66,7 +66,7 @@ namespace Transfer.Models.Repositiry
         /// <returns></returns>
         public Tuple<bool, List<Moody_Tm_YYYY>> GetA71()
         {
-            if (db.Moody_Tm_YYYY.Count() > 0)
+            if (db.Moody_Tm_YYYY.Any())
             {
                 return new Tuple<bool, List<Moody_Tm_YYYY>>(true, db.Moody_Tm_YYYY.ToList());
             }
@@ -81,7 +81,7 @@ namespace Transfer.Models.Repositiry
         /// <returns></returns>
         public Tuple<bool, List<object>> GetA72()
         {
-            if (db.Moody_Tm_YYYY.Count() > 0)
+            if (db.Moody_Tm_YYYY.Any())
             {
                 List<object> odatas = new List<object>();
                 DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList()).Item1;
@@ -129,7 +129,7 @@ namespace Transfer.Models.Repositiry
         /// <returns></returns>
         public Tuple<bool, List<object>> GetA73()
         {
-            if (db.Moody_Tm_YYYY.Count() > 0)
+            if (db.Moody_Tm_YYYY.Any())
             {
                 List<object> odatas = new List<object>();
                 DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList()).Item1;
@@ -181,7 +181,7 @@ namespace Transfer.Models.Repositiry
         /// <returns></returns>
         public Tuple<bool, List<Grade_Moody_Info>> GetA51()
         {
-            if (db.Grade_Moody_Info.Count() > 0)
+            if (db.Grade_Moody_Info.Any())
             {
                 return new Tuple<bool, List<Grade_Moody_Info>>(true, db.Grade_Moody_Info.OrderBy(x => x.PD_Grade).ToList());
             }
@@ -207,7 +207,7 @@ namespace Transfer.Models.Repositiry
             MSGReturnModel result = new MSGReturnModel();
             try
             {
-                if (db.Moody_Tm_YYYY.Count() > 0)
+                if (db.Moody_Tm_YYYY.Any())
                     db.Moody_Tm_YYYY.RemoveRange(db.Moody_Tm_YYYY.ToList()); //資料全刪除
                 int id = 1;
                 foreach (var item in dataModel)
@@ -268,7 +268,7 @@ namespace Transfer.Models.Repositiry
             MSGReturnModel result = new MSGReturnModel();
             try
             {
-                if (db.Moody_Tm_YYYY.Count() > 0)
+                if (db.Moody_Tm_YYYY.Any())
                 {
                     DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList()).Item1;
                     string cs = common.RemoveEntityFrameworkMetadata(string.Empty);
@@ -330,7 +330,7 @@ namespace Transfer.Models.Repositiry
             MSGReturnModel result = new MSGReturnModel();
             try
             {
-                if (db.Moody_Tm_YYYY.Count() > 0)
+                if (db.Moody_Tm_YYYY.Any())
                 {
                     DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList()).Item1;
                     DataTable A73Datas = FromA72GetA73(datas);
@@ -387,14 +387,14 @@ namespace Transfer.Models.Repositiry
             MSGReturnModel result = new MSGReturnModel();
             try
             {
-                if (db.Moody_Tm_YYYY.Count() > 0)
+                if (db.Moody_Tm_YYYY.Any())
                 {
-                    if (db.Grade_Moody_Info.Count() > 0)
+                    if (db.Grade_Moody_Info.Any())
                         db.Grade_Moody_Info.RemoveRange(
                            db.Grade_Moody_Info.ToList()); //資料全刪除  
                     var A51Data = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());
                     string year = (DateTime.Now.Year - 1).ToString();
-                    List<Grade_Moody_Info> A51s = (db.Moody_Tm_YYYY.ToList().
+                    List<Grade_Moody_Info> A51s = (db.Moody_Tm_YYYY.AsEnumerable().
                         Select((x, y) => new Grade_Moody_Info
                         {
                             Rating = x.From_To,
@@ -515,7 +515,7 @@ namespace Transfer.Models.Repositiry
             result.RETURN_FLAG = false;
             result.DESCRIPTION = Message_Type.download_Fail
                 .GetDescription(type, "找不到資料");
-            if (db.Moody_Tm_YYYY.Count() > 0)
+            if (db.Moody_Tm_YYYY.Any())
             {
                 DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList()).Item1;
                 switch (type)
@@ -650,11 +650,11 @@ namespace Transfer.Models.Repositiry
                     }
                     else if (errorData.Contains(item.From_To)) //為中間錯誤
                     {
-                        //不錯任何動作
+                        //不做任何動作
                     }
                     else //無錯誤 (columns 加入原本 參數)
                     {
-                        if (errorData.Count > 0) //上一筆是錯誤情形
+                        if (errorData.Any()) //上一筆是錯誤情形
                         {
                             string key =
                                 string.Format("{0}_{1}",
@@ -669,7 +669,7 @@ namespace Transfer.Models.Repositiry
                         rowData.Add(item.From_To);
                     }
                 }
-                if (errorData.Count > 0) //此為最後一筆為錯誤時觸發
+                if (errorData.Any()) //此為最後一筆為錯誤時觸發
                 {
                     string key =
                         string.Format("{0}_{1}",
@@ -751,7 +751,7 @@ namespace Transfer.Models.Repositiry
                 List<string> WTRow = new List<string>(); //WT要尋找的行的From/To
                 foreach (var item in overData) //合併的資料紀錄
                 {
-                    if (WTArray.Intersect(item.Value).Count() > 0) //找合併裡面符合的
+                    if (WTArray.Intersect(item.Value).Any()) //找合併裡面符合的
                     {
                         WTRow.Add(item.Key);
                     }
@@ -877,7 +877,7 @@ namespace Transfer.Models.Repositiry
                     //取得需求的欄位資料
                     A73datas[i] = dt.AsEnumerable().Select(x => x.Field<string>(A73Array[i])).ToList();
                 }
-                if (A73datas.Count() > 0 && A73datas[0].Count > 0) //有資料
+                if (A73datas.Any() && A73datas[0].Any()) //有資料
                 {
                     for (int j = 0; j < A73datas[0].Count; j++) //原本datatable 的行數
                     {

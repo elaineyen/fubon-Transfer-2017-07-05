@@ -117,9 +117,10 @@
                         toastr.warning(result.DESCRIPTION);
                     }
                 },
-                error: function (result) {
-                    //$.unblockUI();
-                    toastr.error(result.DESCRIPTION);
+                statusCode: {
+                    302: function(xhr) {
+                        alert("hihi" + xhr.responseText);
+                    }
                 }
             });
         }

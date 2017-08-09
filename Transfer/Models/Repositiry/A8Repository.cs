@@ -61,15 +61,15 @@ namespace Transfer.Models.Repositiry
         /// <returns></returns>
         public Tuple<bool, List<A81ViewModel>> GetA81()
         {
-            if (db.Moody_Monthly_PD_Info.Count() > 0)
+            if (db.Moody_Monthly_PD_Info.Any())
             {
   
                  List<A81ViewModel> data =  (from item in db.Moody_Monthly_PD_Info.AsEnumerable()
                      select new A81ViewModel() //轉型 Datetime
                                  {
                          Trailing_12m_Ending =
-                        item.Trailing_12m_Ending.HasValue ?
-                        item.Trailing_12m_Ending.Value.ToString("yyyy/MM/dd") : string.Empty,
+                         item.Trailing_12m_Ending.HasValue ?
+                         item.Trailing_12m_Ending.Value.ToString("yyyy/MM/dd") : string.Empty,
                          Actual_Allcorp = TypeTransfer.doubleNToString(item.Actual_Allcorp),
                          Actual_SG = TypeTransfer.doubleNToString(item.Actual_SG),
                          Baseline_forecast_Allcorp = TypeTransfer.doubleNToString(item.Baseline_forecast_Allcorp),
@@ -91,7 +91,7 @@ namespace Transfer.Models.Repositiry
         /// <returns></returns>
         public Tuple<bool, List<Moody_Quartly_PD_Info>> GetA82()
         {
-            if (db.Moody_Quartly_PD_Info.Count() > 0)
+            if (db.Moody_Quartly_PD_Info.Any())
             {
                 return new Tuple<bool, List<Moody_Quartly_PD_Info>>(true, db.Moody_Quartly_PD_Info.ToList());
             }
@@ -106,7 +106,7 @@ namespace Transfer.Models.Repositiry
         /// <returns></returns>
         public Tuple<bool, List<Moody_Predit_PD_Info>> GetA83()
         {
-            if (db.Moody_Predit_PD_Info.Count() > 0)
+            if (db.Moody_Predit_PD_Info.Any())
             {
                 return new Tuple<bool, List<Moody_Predit_PD_Info>>(true, db.Moody_Predit_PD_Info.ToList());
             }
@@ -138,7 +138,7 @@ namespace Transfer.Models.Repositiry
                 #region save Moody_Monthly_PD_Info(A81)
                 if ("A81".Equals(type))
                 {
-                    if (db.Moody_Monthly_PD_Info.Count() > 0)
+                    if (db.Moody_Monthly_PD_Info.Any())
                     db.Moody_Monthly_PD_Info.RemoveRange(
                         db.Moody_Monthly_PD_Info); //資料全刪除
                     int id = 1;
@@ -169,7 +169,7 @@ namespace Transfer.Models.Repositiry
                 #region save Moody_Quartly_PD_Info(A82)
                 if ("A82".Equals(type))
                 {
-                    if (db.Moody_Quartly_PD_Info.Count() > 0)
+                    if (db.Moody_Quartly_PD_Info.Any())
                         db.Moody_Quartly_PD_Info.RemoveRange(
                              db.Moody_Quartly_PD_Info);
                     int id = 1;
@@ -214,7 +214,7 @@ namespace Transfer.Models.Repositiry
                 #region save Moody_Predit_PD_Info(A83)
                 if ("A83".Equals(type))
                 {
-                    if (db.Moody_Predit_PD_Info.Count() > 0)
+                    if (db.Moody_Predit_PD_Info.Any())
                         db.Moody_Predit_PD_Info.RemoveRange(db.Moody_Predit_PD_Info);
                     List<Exhibit10Model> models = (from q in dataModel
                                                    where !string.IsNullOrWhiteSpace(q.Actual_Allcorp) && //排除掉今年

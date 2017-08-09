@@ -65,7 +65,8 @@ namespace Transfer.Models.Repositiry
             if (db.Moody_LGD_Info.Any())
             {
                 result.Add("ALL");
-                result.AddRange(db.Moody_LGD_Info.AsEnumerable()
+                result.AddRange(db.Moody_LGD_Info
+                    //.AsEnumerable()
                     .Select(x => x.Data_Year).Distinct().OrderBy(x => x));
             }
             return result;
@@ -79,9 +80,10 @@ namespace Transfer.Models.Repositiry
         /// <returns></returns>
         public Tuple<bool, List<Exhibit7Model>> GetA62(string year)
         {
-            if (db.Moody_LGD_Info.Count() > 0)
+            if (db.Moody_LGD_Info.Any())
             {
-                List<Exhibit7Model> data = (from item in db.Moody_LGD_Info.AsEnumerable()
+                List<Exhibit7Model> data = (from item in db.Moody_LGD_Info
+                                            //.AsEnumerable()
                                             .Where(x=> year.Equals("ALL")
                                             || x.Data_Year.Equals(year))
                                             select new Exhibit7Model() //轉型 Datetime
@@ -130,8 +132,9 @@ namespace Transfer.Models.Repositiry
                     .GetDescription(Table_Type.A62.ToString());
                 return result;
             }
-            if (db.Moody_LGD_Info.AsEnumerable()
-                .Any(x => dataModel.First().Data_Year.Equals(x.Data_Year)))
+            string dataYear = dataModel.First().Data_Year;
+            if (db.Moody_LGD_Info
+                .Any(x => dataYear.Equals(x.Data_Year)))
             {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Message_Type.already_Save

@@ -160,11 +160,11 @@ namespace Transfer.Controllers
                 #region save 資料
 
                 #region save Moody_Recovery_Info(A61)
-                tableName = Table_Type.A61.GetDescription();
-                MSGReturnModel resultA61 = A6Repository.saveA61(); //傳入參數自行調整帶想要帶入的
-                bool A61Log = CommonFunction.saveLog("A61", tableName, fileName, proName,
-                  resultA61.RETURN_FLAG, Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, resultA61.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
+                //tableName = Table_Type.A61.GetDescription();
+                //MSGReturnModel resultA61 = A6Repository.saveA61(); //傳入參數自行調整帶想要帶入的
+                //bool A61Log = CommonFunction.saveLog("A61", tableName, fileName, proName,
+                //  resultA61.RETURN_FLAG, Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
+                //TxtLog.txtLog(tableName, resultA61.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
                 #region save Tm_Adjust_YYYY(A62)
@@ -174,21 +174,22 @@ namespace Transfer.Controllers
                     resultA62.RETURN_FLAG, Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(tableName, resultA62.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
-
-                result.RETURN_FLAG = resultA61.RETURN_FLAG && resultA62.RETURN_FLAG;
+                result = resultA62;
+                //result.RETURN_FLAG = resultA61.RETURN_FLAG && resultA62.RETURN_FLAG;
+                //result.RETURN_FLAG = resultA62.RETURN_FLAG;
                 //回傳 基本上A62已經存成功過後就不會再成功了(會顯示已經存過檔案了,除非日期不一樣)
-                result.DESCRIPTION = Message_Type.save_Success.GetDescription("A61,A62");
+                //result.DESCRIPTION = Message_Type.save_Success.GetDescription("A61,A62");
 
-                if (!result.RETURN_FLAG)
-                {
-                    List<string> errs = new List<string>();
-                    if (!resultA61.RETURN_FLAG)
-                        errs.Add(resultA61.DESCRIPTION);
-                    if (!resultA62.RETURN_FLAG)
-                        errs.Add(resultA62.DESCRIPTION);
-                    result.DESCRIPTION = Message_Type.save_Fail
-                        .GetDescription(null, string.Join("\n", errs));
-                }
+                //if (!result.RETURN_FLAG)
+                //{
+                //    List<string> errs = new List<string>();
+                //    if (!resultA61.RETURN_FLAG)
+                //        errs.Add(resultA61.DESCRIPTION);
+                //    if (!resultA62.RETURN_FLAG)
+                //        errs.Add(resultA62.DESCRIPTION);
+                //    result.DESCRIPTION = Message_Type.save_Fail
+                //        .GetDescription(null, string.Join("\n", errs));
+                //}
                 #endregion
             }
             catch (Exception ex)

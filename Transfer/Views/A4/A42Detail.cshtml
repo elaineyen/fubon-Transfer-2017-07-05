@@ -136,17 +136,15 @@
                 }),
                 dataType: "json",
                 url: url.transfer,
-                contentType: 'application/json'
+                contentType: 'application/json',
+                
             })
             .done(function (result) {
-                $.unblockUI();
-                getLog();
+                getLog(debt);
                 if (result.RETURN_FLAG) {
                     var data = result.Datas.Data;
                     if (data.split(',')[0] === "true") //要轉下一個
                     {
-                        //alert("success => " + result.DESCRIPTION
-                        //    + " 接著轉 : " + data.split(',')[1]);
                         toastr.success("success => " + result.DESCRIPTION
                             + " 接著轉 : " + data.split(',')[1]);
                         callTransfer(data.split(',')[1], version, date, true);
@@ -160,7 +158,6 @@
                 }
             });
         }
-
         getLog(debt);
         function getLog(debt) {
             $.ajax({

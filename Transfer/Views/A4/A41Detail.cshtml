@@ -16,7 +16,7 @@
 <div class="container" id="main">
     <div class="row main_hand">
         <div class="col-md-12 main_hand_div">
-            <form id="myFrom1">
+            <form id="myForm1">
                 <table width="100%">
                     <tr>
                         <td style="width:470px" class="form-group">
@@ -33,7 +33,7 @@
                     </tr>
                 </table>
             </form>
-            <form id="myFrom2">
+            <form id="myForm2">
                 <table width="100%">
                     <tr>
                         <td style="width:470px" class="form-group">
@@ -121,7 +121,7 @@
         function ReportSearch() {           
             var version = $('#version').val();
             var date = $('#datepicker1').val();
-            $("#myFrom1").validate({
+            $("#myForm1").validate({
                 rules: {
                     version: { required: true },
                     datepicker1: { dateFormate: date }
@@ -133,7 +133,7 @@
                     error.appendTo(element.parent());
                 }
             })
-            if ($('#myFrom1').valid()) {
+            if ($('#myForm1').valid()) {
                 showJqgrid("A41", "Report", version,date)
             }
         }
@@ -143,7 +143,7 @@
         function BondsSearch() {
             var number = $('#number').val();
             var date = $('#datepicker2').val();
-            $("#myFrom2").validate({
+            $("#myForm2").validate({
                 rules: {
                     number: { required: true },
                     datepicker2: { dateFormate: date }
@@ -155,7 +155,7 @@
                     error.appendTo(element.parent());
                 }
             })
-            if ($('#myFrom2').valid()) {
+            if ($('#myForm2').valid()) {
                 showJqgrid("A41", "Bonds", number, date)
             }
         }
@@ -199,7 +199,10 @@
                 }),
                 dataType: "json",
                 url: url.getData,
-                contentType: 'application/json'
+                contentType: 'application/json',
+                error: function () {
+                    toastr.error("請重新登入!");
+                }
             })
             .done(function (result) {
                 if (result.RETURN_FLAG) {

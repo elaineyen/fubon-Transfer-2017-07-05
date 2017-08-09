@@ -54,6 +54,14 @@
           <Property Name="Assessment_Sub_Kind" Type="varchar" MaxLength="50" />
           <Property Name="Processing_Date" Type="date" />
           <Property Name="Version" Type="varchar" MaxLength="10" />
+          <Property Name="Bond_Aera" Type="varchar" MaxLength="10" />
+          <Property Name="Asset_Type" Type="varchar" MaxLength="100" />
+          <Property Name="IH_OS" Type="varchar" MaxLength="4" />
+          <Property Name="Amount_TW_Ori_Ex_rate" Type="float" />
+          <Property Name="Amort_Amt_Ori_Tw" Type="float" />
+          <Property Name="Market_Value_Ori" Type="float" />
+          <Property Name="Market_Value_TW" Type="float" />
+          <Property Name="Value_date" Type="date" />
         </EntityType>
         <EntityType Name="EL_Data_In">
           <Key>
@@ -552,6 +560,14 @@
           <Property Name="Assessment_Sub_Kind" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Processing_Date" Type="DateTime" Precision="0" />
           <Property Name="Version" Type="String" MaxLength="10" Unicode="false" FixedLength="false" />
+          <Property Name="Bond_Aera" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Asset_Type" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="IH_OS" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
+          <Property Name="Amount_TW_Ori_Ex_rate" Type="Double" />
+          <Property Name="Amort_Amt_Ori_Tw" Type="Double" />
+          <Property Name="Market_Value_Ori" Type="Double" />
+          <Property Name="Market_Value_TW" Type="Double" />
+          <Property Name="Value_date" Type="DateTime" Precision="0" />
         </EntityType>
         <EntityType Name="IFRS9_Main">
           <Key>
@@ -875,6 +891,14 @@
           <EntitySetMapping Name="Bond_Account_Info">
             <EntityTypeMapping TypeName="IFRS9Model.Bond_Account_Info">
               <MappingFragment StoreEntitySet="Bond_Account_Info">
+                <ScalarProperty Name="Value_date" ColumnName="Value_date" />
+                <ScalarProperty Name="Market_Value_TW" ColumnName="Market_Value_TW" />
+                <ScalarProperty Name="Market_Value_Ori" ColumnName="Market_Value_Ori" />
+                <ScalarProperty Name="Amort_Amt_Ori_Tw" ColumnName="Amort_Amt_Ori_Tw" />
+                <ScalarProperty Name="Amount_TW_Ori_Ex_rate" ColumnName="Amount_TW_Ori_Ex_rate" />
+                <ScalarProperty Name="IH_OS" ColumnName="IH_OS" />
+                <ScalarProperty Name="Asset_Type" ColumnName="Asset_Type" />
+                <ScalarProperty Name="Bond_Aera" ColumnName="Bond_Aera" />
                 <ScalarProperty Name="Version" ColumnName="Version" />
                 <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
                 <ScalarProperty Name="Assessment_Sub_Kind" ColumnName="Assessment_Sub_Kind" />
