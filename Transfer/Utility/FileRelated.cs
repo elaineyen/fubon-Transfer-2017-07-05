@@ -75,7 +75,7 @@ namespace Transfer.Utility
             {
 
                 string version = "2003"; //default 2003
-                IWorkbook wb = new XSSFWorkbook();
+                IWorkbook wb = null;
                 ISheet ws;
                 string configVersion = ConfigurationManager.AppSettings["ExcelVersion"];
                 if (!configVersion.IsNullOrWhiteSpace())
