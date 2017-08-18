@@ -1,41 +1,43 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Runtime.Serialization;
+using System.Text;
+using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
+using Transfer.Enum;
+using static Transfer.Enum.Ref;
 
 namespace Transfer.Utility
 {
-    /// <summary>
-    /// 傳到前端的Model
-    /// </summary>
-    [DataContract]
-    public class MSGReturnModel
+    public static class SetFile
     {
-        /// <summary>
-        /// 是否成功
-        /// </summary>
-        [DataMember]
-        [DisplayName("Message Return Flag")]
-        public bool RETURN_FLAG { get; set; }
+        public static string FileUploads { get; private set; }
 
-        /// <summary>
-        /// ReasonCode
-        /// </summary>
-        [DataMember]
-        [DisplayName("Message Reason Code")]
-        public string REASON_CODE { get; set; }
+        public static string FileDownloads { get; private set; }
 
-        /// <summary>
-        /// 回傳訊息
-        /// </summary>
-        [DataMember]
-        [DisplayName("Message Description")]
-        public string DESCRIPTION { get; set; }
+        public static string ProgramName { get; private set; }
 
-        /// <summary>
-        /// 回傳資料
-        /// </summary>
-        [DataMember]
-        public JsonResult Datas { get; set; }
+        public static string A41TransferTxtLog { get; private set; }
+
+        public static string A42TransferTxtLog { get; private set; }
+
+        public static string A62TransferTxtLog { get; private set; }
+
+        public static string A71TransferTxtLog { get; private set; }
+
+        public static string A81TransferTxtLog { get; private set; }
+        static SetFile()
+        {
+            ProgramName = "Transfer";
+            FileUploads = "FileUploads";
+            FileDownloads = "FileDownloads";
+            A41TransferTxtLog = @"DataRequirementsTransfer.txt";
+            A42TransferTxtLog = @"A42TTransfer.txt";
+            A62TransferTxtLog = @"Exhibit 7Transfer.txt";
+            A71TransferTxtLog = @"Exhibit29Transfer.txt";
+            A81TransferTxtLog = @"Exhibit10Transfer.txt";
+        }
     }
-
 }

@@ -13,7 +13,7 @@ using Transfer.Utility;
 using Transfer.ViewModels;
 using static Transfer.Enum.Ref;
 
-namespace Transfer.Models.Repositiry
+namespace Transfer.Models.Repository
 {
     public class A7Repository : IA7Repository, IDbEvent
     {
@@ -244,13 +244,13 @@ namespace Transfer.Models.Repositiry
                 }
                 db.SaveChanges(); //Save
                 result.RETURN_FLAG = true;
-                result.DESCRIPTION = Message_Type.save_Success.GetDescription("A71");
+                result.DESCRIPTION = Message_Type.save_Success.GetDescription(Table_Type.A71.ToString());
             }
             catch (DbUpdateException ex)
             {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Message_Type
-                                    .save_Fail.GetDescription("A71",
+                                    .save_Fail.GetDescription(Table_Type.A71.ToString(),
                                     $"message: {ex.Message}" +
                                     $", inner message {ex.InnerException?.InnerException?.Message}");
             }
@@ -274,7 +274,7 @@ namespace Transfer.Models.Repositiry
                     string cs = common.RemoveEntityFrameworkMetadata(string.Empty);
                     using (var conn = new SqlConnection(cs))
                     {
-                        using (var cmd = new SqlCommand(CreateA7Table("Tm_Adjust_YYYY", datas), conn))
+                        using (var cmd = new SqlCommand(CreateA7Table(Table_Type.A72.GetDescription(), datas), conn))
                         {
                             conn.Open();
                             //SqlDataReader reader = cmd.ExecuteReader();
@@ -288,13 +288,13 @@ namespace Transfer.Models.Repositiry
                             {
                                 result.RETURN_FLAG = true;
                                 result.DESCRIPTION = Message_Type.save_Success
-                                    .GetDescription("A72");
+                                    .GetDescription(Table_Type.A72.ToString());
                             }
                             else
                             {
                                 result.RETURN_FLAG = false;
                                 result.DESCRIPTION = Message_Type.save_Fail
-                                    .GetDescription("A72", "新增筆數有誤!");
+                                    .GetDescription(Table_Type.A72.ToString(), "新增筆數有誤!");
                             }
                         }
                     }
@@ -304,7 +304,7 @@ namespace Transfer.Models.Repositiry
             {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Message_Type
-                        .save_Fail.GetDescription("A72",
+                        .save_Fail.GetDescription(Table_Type.A72.ToString(),
                         $"message: {ex.Message}" +
                         $", inner message {ex.InnerException?.InnerException?.Message}");
             }
@@ -312,7 +312,7 @@ namespace Transfer.Models.Repositiry
             {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Message_Type
-                        .save_Fail.GetDescription("A72",
+                        .save_Fail.GetDescription(Table_Type.A72.ToString(),
                         $"message: {ex.Message}" +
                         $", inner message {ex.InnerException?.InnerException?.Message}");
             }
@@ -337,7 +337,7 @@ namespace Transfer.Models.Repositiry
                     string cs = common.RemoveEntityFrameworkMetadata(string.Empty);
                     using (var conn = new SqlConnection(cs))
                     {
-                        using (var cmd = new SqlCommand(CreateA7Table("GM_YYYY", A73Datas), conn))
+                        using (var cmd = new SqlCommand(CreateA7Table(Table_Type.A73.GetDescription(), A73Datas), conn))
                         {
                             conn.Open();
                             int count = cmd.ExecuteNonQuery();
@@ -345,13 +345,13 @@ namespace Transfer.Models.Repositiry
                             {
                                 result.RETURN_FLAG = true;
                                 result.DESCRIPTION = Message_Type.save_Success
-                                    .GetDescription("A73");
+                                    .GetDescription(Table_Type.A73.ToString());
                             }
                             else
                             {
                                 result.RETURN_FLAG = false;
                                 result.DESCRIPTION = Message_Type.save_Fail
-                                    .GetDescription("A73", "新增筆數有誤!");
+                                    .GetDescription(Table_Type.A73.ToString(), "新增筆數有誤!");
                             }
                         }
                     }
@@ -361,7 +361,7 @@ namespace Transfer.Models.Repositiry
             {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Message_Type
-                        .save_Fail.GetDescription("A73",
+                        .save_Fail.GetDescription(Table_Type.A73.ToString(),
                         $"message: {ex.Message}" +
                         $", inner message {ex.InnerException?.InnerException?.Message}");
             }
@@ -369,7 +369,7 @@ namespace Transfer.Models.Repositiry
             {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Message_Type
-                        .save_Fail.GetDescription("A73",
+                        .save_Fail.GetDescription(Table_Type.A73.ToString(),
                         $"message: {ex.Message}" +
                         $", inner message {ex.InnerException?.InnerException?.Message}");
             }
@@ -441,14 +441,14 @@ namespace Transfer.Models.Repositiry
                     db.SaveChanges(); //Save
                     result.RETURN_FLAG = true;
                     result.DESCRIPTION = Message_Type.save_Success
-                                          .GetDescription("A51");
+                                          .GetDescription(Table_Type.A51.ToString());
                 }
             }
             catch (DbUpdateException ex)
             {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Message_Type
-                        .save_Fail.GetDescription("A51",
+                        .save_Fail.GetDescription(Table_Type.A51.ToString(),
                         $"message: {ex.Message}" +
                         $", inner message {ex.InnerException?.InnerException?.Message}");
             }
@@ -521,14 +521,14 @@ namespace Transfer.Models.Repositiry
                 switch (type)
                 {
                     case "A72":
-                        result.DESCRIPTION = FileRelated.DataTableToExcel(datas, path, "A72");
+                        result.DESCRIPTION = FileRelated.DataTableToExcel(datas, path, Table_Type.A72.ToString());
                         result.RETURN_FLAG = string.IsNullOrWhiteSpace(result.DESCRIPTION);
                         break;
                     case "A73":
                         DataTable newData = FromA72GetA73(datas); //要組新的 Table                           
                         if (newData != null) //有資料
                         {
-                            result.DESCRIPTION = FileRelated.DataTableToExcel(newData, path, "A73");
+                            result.DESCRIPTION = FileRelated.DataTableToExcel(newData, path, Table_Type.A73.ToString());
                             result.RETURN_FLAG = string.IsNullOrWhiteSpace(result.DESCRIPTION);
                         }
                         else
@@ -808,49 +808,49 @@ namespace Transfer.Models.Repositiry
         /// <returns></returns>
         private double getDbValueINColume(Moody_Tm_YYYY db, string cname)
         {
-            if (cname.Equals(Ref.A7_Type.Aaa.ToString()))
+            if (cname.Equals(A7_Type.Aaa.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Aaa);
-            if (cname.Equals(Ref.A7_Type.Aa1.ToString()))
+            if (cname.Equals(A7_Type.Aa1.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Aa1);
-            if (cname.Equals(Ref.A7_Type.Aa2.ToString()))
+            if (cname.Equals(A7_Type.Aa2.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Aa2);
-            if (cname.Equals(Ref.A7_Type.Aa3.ToString()))
+            if (cname.Equals(A7_Type.Aa3.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Aa3);
-            if (cname.Equals(Ref.A7_Type.A1.ToString()))
+            if (cname.Equals(A7_Type.A1.ToString()))
                 return TypeTransfer.doubleNToDouble(db.A1);
-            if (cname.Equals(Ref.A7_Type.A2.ToString()))
+            if (cname.Equals(A7_Type.A2.ToString()))
                 return TypeTransfer.doubleNToDouble(db.A2);
-            if (cname.Equals(Ref.A7_Type.A3.ToString()))
+            if (cname.Equals(A7_Type.A3.ToString()))
                 return TypeTransfer.doubleNToDouble(db.A3);
-            if (cname.Equals(Ref.A7_Type.Baa1.ToString()))
+            if (cname.Equals(A7_Type.Baa1.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Baa1);
-            if (cname.Equals(Ref.A7_Type.Baa2.ToString()))
+            if (cname.Equals(A7_Type.Baa2.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Baa2);
-            if (cname.Equals(Ref.A7_Type.Baa3.ToString()))
+            if (cname.Equals(A7_Type.Baa3.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Baa3);
-            if (cname.Equals(Ref.A7_Type.Ba1.ToString()))
+            if (cname.Equals(A7_Type.Ba1.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Ba1);
-            if (cname.Equals(Ref.A7_Type.Ba2.ToString()))
+            if (cname.Equals(A7_Type.Ba2.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Ba2);
-            if (cname.Equals(Ref.A7_Type.Ba3.ToString()))
+            if (cname.Equals(A7_Type.Ba3.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Ba3);
-            if (cname.Equals(Ref.A7_Type.B1.ToString()))
+            if (cname.Equals(A7_Type.B1.ToString()))
                 return TypeTransfer.doubleNToDouble(db.B1);
-            if (cname.Equals(Ref.A7_Type.B2.ToString()))
+            if (cname.Equals(A7_Type.B2.ToString()))
                 return TypeTransfer.doubleNToDouble(db.B2);
-            if (cname.Equals(Ref.A7_Type.B3.ToString()))
+            if (cname.Equals(A7_Type.B3.ToString()))
                 return TypeTransfer.doubleNToDouble(db.B3);
-            if (cname.Equals(Ref.A7_Type.Caa1.ToString()))
+            if (cname.Equals(A7_Type.Caa1.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Caa1);
-            if (cname.Equals(Ref.A7_Type.Caa2.ToString()))
+            if (cname.Equals(A7_Type.Caa2.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Caa2);
-            if (cname.Equals(Ref.A7_Type.Caa3.ToString()))
+            if (cname.Equals(A7_Type.Caa3.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Caa3);
-            if (cname.Equals(Ref.A7_Type.Ca_C.ToString()))
+            if (cname.Equals(A7_Type.Ca_C.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Ca_C);
-            if (cname.Equals(Ref.A7_Type.WR.ToString()))
+            if (cname.Equals(A7_Type.WR.ToString()))
                 return TypeTransfer.doubleNToDouble(db.WR);
-            if (cname.Equals(Ref.A7_Type.Default.ToString()))
+            if (cname.Equals(A7_Type.Default.ToString()))
                 return TypeTransfer.doubleNToDouble(db.Default_Value);
             return 0d;
         }

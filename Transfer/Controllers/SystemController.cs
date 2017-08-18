@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Transfer.Infrastructure;
-using Transfer.Models;
 using Transfer.Models.Interface;
-using Transfer.Models.Repositiry;
+using Transfer.Models.Repository;
 using Transfer.Utility;
-using Transfer.ViewModels;
 using static Transfer.Enum.Ref;
 
 namespace Transfer.Controllers

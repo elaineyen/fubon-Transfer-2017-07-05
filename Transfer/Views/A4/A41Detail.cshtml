@@ -19,7 +19,7 @@
             <form id="myForm1">
                 <table width="100%">
                     <tr>
-                        <td style="width:470px" class="form-group">
+                        <td style="width:700px" class="form-group">
                             <label>報導日 : </label>
                             <input type="text" id="datepicker1" name="datepicker1">
                         </td>
@@ -27,16 +27,13 @@
                             <label>版本 : </label>
                             <input type="text" id="version" name="version">
                         </td>
-                        <td>
-                            <input type="button" class="btn btn-primary" value="報導日資料查詢" id="btnA41ReportSearch" />
-                        </td>
                     </tr>
                 </table>
             </form>
             <form id="myForm2">
                 <table width="100%">
                     <tr>
-                        <td style="width:470px" class="form-group">
+                        <td style="width:700px" class="form-group">
                             <label>債券購入日期 : </label>
                             <input type="text" id="datepicker2" name="datepicker2">
                         </td>
@@ -44,12 +41,19 @@
                             <label>債券編號 : </label>
                             <input type="text" id="number" name="number">
                         </td>
-                        <td>
-                            <input type="button" class="btn btn-primary" value="債券資料查詢" id="btnA41BondsSearch" />
-                        </td>
                     </tr>
                 </table>
             </form>
+            <table style="margin-top:5px">
+                <tr>
+                    <td>
+                        <input type="button" class="btn btn-primary" value="報導日資料查詢" id="btnA41ReportSearch" style="margin-right:10px"/>
+                    </td>
+                    <td>
+                        <input type="button" class="btn btn-primary" value="債券資料查詢" id="btnA41BondsSearch" />
+                    </td>
+                </tr>
+            </table>
         </div>
     </div>
     <div class="row main_body" style="overflow:auto;height:100%">
@@ -77,7 +81,6 @@
         //#endregion 註冊URL
 
         //#region 產生datepicker
-        var d = new Date();
         $("#datepicker1,#datepicker2").datepicker({
             changeMonth: true,
             changeYear: true,
@@ -93,7 +96,7 @@
                             $(this).removeClass('error');
                     })
             }
-        }).datepicker('setDate', new Date(d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + 25));
+        }).datepicker('setDate', verified.reportDate());
         //#endregion 
 
         //#region 註冊click事件
@@ -114,25 +117,15 @@
         $.validator.addMethod("dateFormate",
         function (value, element, arg) {
             return verified.isDate(value);
-        }, "日期錯誤 (yyyy/mm/dd)");
+        }, message.date);
         //#endregion
 
         //#region ReportSearch
         function ReportSearch() {           
             var version = $('#version').val();
             var date = $('#datepicker1').val();
-            $("#myForm1").validate({
-                rules: {
-                    version: { required: true },
-                    datepicker1: { dateFormate: date }
-                },
-                messages: {
-                    version: "版本為必填!",
-                },
-                errorPlacement: function (error, element) {                    
-                    error.appendTo(element.parent());
-                }
-            })
+            verified.datepicker("myForm1", "datepicker1", false, date);
+            verified.required('myForm1', 'version', message.required(message.version));
             if ($('#myForm1').valid()) {
                 showJqgrid("A41", "Report", version,date)
             }
@@ -143,18 +136,8 @@
         function BondsSearch() {
             var number = $('#number').val();
             var date = $('#datepicker2').val();
-            $("#myForm2").validate({
-                rules: {
-                    number: { required: true },
-                    datepicker2: { dateFormate: date }
-                },
-                messages: {
-                    number: "債券編號為必填!",
-                },
-                errorPlacement: function (error, element) {
-                    error.appendTo(element.parent());
-                }
-            })
+            verified.datepicker("myForm2", "datepicker2", false, date);
+            verified.required('myForm2', 'number', message.required(message.bondsNumber));
             if ($('#myForm2').valid()) {
                 showJqgrid("A41", "Bonds", number, date)
             }

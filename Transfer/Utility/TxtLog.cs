@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using static Transfer.Enum.Ref;
 
 namespace Transfer.Utility
 {
@@ -13,7 +14,7 @@ namespace Transfer.Utility
         /// <param name="falg">成功或失敗</param>
         /// <param name="start">開始時間</param>
         /// <param name="folderPath">檔案路徑</param>
-        public static void txtLog(string tableName, bool falg, DateTime start, string folderPath)
+        public static void txtLog(Table_Type tableName, bool falg, DateTime start, string folderPath)
         {
             try
             {
@@ -23,8 +24,9 @@ namespace Transfer.Utility
                     txtData = File.ReadAllText(folderPath);
                 }
                 catch { }
-                string txt = string.Format("{0}_{1}_{2}",
-                             tableName,
+                string txt = string.Format("{0}({1})_{2}_{3}",
+                             tableName.GetDescription(),
+                             tableName.ToString(),
                              start.ToString("yyyyMMddHHmmss"),
                              falg ? "Y" : "N");
                 if (!string.IsNullOrWhiteSpace(txtData)) //有舊資料就換行寫入下一筆

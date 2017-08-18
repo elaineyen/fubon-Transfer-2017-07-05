@@ -57,7 +57,10 @@
             })
             .done(function (result) {
                 if (result.RETURN_FLAG)
-                    toastr.success(result.DESCRIPTION);
+                {
+                    window.location.href = "@Url.RouteUrl(new 
+                    { Controller = "A7", Action = "DownloadExcecl"})/?type=" + type;
+                }
                 else
                     toastr.error(result.DESCRIPTION);
             })

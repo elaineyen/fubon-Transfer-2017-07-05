@@ -5,6 +5,9 @@ namespace Transfer.Enum
 {
     public partial class Ref
     {
+        /// <summary>
+        /// 回傳訊息格式統一
+        /// </summary>
         public enum Message_Type
         {
             /// <summary>
@@ -68,9 +71,9 @@ namespace Transfer.Enum
             upload_Not_Find,
 
             /// <summary>
-            /// 請確認檔案為Excel檔案或超過大小!
+            /// 請確認檔案為Excel檔案或無資料!
             /// </summary>
-            [Description("請確認檔案為Excel檔案或超過大小!")]
+            [Description("請確認檔案為Excel檔案或無資料!")]
             excel_Validate,
 
             /// <summary>
@@ -84,6 +87,12 @@ namespace Transfer.Enum
             /// </summary>
             [Description("傳入參數錯誤!")]
             parameter_Error,
+
+            /// <summary>
+            /// 時間停滯太久請重新上一動作!
+            /// </summary>
+            [Description("時間停滯太久請重新上一動作!")]
+            time_Out
         }
     }
 }

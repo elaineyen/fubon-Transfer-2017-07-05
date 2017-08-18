@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using Transfer.Controllers;
@@ -26,7 +24,7 @@ namespace Transfer.Infrastructure
         protected override bool AuthorizeCore(HttpContextBase httpContext)
         {
             string menu_id = string.Empty;
-            var sub = db.IFRS9_Menu_Sub.AsEnumerable().FirstOrDefault(x => x.Href.Equals(_href));
+            var sub = db.IFRS9_Menu_Sub.FirstOrDefault(x => x.Href.Equals(_href));
             if (sub != null)
                 menu_id = sub.Menu_Id;
             bool flag = db.IFRS9_Menu_Set.FirstOrDefault(

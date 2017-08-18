@@ -5,9 +5,8 @@ using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using Transfer.Infrastructure;
-using Transfer.Models;
 using Transfer.Models.Interface;
-using Transfer.Models.Repositiry;
+using Transfer.Models.Repository;
 using Transfer.Utility;
 using Transfer.ViewModels;
 using static Transfer.Enum.Ref;
@@ -18,16 +17,23 @@ namespace Transfer.Controllers
     [Authorize]
     public class A4Controller : CommonController
     {
-        private string[] selects = { "All", "B01","C01" };
+        private string[] selects = { "All", "B01", "C01" };
         private IA4Repository A4Repository;
         private ICommon CommonFunction;
         public ICacheProvider Cache { get; set; }
+        public string A42TDefaultFileName = "A42T.xlsx";
 
         public A4Controller()
         {
             this.A4Repository = new A4Repository();
             this.CommonFunction = new Common();
             this.Cache = new DefaultCacheProvider();
+
+            string configFileName = ConfigurationManager.AppSettings["fileA42TName"];
+            if (!string.IsNullOrWhiteSpace(configFileName))
+            {
+                A42TDefaultFileName = configFileName; //config 有設定就取代
+            }
         }
 
         /// <summary>
@@ -75,6 +81,16 @@ namespace Transfer.Controllers
         }
 
         /// <summary>
+        /// A42T(國庫券月結資料檔)
+        /// </summary>
+        /// <returns></returns>
+        [UserAuth("A42T,A4")]
+        public ActionResult A42T()
+        {
+            return View();
+        }
+
+        /// <summary>
         /// 選擇檔案後點選資料上傳觸發
         /// </summary>
         /// <param name="FileModel"></param>
@@ -96,7 +112,7 @@ namespace Transfer.Controllers
 
                 #region 前端檔案大小不符或不為Excel檔案(驗證)
                 //ModelState
-                if (FileModel.File.ContentLength == 0 )
+                if (!ModelState.IsValid)
                 {
                     result.RETURN_FLAG = false;
                     result.DESCRIPTION = Message_Type.excel_Validate.GetDescription();
@@ -105,11 +121,19 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region 上傳檔案
-                var fileName = Path.GetFileName(FileModel.File.FileName); //檔案名稱
+                string pathType = Path.GetExtension(FileModel.File.FileName)
+                                       .Substring(1); //上傳的檔案類型
+
+                var fileName = string.Format("{0}.{1}",
+                    Excel_UploadName.A41.GetDescription(),
+                    pathType); //固定轉成此名稱
+
+                Cache.Invalidate(CacheList.A41ExcelName); //清除 Cache
+                Cache.Set(CacheList.A41ExcelName, fileName, 15); //把資料存到 Cache
 
                 #region 檢查是否有FileUploads資料夾,如果沒有就新增 並加入 excel 檔案
 
-                string projectFile = Server.MapPath("~/FileUploads"); //專案資料夾
+                string projectFile = Server.MapPath("~/"+ SetFile.FileUploads); //專案資料夾
                 string path = Path.Combine(projectFile, fileName);
 
                 FileRelated.createFile(projectFile); //檢查是否有FileUploads資料夾,如果沒有就新增
@@ -121,16 +145,14 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region 讀取Excel資料 使用ExcelDataReader 並且組成 json
-                string pathType =
-                    Path.GetExtension(FileModel.File.FileName)
-                    .Substring(1); //檔案類型
+
                 var stream = FileModel.File.InputStream;
                 List<A41ViewModel> dataModel = A4Repository.getExcel(pathType, stream);
                 if (dataModel.Count > 0)
                 {
                     result.RETURN_FLAG = true;
-                    Cache.Invalidate("A41ExcelfileData"); //清除 Cache
-                    Cache.Set("A41ExcelfileData", dataModel, 15); //把資料存到 Cache
+                    Cache.Invalidate(CacheList.A41ExcelfileData); //清除 Cache
+                    Cache.Set(CacheList.A41ExcelfileData, dataModel, 15); //把資料存到 Cache
                 }
                 else
                 {
@@ -150,6 +172,103 @@ namespace Transfer.Controllers
         }
 
         /// <summary>
+        /// 選擇檔案後點選資料上傳觸發
+        /// </summary>
+        /// <returns>MSGReturnModel</returns>
+        [HttpPost]
+        public JsonResult UploadA42T()
+        {
+            MSGReturnModel result = new MSGReturnModel();
+
+            //## 如果有任何檔案類型才做
+            if (Request.Files.AllKeys.Any())
+            {
+                var FileModel = Request.Files["UploadedFile"];
+                string processingDate = Request.Form["processingDate"];
+                string reportDate = Request.Form["reportDate"];
+
+                try
+                {
+                    #region 前端無傳送檔案進來
+                    if (FileModel == null)
+                    {
+                        result.RETURN_FLAG = false;
+                        result.DESCRIPTION = Message_Type.upload_Not_Find.GetDescription();
+                        return Json(result);
+                    }
+                    #endregion
+
+                    #region 前端檔案大小不符或不為Excel檔案(驗證)
+                    //ModelState
+                    if (!ModelState.IsValid)
+                    {
+                        result.RETURN_FLAG = false;
+                        result.DESCRIPTION = Message_Type.excel_Validate.GetDescription();
+                        return Json(result);
+                    }
+                    else
+                    {
+                        string ExtensionName = Path.GetExtension(FileModel.FileName).ToLower();
+                        if (ExtensionName != ".xls" && ExtensionName != ".xlsx")
+                        {
+                            result.RETURN_FLAG = false;
+                            result.DESCRIPTION = Message_Type.excel_Validate.GetDescription();
+                            return Json(result);
+                        }
+                    }
+                    #endregion
+
+                    #region 上傳檔案
+                    var fileName = A42TDefaultFileName;
+
+                    #region 檢查是否有FileUploads資料夾,如果沒有就新增 並加入 excel 檔案
+                    string projectFile = Server.MapPath("~/"+ SetFile.FileUploads); //專案資料夾
+                    string path = Path.Combine(projectFile, fileName);
+
+                    FileRelated.createFile(projectFile); //檢查是否有FileUploads資料夾,如果沒有就新增
+
+                    //呼叫上傳檔案 function
+                    result = FileRelated.FileUpLoadinPath(path, FileModel);
+                    if (!result.RETURN_FLAG)
+                    {
+                        return Json(result);
+                    }
+                    #endregion
+
+                    #region 讀取Excel資料 使用ExcelDataReader 並且組成 json
+                    string pathType = Path.GetExtension(FileModel.FileName).Substring(1); //檔案類型
+                    var stream = FileModel.InputStream;
+                    List<A42TViewModel> dataModel = A4Repository.getA42TExcel(pathType, stream, processingDate, reportDate);
+                    if (dataModel.Count > 0)
+                    {
+                        result.RETURN_FLAG = true;
+                        result.Datas = Json(dataModel); //給JqGrid 顯示
+                    }
+                    else
+                    {
+                        result.RETURN_FLAG = false;
+                        result.DESCRIPTION = Message_Type.data_Not_Compare.GetDescription();
+                    }
+                    #endregion
+                    #endregion
+                }
+                catch (Exception ex)
+                {
+                    result.RETURN_FLAG = false;
+                    result.DESCRIPTION = ex.Message;
+                }
+            }
+            else
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = Message_Type.upload_Not_Find.GetDescription();
+                return Json(result);
+            }
+
+            return Json(result);
+        }
+
+        /// <summary>
         /// Get Cache Data
         /// </summary>
         /// <param name="jdata"></param>
@@ -162,12 +281,12 @@ namespace Transfer.Controllers
             switch (type)
             {
                 case "Excel":
-                    if (Cache.IsSet("A41ExcelfileData"))
-                        data = (List<A41ViewModel>)Cache.Get("A41ExcelfileData");  //從Cache 抓資料
+                    if (Cache.IsSet(CacheList.A41ExcelfileData))
+                        data = (List<A41ViewModel>)Cache.Get(CacheList.A41ExcelfileData);  //從Cache 抓資料
                     break;
                 case "Db":
-                    if (Cache.IsSet("A41DbfileData"))
-                        data = (List<A41ViewModel>)Cache.Get("A41DbfileData");
+                    if (Cache.IsSet(CacheList.A41DbfileData))
+                        data = (List<A41ViewModel>)Cache.Get(CacheList.A41DbfileData);
                     break;
             }
             return Json(jdata.modelToJqgridResult(data));
@@ -178,7 +297,7 @@ namespace Transfer.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult Transfer()
+        public JsonResult Transfer(string reportDate)
         {
             MSGReturnModel result = new MSGReturnModel();
             try
@@ -186,45 +305,48 @@ namespace Transfer.Controllers
                 #region 抓Excel檔案 轉成 model
                 // Excel 檔案位置
                 DateTime startTime = DateTime.Now;
-                string projectFile = Server.MapPath("~/FileUploads");
-                string fileName = @"Data Requirements.xlsx"; //預設
-                string configFileName = ConfigurationManager.AppSettings["fileA4Name"];
-                if (!string.IsNullOrWhiteSpace(configFileName))
-                    fileName = configFileName; //config 設定就取代
+                string projectFile = Server.MapPath("~/"+SetFile.FileUploads);
+
+                string fileName = string.Empty;
+                if (Cache.IsSet(CacheList.A41ExcelName))
+                    fileName = (string)Cache.Get(CacheList.A41ExcelName);  //從Cache 抓資料
+
+                if (fileName.IsNullOrWhiteSpace())
+                {
+                    result.RETURN_FLAG = false;
+                    result.DESCRIPTION = Message_Type.time_Out.GetDescription();
+                }
+
                 string path = Path.Combine(projectFile, fileName);
                 FileStream stream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read);
 
                 string pathType = path.Split('.')[1]; //抓副檔名
                 List<A41ViewModel> dataModel = A4Repository.getExcel(pathType, stream); //Excel轉成 Exhibit10Model
 
-                string proName = "Transfer";
-                string tableName = string.Empty;
                 #endregion
 
                 #region txtlog 檔案名稱
-                string txtpath = "DataRequirementsTransfer.txt"; //預設txt名稱
+                string txtpath = SetFile.A41TransferTxtLog; //預設txt名稱
                 string configTxtName = ConfigurationManager.AppSettings["txtLogA4Name"];
                 if (!string.IsNullOrWhiteSpace(configTxtName))
                     txtpath = configTxtName; //有設定webConfig且不為空就取代
                 #endregion
 
                 #region save Bond_Account_Info(A41)
-                var table = Table_Type.A41;
-                tableName = table.GetDescription() ;
-                MSGReturnModel resultA41 = A4Repository.saveA41(dataModel); //save to DB
-                bool A41Log = CommonFunction.saveLog(table.ToString(),tableName,
-                    fileName, proName, resultA41.RETURN_FLAG,
+                MSGReturnModel resultA41 = A4Repository.saveA41(dataModel, reportDate); //save to DB
+                bool A41Log = CommonFunction.saveLog(Table_Type.A41,
+                    fileName, SetFile.ProgramName, resultA41.RETURN_FLAG,
                     Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, resultA41.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
+                TxtLog.txtLog(Table_Type.A41, resultA41.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
                 result.RETURN_FLAG = resultA41.RETURN_FLAG;
-                result.DESCRIPTION = Message_Type.save_Success.GetDescription("A41");
+                result.DESCRIPTION = Message_Type.save_Success.GetDescription(Table_Type.A41.ToString());
 
                 if (!result.RETURN_FLAG)
                 {
                     result.DESCRIPTION = Message_Type.save_Fail
-                        .GetDescription("A41", resultA41.DESCRIPTION);
+                        .GetDescription(Table_Type.A41.ToString(), resultA41.DESCRIPTION);
                 }
             }
             catch (Exception ex)
@@ -232,6 +354,67 @@ namespace Transfer.Controllers
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = ex.Message;
             }
+            return Json(result);
+        }
+
+        /// <summary>
+        /// 轉檔把Excel 資料存到 DB
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult TransferA42T(string processingDate, string reportDate)
+        {
+            MSGReturnModel result = new MSGReturnModel();
+
+            try
+            {
+                #region 抓Excel檔案 轉成 model
+                // Excel 檔案位置
+                DateTime startTime = DateTime.Now;
+                string projectFile = Server.MapPath("~/"+SetFile.FileUploads);
+                string fileName = A42TDefaultFileName; //預設
+
+                string path = Path.Combine(projectFile, fileName);
+                FileStream stream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read);
+
+                string pathType = path.Split('.')[1]; //抓副檔名
+                List<A42TViewModel> dataModel = A4Repository.getA42TExcel(pathType, stream, processingDate, reportDate); //Excel轉成 A42TViewModel
+                #endregion
+
+                #region txtlog 檔案名稱
+                string txtpath = SetFile.A42TransferTxtLog; //預設txt名稱
+                string configTxtName = ConfigurationManager.AppSettings["txtLogA42TName"];
+                if (!string.IsNullOrWhiteSpace(configTxtName))
+                {
+                    txtpath = configTxtName; //有設定webConfig且不為空就取代
+                }
+                #endregion
+
+                #region save Treasury_Securities_Info(A42T)
+                MSGReturnModel resultA42T = A4Repository.saveA42T(dataModel); //save to DB
+
+                bool A42TLog = CommonFunction.saveLog(Table_Type.A42T,
+                                                      fileName, SetFile.ProgramName, resultA42T.RETURN_FLAG,
+                                                      Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
+                TxtLog.txtLog(Table_Type.A42T, resultA42T.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
+                #endregion
+
+                result.RETURN_FLAG = resultA42T.RETURN_FLAG;
+                result.DESCRIPTION = Message_Type.save_Success
+                    .GetDescription(Table_Type.A42T.ToString());
+
+                if (!result.RETURN_FLAG)
+                {
+                    result.DESCRIPTION = Message_Type.save_Fail
+                        .GetDescription(Table_Type.A42T.ToString(), resultA42T.DESCRIPTION);
+                }
+            }
+            catch (Exception ex)
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = ex.Message;
+            }
+
             return Json(result);
         }
 
@@ -262,13 +445,8 @@ namespace Transfer.Controllers
                     case "A41":
                             var A41Data = A4Repository.GetA41(searchType, value,d);
                             result.RETURN_FLAG = A41Data.Item1;
-                            Cache.Invalidate("A41DbfileData"); //清除
-                            Cache.Set("A41DbfileData", A41Data.Item2, 15); //把資料存到 Cache
-                        //}
-                        //else
-                        //{
-                        //    result.RETURN_FLAG = true; //有Cache資料
-                        //}
+                            Cache.Invalidate(CacheList.A41DbfileData); //清除
+                            Cache.Set(CacheList.A41DbfileData, A41Data.Item2, 15); //把資料存到 Cache
                         break;
                 }
             }
@@ -304,7 +482,7 @@ namespace Transfer.Controllers
                 return Json(result);
 
             string tableName = string.Empty;
-            string fileName = @"Data Requirements.xlsx"; //預設
+            string fileName = Excel_UploadName.A41.GetDescription().GetExelName(); //預設
             if (Debt_Type.B.ToString().Equals(debt))
             {
                 string configFileName = ConfigurationManager.AppSettings["fileA4Name"];
@@ -314,22 +492,19 @@ namespace Transfer.Controllers
             if (Debt_Type.M.ToString().Equals(debt))
                 fileName = "A01-IAS39,A02";
 
-            string proName = "Transfer";
             DateTime startTime = DateTime.Now;
             switch (type)
             {
                 case "All": //All 也是重B01開始 B01 => C01
                 case "B01":
                     result = A4Repository.saveB01(version, dat, debt);
-                    tableName = Table_Type.B01.GetDescription();
-                    bool B01Log = CommonFunction.saveLog("B01", tableName, fileName, proName, 
+                    bool B01Log = CommonFunction.saveLog(Table_Type.B01, fileName, SetFile.ProgramName, 
                         result.RETURN_FLAG, debt, startTime, DateTime.Now); //寫sql Log
-                    result.Datas = Json(transferMessage(next, "C01")); //回傳要不要做下一個transfer
+                    result.Datas = Json(transferMessage(next, Transfer_Table_Type.C01.ToString())); //回傳要不要做下一個transfer
                     break;
                 case "C01":
                     result = A4Repository.saveC01(version, dat, debt);
-                    tableName = Table_Type.C01.GetDescription();
-                    bool C01Log = CommonFunction.saveLog("C01", tableName, fileName, proName, 
+                    bool C01Log = CommonFunction.saveLog(Table_Type.C01, fileName, SetFile.ProgramName, 
                         result.RETURN_FLAG, debt, startTime, DateTime.Now); //寫sql Log
                     result.Datas = Json(transferMessage(false, string.Empty)); //目前到C01 而已
                     break;

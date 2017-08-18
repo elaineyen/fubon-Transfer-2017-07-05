@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Web.Mvc;
 using Transfer.Infrastructure;
 using Transfer.Models.Interface;
-using Transfer.Models.Repositiry;
+using Transfer.Models.Repository;
 using Transfer.Utility;
 using Transfer.ViewModels;
-using System.Linq;
 using static Transfer.Enum.Ref;
 
 namespace Transfer.Controllers
@@ -18,11 +18,13 @@ namespace Transfer.Controllers
     {
         private IA6Repository A6Repository;
         private ICommon CommonFunction;
+        public ICacheProvider Cache { get; set; }
 
         public A6Controller()
         {
             this.A6Repository = new A6Repository();
             this.CommonFunction = new Common();
+            this.Cache = new DefaultCacheProvider();
         }
 
         /// <summary>
@@ -70,7 +72,7 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region 前端檔案大小不服或不為Excel檔案(驗證)
-                if (FileModel.File.ContentLength == 0 || !ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
                     result.RETURN_FLAG = false;
                     result.DESCRIPTION = Message_Type.excel_Validate.GetDescription();
@@ -79,11 +81,19 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region 上傳檔案
-                var fileName = Path.GetFileName(FileModel.File.FileName); //檔案名稱
+                string pathType = Path.GetExtension(FileModel.File.FileName)
+                                      .Substring(1); //上傳的檔案類型
+
+                var fileName = string.Format("{0}.{1}",
+                    Excel_UploadName.A62.GetDescription(),
+                    pathType); //固定轉成此名稱
+
+                Cache.Invalidate(CacheList.A62ExcelName); //清除 Cache
+                Cache.Set(CacheList.A62ExcelName, fileName, 15); //把資料存到 Cache
+
 
                 #region 檢查是否有FileUploads資料夾,如果沒有就新增 並加入 excel 檔案
-
-                string projectFile = Server.MapPath("~/FileUploads"); //專案資料夾
+                string projectFile = Server.MapPath("~/"+SetFile.FileUploads); //專案資料夾
                 string path = Path.Combine(projectFile, fileName);
                 FileRelated.createFile(projectFile); //檢查是否有FileUploads資料夾,如果沒有就新增
 
@@ -94,9 +104,7 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region 讀取Excel資料 使用ExcelDataReader 並且組成 json
-                string pathType =
-                    Path.GetExtension(FileModel.File.FileName)
-                    .Substring(1); //檔案類型
+
                 var stream = FileModel.File.InputStream;
                 List<Exhibit7Model> dataModel = A6Repository.getExcel(pathType, stream);
                 if (dataModel.Count > 0)
@@ -135,23 +143,25 @@ namespace Transfer.Controllers
                 #region 抓Excel檔案 轉成 model
                 // Excel 檔案位置
                 DateTime startTime = DateTime.Now;
-                string projectFile = Server.MapPath("~/FileUploads");
-                string fileName = @"Exhibit 7.xlsx"; //預設
-                string configFileName = ConfigurationManager.AppSettings["fileA6Name"];
-                if (!string.IsNullOrWhiteSpace(configFileName))
-                    fileName = configFileName; //config 設定就取代
+                string projectFile = Server.MapPath("~/"+SetFile.FileUploads);
+                string fileName = string.Empty;
+                if (Cache.IsSet(CacheList.A62ExcelName))
+                    fileName = (string)Cache.Get(CacheList.A62ExcelName);  //從Cache 抓資料
+                if (fileName.IsNullOrWhiteSpace())
+                {
+                    result.RETURN_FLAG = false;
+                    result.DESCRIPTION = Message_Type.time_Out.GetDescription();
+                }
+
                 string path = Path.Combine(projectFile, fileName);
                 FileStream stream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read);
 
                 string pathType = path.Split('.')[1]; //抓副檔名
-                List<Exhibit7Model> dataModel = A6Repository.getExcel(pathType, stream); //Excel轉成 Exhibit10Model
-
-                string proName = "Transfer";
-                string tableName = string.Empty;
+                List<Exhibit7Model> dataModel = A6Repository.getExcel(pathType, stream); //Excel轉成 Exhibit7Model
                 #endregion
 
                 #region txtlog 檔案名稱
-                string txtpath = "Exhibit 7Transfer.txt"; //預設txt名稱
+                string txtpath = SetFile.A62TransferTxtLog; //預設txt名稱
                 string configTxtName = ConfigurationManager.AppSettings["txtLogA6Name"];
                 if (!string.IsNullOrWhiteSpace(configTxtName))
                     txtpath = configTxtName; //有設定webConfig且不為空就取代
@@ -168,11 +178,10 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region save Tm_Adjust_YYYY(A62)
-                tableName = Table_Type.A62.GetDescription();
                 MSGReturnModel resultA62 = A6Repository.saveA62(dataModel); //save to DB
-                bool A62Log = CommonFunction.saveLog("A62",tableName, fileName, proName,
+                bool A62Log = CommonFunction.saveLog(Table_Type.A62, fileName, SetFile.ProgramName,
                     resultA62.RETURN_FLAG, Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, resultA62.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
+                TxtLog.txtLog(Table_Type.A62, resultA62.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
                 result = resultA62;
                 //result.RETURN_FLAG = resultA61.RETURN_FLAG && resultA62.RETURN_FLAG;

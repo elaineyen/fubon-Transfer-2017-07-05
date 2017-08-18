@@ -7,6 +7,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Transfer.ViewModels
 {
+   
     /// <summary>
     /// 檔案驗證
     /// </summary>
@@ -18,9 +19,10 @@ namespace Transfer.ViewModels
     }
 
 
+
     public class FileSizeAttribute : ValidationAttribute
     {
-        private readonly int _maxSize;
+        private int _maxSize;
 
         public FileSizeAttribute(int maxSize)
         {
@@ -31,12 +33,14 @@ namespace Transfer.ViewModels
         {
             if (value == null) return true;
 
-            return _maxSize > ((HttpPostedFileWrapper)value).ContentLength;
+            //return _maxSize > ((HttpPostedFileWrapper)value).ContentLength;
+            return ((HttpPostedFileWrapper)value).ContentLength != 0;
         }
 
         public override string FormatErrorMessage(string name)
         {
-            return string.Format("File size should be within {0}", _maxSize);
+            //return string.Format("File size should be within {0}", _maxSize);
+            return string.Format("File No Data");
         }
     }
 

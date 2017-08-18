@@ -10,7 +10,7 @@ using Transfer.Utility;
 using Transfer.ViewModels;
 using static Transfer.Enum.Ref;
 
-namespace Transfer.Models.Repositiry
+namespace Transfer.Models.Repository
 {
     public class A8Repository : IA8Repository , IDbEvent
     {
@@ -128,7 +128,10 @@ namespace Transfer.Models.Repositiry
             MSGReturnModel result = new MSGReturnModel();            
             try
             {
-                List<string> A8Type = new List<string>() {"A81","A82","A83" };
+                List<string> A8Type = new List<string>() {
+                    Table_Type.A81.ToString(),
+                    Table_Type.A82.ToString(),
+                    Table_Type.A83.ToString()};
                 if (!A8Type.Contains(type))
                 {
                     result.RETURN_FLAG = false;
@@ -136,7 +139,7 @@ namespace Transfer.Models.Repositiry
                     return result;
                 }
                 #region save Moody_Monthly_PD_Info(A81)
-                if ("A81".Equals(type))
+                if (Table_Type.A81.ToString().Equals(type))
                 {
                     if (db.Moody_Monthly_PD_Info.Any())
                     db.Moody_Monthly_PD_Info.RemoveRange(
@@ -167,7 +170,7 @@ namespace Transfer.Models.Repositiry
                 }
                 #endregion
                 #region save Moody_Quartly_PD_Info(A82)
-                if ("A82".Equals(type))
+                if (Table_Type.A82.ToString().Equals(type))
                 {
                     if (db.Moody_Quartly_PD_Info.Any())
                         db.Moody_Quartly_PD_Info.RemoveRange(
@@ -212,7 +215,7 @@ namespace Transfer.Models.Repositiry
                 }
                 #endregion
                 #region save Moody_Predit_PD_Info(A83)
-                if ("A83".Equals(type))
+                if (Table_Type.A83.ToString().Equals(type))
                 {
                     if (db.Moody_Predit_PD_Info.Any())
                         db.Moody_Predit_PD_Info.RemoveRange(db.Moody_Predit_PD_Info);

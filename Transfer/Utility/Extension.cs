@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Configuration;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Web;
@@ -15,6 +17,14 @@ namespace Transfer.Utility
         public string DisplayText { get; set; }
         public bool IsChecked { get; set; }
     }
+    public static class EnumUtil
+    {
+        public static IEnumerable<T> GetValues<T>()
+        {
+            return System.Enum.GetValues(typeof(T)).Cast<T>();
+        }
+    }
+
     public static class Extension
     {
 
@@ -26,6 +36,17 @@ namespace Transfer.Utility
                 if (fun(item))
                     yield return item; 
             }
+        }
+
+        public static string GetExelName(this string str)
+        {
+            if (str.IsNullOrWhiteSpace())
+                return string.Empty;
+            string version = "2003"; //default 2003
+            string configVersion = ConfigurationManager.AppSettings["ExcelVersion"];
+            if (!configVersion.IsNullOrWhiteSpace())
+                version = configVersion;
+            return "2003".Equals(version) ? str + ".xls" : str + ".xlsx";
         }
 
         public static bool IsNullOrWhiteSpace
@@ -122,6 +143,8 @@ namespace Transfer.Utility
             }
             return enumerationValue.ToString();
         }
+
+
 
         #region CheckBoxList
         /// <summary>

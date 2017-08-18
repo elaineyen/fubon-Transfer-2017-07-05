@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static Transfer.Enum.Ref;
 
 namespace Transfer.Models.Interface
 {
@@ -12,8 +13,7 @@ namespace Transfer.Models.Interface
         /// <summary>
         /// Log資料存到Sql(IFRS9_Log)
         /// </summary>
-        /// <param name="tableType">table簡寫</param>
-        /// <param name="tableName">table名</param>
+        /// <param name="Table_Type">table類型</param>
         /// <param name="fileName">檔案名</param>
         /// <param name="programName">專案名</param>
         /// <param name="falg">成功失敗</param>
@@ -22,13 +22,42 @@ namespace Transfer.Models.Interface
         /// <param name="end">結束時間</param>
         /// <returns>回傳成功或失敗</returns>
         bool saveLog(
-            string tableType,
-            string tableName,
+            Table_Type table,
             string fileName,
             string programName,
             bool falg,
             string deptType,
             DateTime start,
             DateTime end);
+
+        /// <summary>
+        /// 轉檔紀錄存到Sql(Transfer_CheckTable)
+        /// </summary>
+        /// <param name="fileName">檔案名稱 A41,A42...</param>
+        /// <param name="falg">成功失敗</param>
+        /// <param name="reportDate">基準日</param>
+        /// <param name="version">版本</param>
+        /// <param name="start">轉檔開始時間</param>
+        /// <param name="end">轉檔結束時間</param>
+        /// <returns>回傳成功或失敗</returns>
+        bool saveTransferCheck(
+             string fileName,
+             bool falg,
+             DateTime reportDate,
+             string version,
+             DateTime start,
+             DateTime end);
+
+        /// <summary>
+        /// 判斷轉檔紀錄是否有存在
+        /// </summary>
+        /// <param name="fileNames">要判斷的檔案名稱(可多個)</param>
+        /// <param name="reportDate">基準日</param>
+        /// <param name="version">版本</param>
+        /// <returns>回傳成功或失敗</returns>
+        bool checkTransferCheck(
+            List<string> fileNames,
+            DateTime reportDate,
+            string version);
     }
 }

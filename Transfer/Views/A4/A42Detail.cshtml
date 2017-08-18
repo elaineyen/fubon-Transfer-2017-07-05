@@ -21,11 +21,11 @@
             <form id="myFrom">
                 <table width="100%">
                     <tr>
-                        <td style="width:450px" class="form-group">
+                        <td style="width:700px" class="form-group">
                             <label>日期 : </label>
                             <input type="text" id="datepicker" name="datepicker">
                         </td>
-                        <td style="padding-top:8px">
+                        <td style="width:400px;padding-top:8px">
                             <label>版本 : </label>
                             <input type="text" id="version" name="version">
                         </td>
@@ -61,7 +61,6 @@
 <script src="~/Scripts/verification.js"></script> @*use validate*@
 <script type="text/javascript">
     $(function () {
-        var d = new Date();
         $("#datepicker").datepicker({
             changeMonth: true,
             changeYear: true,
@@ -69,7 +68,7 @@
             showOn: "both",
             buttonText: '<i class="fa fa-calendar fa-2x toggle-btn"></i>',
             onSelect: function (value) {
-                if (verified.isDate(value))
+                if (verified.isDate(value,true))
                     $(this).parent().children().each(function () {
                         if ($(this).is('label') && $(this).hasClass('error'))
                             $(this).remove();
@@ -77,8 +76,7 @@
                             $(this).removeClass('error');
                     })
             }
-        }).datepicker('setDate', new Date(d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + 25));
-
+        }).datepicker('setDate', verified.reportDate());
         //#region 註冊URL
         var url = {};
         url.transfer = '@Url.Action("TransferToOther", "A4")';
@@ -101,22 +99,10 @@
             var version = $('#version').val();
             var date = $('#datepicker').val();
             var type = $('#transferType').val();
-            $.validator.addMethod("dateFormate",
-                function (value, element, arg) {
-                    return verified.isDate(value);
-                }, "日期錯誤 (yyyy/mm/dd)");
-            $("#myFrom").validate({
-                rules: {
-                    version: { required: true },
-                    datepicker: { dateFormate: date }
-                },
-                messages: {
-                    version: "版本為必填!",
-                },
-                errorPlacement: function (error, element) {
-                    error.appendTo(element.parent());
-                }
-            })
+
+            verified.required('myFrom', 'version', message.required(message.version));
+            verified.datepicker('myFrom', 'datepicker', true, date);
+            
             if ($('#myFrom').valid()) {
                 callTransfer(type, version, date, type === "All")
             }

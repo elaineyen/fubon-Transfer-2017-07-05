@@ -20,14 +20,21 @@ namespace Transfer.Models.Interface
         /// get Db A41 data
         /// </summary>
         /// <returns></returns>
-        Tuple<bool, List<A41ViewModel>> GetA41(string type,string value,DateTime date);
+        Tuple<bool, List<A41ViewModel>> GetA41(string type, string value, DateTime date);
 
         /// <summary>
         /// save A41 To Db
         /// </summary>
         /// <param name="dataModel">A41ViewModel</param>
         /// <returns></returns>
-        MSGReturnModel saveA41(List<A41ViewModel> dataModel);
+        MSGReturnModel saveA41(List<A41ViewModel> dataModel,string reportDate);
+
+        /// <summary>
+        /// save A42T To Db
+        /// </summary>
+        /// <param name="dataModel">A42TViewModel</param>
+        /// <returns></returns>
+        MSGReturnModel saveA42T(List<A42TViewModel> dataModel);
 
         /// <summary>
         /// save B01 to DB
@@ -50,11 +57,19 @@ namespace Transfer.Models.Interface
         /// </summary>
         /// <param name="tableTypes">"B01","C01"...</param>
         /// <returns></returns>
-        List<string> GetLogData(List<string> tableTypes,string debt);
+        List<string> GetLogData(List<string> tableTypes, string debt);
 
         /// <summary>
         /// 
         /// </summary>
         void SaveChange();
+
+        /// <summary>
+        /// Excel資料 轉 A42TViewModel
+        /// </summary>
+        /// <param name="pathType"></param>
+        /// <param name="stream"></param>
+        /// <returns></returns>
+        List<A42TViewModel> getA42TExcel(string pathType, Stream stream, string processingDate, string reportDate);
     }
 }

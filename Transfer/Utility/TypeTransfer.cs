@@ -84,6 +84,20 @@ namespace Transfer.Utility
         }
         #endregion
 
+        #region String To DateTime
+        /// <summary>
+        /// string 轉 DateTime
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static DateTime stringToDateTime(string value)
+        {
+            DateTime t = DateTime.MinValue;
+            DateTime.TryParse(value, out t);
+            return t;
+        }
+        #endregion
+
         #region 民國字串轉西元年
         /// <summary>
         /// 民國字串轉西元年

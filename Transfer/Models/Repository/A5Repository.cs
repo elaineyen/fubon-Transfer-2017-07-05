@@ -5,7 +5,7 @@ using System.Web;
 using Transfer.Models.Interface;
 using Transfer.ViewModels;
 
-namespace Transfer.Models.Repositiry
+namespace Transfer.Models.Repository
 {
     public class A5Repository : IA5Repository , IDbEvent
     {

@@ -1,0 +1,150 @@
+﻿@{
+    ViewBag.Manu = "A5Main";
+    ViewBag.SubManu = "A57Sub";
+    ViewBag.Title = "債券信評補登(歷史檔)";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .ui-datepicker-trigger {
+        border: none;
+        background: none;
+    }
+    .error {
+        color: red;
+    }
+</style>
+<div class="container" id="main">
+    <div class="row main_hand">
+        <div class="col-md-12 main_hand_div">
+            <table>
+                <tr>
+                    <td style="width:600px" class="form-group">
+                        <label>報導日&emsp; : </label>
+                        <input type="text" id="datepicker" name="datepicker">
+                    </td>
+                    <td style="width:400px">
+                        <label>選單條件 : </label>
+                        @Html.DropDownList("sType",
+                           (SelectList)ViewBag.sType,
+                            new { @class = "form-control", @style = "display:inline-block" })
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-top:5px;padding-bottom:10px">
+                        <label>購入日期 : </label>
+                        <input type="text" id="from" name="from">
+                        <label > ~&ensp;</label>
+                        <input type="text" id="to" name="to">
+                    </td>
+                    <td style="padding-top:10px;padding-bottom:10px">
+                        <label>債券編號 : </label>
+                        <input type="text" id="version" name="version" style="width:300px">
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label>查詢類型 : </label>
+                        @Html.DropDownList("searchType",
+                           (SelectList)ViewBag.searchOption,
+                            new { @class = "form-control", @style = "display:inline-block" })
+                    </td>
+                    <td>
+
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="row main_body" style="overflow:auto;height:100%">
+        <div class="col-md-12">
+            <div class="viewDetail">
+                <div id="jqgridDiv" class="jqd">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Scripts/jquery-ui-1.10.0.min.js"></script> @*jquery-ui*@
+<script src="~/Scripts/i18n/datepicker-zh-TW.js"></script>  @*use datepicker*@
+<script src="~/Scripts/jquery.validate.min.js"></script> @*use validate*@
+<script src="~/Scripts/verification.js"></script> @*use validate*@
+
+<script type="text/javascript">
+
+    $(function () {
+        //#region 註冊URL
+        var url = {};
+        url.getData = '@Url.Action("GetData", "A4")';
+        url.getDbData = '@Url.Action("GetCacheData", "A4")';
+        //#endregion 註冊URL
+
+        //#region 註冊datepicker
+        var dateFormat = 'yy/mm/dd';
+        $("#datepicker").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: dateFormat,
+            showOn: "both",
+            buttonText: '<i class="fa fa-calendar fa-2x toggle-btn"></i>',
+            onSelect: function (value) {
+                if (verified.isDate(value, true))
+                    $(this).parent().children().each(function () {
+                        if ($(this).is('label') && $(this).hasClass('error'))
+                            $(this).remove();
+                        if ($(this).is('input') && $(this).hasClass('error'))
+                            $(this).removeClass('error');
+                    })
+            }
+        }).datepicker('setDate', verified.reportDate());
+
+        var from = $("#from")
+        .datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: dateFormat,
+            showOn: "both",
+            buttonText: '<i class="fa fa-calendar fa-2x toggle-btn"></i>',
+            onSelect: function (value) {
+                if (verified.isDate(value, false)) {
+                    to.datepicker("option", "minDate", getDate(this));
+                    $(this).parent().children().each(function () {
+                        if ($(this).is('label') && $(this).hasClass('error'))
+                            $(this).remove();
+                        if ($(this).is('input') && $(this).hasClass('error'))
+                            $(this).removeClass('error');
+                    })
+                }
+            }
+        });
+        var to = $("#to").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: dateFormat,
+            showOn: "both",
+            buttonText: '<i class="fa fa-calendar fa-2x toggle-btn"></i>',
+            onSelect: function (value) {
+                if (verified.isDate(value, false)) {
+                    from.datepicker("option", "maxDate", getDate(this));
+                    $(this).parent().children().each(function () {
+                        if ($(this).is('label') && $(this).hasClass('error'))
+                            $(this).remove();
+                        if ($(this).is('input') && $(this).hasClass('error'))
+                            $(this).removeClass('error');
+                    })
+                }
+            }
+        });
+
+        function getDate(element) {
+            var date;
+            try {
+                date = $.datepicker.parseDate(dateFormat, element.value);
+            } catch (error) {
+                date = null;
+            }
+            return date;
+        }
+        //#endregion 註冊datepicker
+    });
+</script>

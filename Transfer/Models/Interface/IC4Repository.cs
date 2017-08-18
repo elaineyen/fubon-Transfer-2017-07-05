@@ -8,6 +8,6 @@ namespace Transfer.Models.Interface
 {
     public interface IC4Repository
     {
-        void test(string filePath, string fileName);
+
     }
 }

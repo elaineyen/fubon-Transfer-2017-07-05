@@ -13,7 +13,7 @@
         </a>
     </li>
     <ul class="sub-menu collapse" id=@item.Menu>
-        @foreach (var sub in Model.menu_Sub.Where(x => x.Menu == item.Menu))
+        @foreach (var sub in Model.menu_Sub.Where(x => x.Menu == item.Menu).OrderBy(x=>x.SortNum))
         {
             if (sub.Href.Split(',').Length >= 2)
             {

@@ -10,7 +10,7 @@ using Transfer.Utility;
 using Transfer.ViewModels;
 using static Transfer.Enum.Ref;
 
-namespace Transfer.Models.Repositiry
+namespace Transfer.Models.Repository
 {
     public class A4Repository : IA4Repository, IDbEvent
     {
@@ -136,27 +136,26 @@ namespace Transfer.Models.Repositiry
         /// </summary>
         /// <param name="dataModel"></param>
         /// <returns></returns>
-        public MSGReturnModel saveA41(List<A41ViewModel> dataModel)
+        public MSGReturnModel saveA41(List<A41ViewModel> dataModel,string reportDate)
         {
             MSGReturnModel result = new MSGReturnModel();
+            DateTime dt = TypeTransfer.stringToDateTime(reportDate);
             try
             {
                 if (!dataModel.Any())
                 {
                     result.RETURN_FLAG = false;
-                    result.DESCRIPTION = "No Save Data!";
+                    result.DESCRIPTION = Message_Type.not_Find_Any.GetDescription();
                     return result;
                 }
                 if (db.Bond_Account_Info.Any() &&
                     db.Bond_Account_Info
-                    //.AsEnumerable()
                     .FirstOrDefault(x => x.Report_Date != null
-                    && x.Report_Date.Value.ToString("yyyy/MM/dd")
-                    .Equals(dataModel.First().Report_Date)) != null)
+                    && x.Report_Date == dt) != null)
                 //資料裡面已經有相同的 Report_Date ?? 是否需加入 version
                 {
                     result.RETURN_FLAG = false;
-                    result.DESCRIPTION = "Already Save Data!";
+                    result.DESCRIPTION = Message_Type.already_Save.GetDescription();
                     return result;
                 }
                 foreach (var item in dataModel)
@@ -196,7 +195,7 @@ namespace Transfer.Models.Repositiry
                         Impair_Yn = item.Impair_Yn,
                         Eir = TypeTransfer.stringToDoubleN(item.Eir),
                         Currency_Code = item.Currency_Code,
-                        Report_Date = TypeTransfer.stringToDateTimeN(item.Report_Date),
+                        Report_Date = dt,
                         Issuer = item.Issuer,
                         Country_Risk = item.Country_Risk,
                         Ex_rate = TypeTransfer.stringToDoubleN(item.Ex_rate),
@@ -228,10 +227,65 @@ namespace Transfer.Models.Repositiry
             {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Message_Type
-                        .save_Fail.GetDescription("A41",
+                        .save_Fail.GetDescription(Table_Type.A41.ToString(),
                         $"message: {ex.Message}" +
                         $", inner message {ex.InnerException?.InnerException?.Message}");
             }
+            return result;
+        }
+        #endregion
+
+        #region Save A42T
+        /// <summary>
+        /// A42T save db
+        /// </summary>
+        /// <param name="dataModel"></param>
+        /// <returns></returns>
+        public MSGReturnModel saveA42T(List<A42TViewModel> dataModel)
+        {
+            MSGReturnModel result = new MSGReturnModel();
+            try
+            {
+                if (!dataModel.Any())
+                {
+                    result.RETURN_FLAG = false;
+                    result.DESCRIPTION = Message_Type.not_Find_Any.GetDescription();
+                    return result;
+                }
+
+                var query = db.Treasury_Securities_Info.AsEnumerable().Where(x => x.Report_Date.ToString("yyyy/MM/dd") == dataModel[0].Report_Date);
+                db.Treasury_Securities_Info.RemoveRange(query);
+
+                foreach (var item in dataModel)
+                {
+                    db.Treasury_Securities_Info.Add(
+                    new Treasury_Securities_Info()
+                    {
+                        Bond_Number = item.Bond_Number,
+                        Lots = item.Lots,
+                        Segment_Name = item.Segment_Name,
+                        Portfolio_Name = item.Portfolio_Name,
+                        Bond_Value = TypeTransfer.stringToDouble(item.Bond_Value),
+                        Ori_Amount = TypeTransfer.stringToDouble(item.Ori_Amount),
+                        Principal = TypeTransfer.stringToDouble(item.Principal),
+                        Amort_value = TypeTransfer.stringToDouble(item.Amort_value),
+                        Processing_Date = TypeTransfer.stringToDateTime(item.Processing_Date),
+                        Report_Date = TypeTransfer.stringToDateTime(item.Report_Date)
+                    });
+                }
+
+                db.SaveChanges(); //Save
+                result.RETURN_FLAG = true;
+            }
+            catch (DbUpdateException ex)
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = Message_Type
+                        .save_Fail.GetDescription(Table_Type.A42T.ToString(),
+                        $"message: {ex.Message}" +
+                        $", inner message {ex.InnerException?.InnerException?.Message}");
+            }
+
             return result;
         }
         #endregion
@@ -264,7 +318,7 @@ namespace Transfer.Models.Repositiry
                         if (!addData.Any())
                         {
                             result.DESCRIPTION = Message_Type
-                                .query_Not_Find.GetDescription("B01");
+                                .query_Not_Find.GetDescription(Table_Type.B01.ToString());
                             return result;
                         }
 
@@ -280,7 +334,7 @@ namespace Transfer.Models.Repositiry
                         if (!addData.Any())
                         {
                             result.DESCRIPTION = Message_Type
-                                .already_Save.GetDescription("B01");
+                                .already_Save.GetDescription(Table_Type.B01.ToString());
                             return result;
                         }
                         db.IFRS9_Main.AddRange(
@@ -355,7 +409,7 @@ namespace Transfer.Models.Repositiry
                         db.SaveChanges();
                         result.RETURN_FLAG = true;
                         result.DESCRIPTION = Message_Type
-                            .save_Success.GetDescription("B01");
+                            .save_Success.GetDescription(Table_Type.B01.ToString());
                     }
                 }
                 if (Debt_Type.M.ToString().Equals(type)) //房貸
@@ -450,7 +504,7 @@ namespace Transfer.Models.Repositiry
                             db.SaveChanges();
                             result.RETURN_FLAG = true;
                             result.DESCRIPTION = Message_Type
-                                .save_Success.GetDescription("B01");
+                                .save_Success.GetDescription(Table_Type.B01.ToString());
                         }
                     }
                 }
@@ -460,7 +514,7 @@ namespace Transfer.Models.Repositiry
             {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Message_Type
-                        .save_Fail.GetDescription("B01",
+                        .save_Fail.GetDescription(Table_Type.B01.ToString(),
                         $"message: {ex.Message}" +
                         $", inner message {ex.InnerException?.InnerException?.Message}");
             }
@@ -481,7 +535,7 @@ namespace Transfer.Models.Repositiry
             MSGReturnModel result = new MSGReturnModel();
             result.RETURN_FLAG = false;
             result.DESCRIPTION = Message_Type
-                    .not_Find_Any.GetDescription("C01");
+                    .not_Find_Any.GetDescription(Table_Type.C01.ToString());
             try
             {
                 if (db.IFRS9_Main.Any())
@@ -502,7 +556,7 @@ namespace Transfer.Models.Repositiry
                     if (!addData.Any())
                     {
                         result.DESCRIPTION = Message_Type
-                            .query_Not_Find.GetDescription("C01");
+                            .query_Not_Find.GetDescription(Table_Type.C01.ToString());
                         return result;
                     }
 
@@ -519,7 +573,7 @@ namespace Transfer.Models.Repositiry
                     if (!addData.Any())
                     {
                         result.DESCRIPTION = Message_Type
-                            .already_Save.GetDescription("C01");
+                            .already_Save.GetDescription(Table_Type.C01.ToString());
                         return result;
                     }
                     DateTime now = DateTime.Now;
@@ -605,14 +659,14 @@ namespace Transfer.Models.Repositiry
                     db.SaveChanges();
                     result.RETURN_FLAG = true;
                     result.DESCRIPTION = Message_Type
-                        .save_Success.GetDescription("C01");
+                        .save_Success.GetDescription(Table_Type.C01.ToString());
                 }
             }
             catch (DbUpdateException ex)
             {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Message_Type
-                        .save_Fail.GetDescription("C01",
+                        .save_Fail.GetDescription(Table_Type.C01.ToString(),
                         $"message: {ex.Message}" +
                         $", inner message {ex.InnerException?.InnerException?.Message}");
             }
@@ -653,8 +707,8 @@ namespace Transfer.Models.Repositiry
                 int idNum = 0;
                 if (db.Bond_Account_Info.Any())
                     idNum = db.Bond_Account_Info
-                        //.AsEnumerable()
-                        .Max(x => Convert.ToInt32(x.Reference_Nbr));
+                        .Select(x=>x.Reference_Nbr).Distinct().AsEnumerable()
+                        .Max(x => Convert.ToInt32(x));
                 if (resultData.Tables[0].Rows.Count > 2) //判斷有無資料
                 {
                     dataModel = resultData.Tables[1].AsEnumerable().Skip(1) //第二頁籤第二行開始
@@ -670,6 +724,50 @@ namespace Transfer.Models.Repositiry
             }
             catch (Exception ex)
             { }
+            return dataModel;
+        }
+        #endregion
+
+        #region Excel 資料轉成 A42TViewModel
+        /// <summary>
+        /// Excel 資料轉成 A42TViewModel
+        /// </summary>
+        /// <param name="pathType">Excel 副檔名</param>
+        /// <param name="stream"></param>
+        /// <param name="reportDate"></param>
+        /// <returns></returns>
+        public List<A42TViewModel> getA42TExcel(string pathType, Stream stream, string processingDate, string reportDate)
+        {
+            DataSet resultData = new DataSet();
+            List<A42TViewModel> dataModel = new List<A42TViewModel>();
+
+            try
+            {
+                IExcelDataReader reader = null;
+                switch (pathType) //判斷型別
+                {
+                    case "xls":
+                        reader = ExcelReaderFactory.CreateBinaryReader(stream);
+                        break;
+                    case "xlsx":
+                        reader = ExcelReaderFactory.CreateOpenXmlReader(stream);
+                        break;
+                }
+
+                reader.IsFirstRowAsColumnNames = true;
+                resultData = reader.AsDataSet();
+                reader.Close();
+
+                if (resultData.Tables[0].Rows.Count > 1) //判斷有無資料
+                {
+                    dataModel = (from q in resultData.Tables[0].AsEnumerable()
+                                 select getA42TViewModel(q, processingDate, reportDate)).ToList();
+                }
+            }
+            catch (Exception ex)
+            {
+            }
+
             return dataModel;
         }
         #endregion
@@ -810,6 +908,30 @@ namespace Transfer.Models.Repositiry
                 Market_Value_Ori = TypeTransfer.doubleNToString(data.Market_Value_Ori),
                 Market_Value_TW = TypeTransfer.doubleNToString(data.Market_Value_TW),
                 Value_date = TypeTransfer.dateTimeNToString(data.Value_date)
+            };
+        }
+        #endregion
+
+        #region datarow 組成 A42TViewModel
+        /// <summary>
+        /// datarow 組成 A42TViewModel
+        /// </summary>
+        /// <param name="item">DataRow</param>
+        /// <returns>A42TViewModel</returns>
+        private A42TViewModel getA42TViewModel(DataRow item, string processingDate, string reportDate)
+        {
+            return new A42TViewModel()
+            {
+                Bond_Number = TypeTransfer.objToString(item[0]),
+                Lots = TypeTransfer.objToString(item[1]),
+                Segment_Name = TypeTransfer.objToString(item[2]),
+                Portfolio_Name = TypeTransfer.objToString(item[3]),
+                Bond_Value = TypeTransfer.objToString(item[4]),
+                Ori_Amount = TypeTransfer.objToString(item[5]),
+                Principal = TypeTransfer.objToString(item[6]),
+                Amort_value = TypeTransfer.objToString(item[7]),
+                Processing_Date = processingDate,
+                Report_Date = reportDate
             };
         }
         #endregion

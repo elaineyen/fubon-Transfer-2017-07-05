@@ -2,10 +2,11 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Web.Mvc;
 using Transfer.Infrastructure;
 using Transfer.Models.Interface;
-using Transfer.Models.Repositiry;
+using Transfer.Models.Repository;
 using Transfer.Utility;
 using Transfer.ViewModels;
 using static Transfer.Enum.Ref;
@@ -17,11 +18,13 @@ namespace Transfer.Controllers
     {
         private IA7Repository A7Repository;
         private ICommon CommonFunction;
+        public ICacheProvider Cache { get; set; }
 
         public A7Controller()
         {
             this.A7Repository = new A7Repository();
             this.CommonFunction = new Common();
+            this.Cache = new DefaultCacheProvider();
         }
 
         /// <summary>
@@ -95,7 +98,7 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region 前端檔案大小不服或不為Excel檔案(驗證)
-                if (FileModel.File.ContentLength == 0 || !ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
                     result.RETURN_FLAG = false;
                     result.DESCRIPTION = Message_Type.excel_Validate.GetDescription();
@@ -104,11 +107,21 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region 上傳檔案
-                var fileName = Path.GetFileName(FileModel.File.FileName); //檔案名稱
+
+                string pathType = Path.GetExtension(FileModel.File.FileName)
+                                      .Substring(1); //上傳的檔案類型
+
+                var fileName = string.Format("{0}.{1}",
+                    Excel_UploadName.A71.GetDescription(),
+                    pathType); //固定轉成此名稱
+
+                Cache.Invalidate(CacheList.A71ExcelName); //清除 Cache
+                Cache.Set(CacheList.A71ExcelName, fileName, 15); //把資料存到 Cache
+
 
                 #region 檢查是否有FileUploads資料夾,如果沒有就新增 並加入 excel 檔案
 
-                string projectFile = Server.MapPath("~/FileUploads"); //專案資料夾
+                string projectFile = Server.MapPath("~/"+SetFile.FileUploads); //專案資料夾
                 string path = Path.Combine(projectFile, fileName);
                 FileRelated.createFile(projectFile); //檢查是否有FileUploads資料夾,如果沒有就新增
 
@@ -119,9 +132,7 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region 讀取Excel資料 使用ExcelDataReader 並且組成 json
-                string pathType =
-                    Path.GetExtension(FileModel.File.FileName)
-                    .Substring(1); //檔案類型
+
                 var stream = FileModel.File.InputStream;
                 List<Exhibit29Model> dataModel = A7Repository.getExcel(pathType, stream);
                 if (dataModel.Count > 0)
@@ -160,23 +171,27 @@ namespace Transfer.Controllers
                 #region 抓Excel檔案 轉成 model
                 // Excel 檔案位置
                 DateTime startTime = DateTime.Now;
-                string projectFile = Server.MapPath("~/FileUploads");
-                string fileName = @"Exhibit 29.xlsx"; //預設
-                string configFileName = ConfigurationManager.AppSettings["fileA7Name"];
-                if (!string.IsNullOrWhiteSpace(configFileName))
-                    fileName = configFileName; //config 設定就取代
+                string projectFile = Server.MapPath("~/"+SetFile.FileUploads);
+
+                string fileName = string.Empty;
+                if (Cache.IsSet(CacheList.A71ExcelName))
+                    fileName = (string)Cache.Get(CacheList.A71ExcelName);  //從Cache 抓資料
+
+                if (fileName.IsNullOrWhiteSpace())
+                {
+                    result.RETURN_FLAG = false;
+                    result.DESCRIPTION = Message_Type.time_Out.GetDescription();
+                }
+
                 string path = Path.Combine(projectFile, fileName);
                 FileStream stream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read);
 
                 string pathType = path.Split('.')[1]; //抓副檔名
-                List<Exhibit29Model> dataModel = A7Repository.getExcel(pathType, stream); //Excel轉成 Exhibit10Model
-
-                string proName = "Transfer";
-                string tableName = string.Empty;
+                List<Exhibit29Model> dataModel = A7Repository.getExcel(pathType, stream); //Excel轉成 Exhibit29Model
                 #endregion
 
                 #region txtlog 檔案名稱
-                string txtpath = "Exhibit29Transfer.txt"; //預設txt名稱
+                string txtpath =  SetFile.A71TransferTxtLog; //預設txt名稱
                 string configTxtName = ConfigurationManager.AppSettings["txtLogA7Name"];
                 if (!string.IsNullOrWhiteSpace(configTxtName))
                     txtpath = configTxtName; //有設定webConfig且不為空就取代
@@ -184,32 +199,28 @@ namespace Transfer.Controllers
 
                 #region save 資料
                 #region save Moody_Tm_YYYY(A71)
-                tableName = Table_Type.A71.GetDescription();
                 MSGReturnModel resultA71 = A7Repository.saveA71(dataModel); //save to DB
-                bool A71Log = CommonFunction.saveLog("A71",tableName, fileName, proName,
+                bool A71Log = CommonFunction.saveLog(Table_Type.A71, fileName, SetFile.ProgramName,
                     resultA71.RETURN_FLAG,Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, resultA71.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
+                TxtLog.txtLog(Table_Type.A71, resultA71.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
                 #region save Tm_Adjust_YYYY(A72)
-                tableName = Table_Type.A72.GetDescription();
                 MSGReturnModel resultA72 = A7Repository.saveA72(); //save to DB
-                bool A72Log = CommonFunction.saveLog("A72",tableName, fileName, proName, 
+                bool A72Log = CommonFunction.saveLog(Table_Type.A72, fileName, SetFile.ProgramName, 
                     resultA72.RETURN_FLAG, Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, resultA72.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
+                TxtLog.txtLog(Table_Type.A72, resultA72.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
                 #region save GM_YYYY(A73)
-                tableName = Table_Type.A73.GetDescription();
                 MSGReturnModel resultA73 = A7Repository.saveA73(); //save to DB
-                bool A73Log = CommonFunction.saveLog("A73",tableName, fileName, proName, 
+                bool A73Log = CommonFunction.saveLog(Table_Type.A73, fileName, SetFile.ProgramName, 
                     resultA73.RETURN_FLAG, Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, resultA73.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
+                TxtLog.txtLog(Table_Type.A73, resultA73.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
                 #region save Grade_Moody_Info(A51)
-                tableName = Table_Type.A51.GetDescription();
                 MSGReturnModel resultA51 = A7Repository.saveA51(); //save to DB
-                bool A51Log = CommonFunction.saveLog("A51",tableName, fileName, proName,
+                bool A51Log = CommonFunction.saveLog(Table_Type.A51, fileName, SetFile.ProgramName,
                     resultA51.RETURN_FLAG, Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, resultA51.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
+                TxtLog.txtLog(Table_Type.A51, resultA51.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
                 result.RETURN_FLAG = resultA71.RETURN_FLAG &&
@@ -217,8 +228,14 @@ namespace Transfer.Controllers
                                      resultA73.RETURN_FLAG &&
                                      resultA51.RETURN_FLAG;
 
-                result.DESCRIPTION = Message_Type.save_Success.GetDescription("A71,A72,A73,A51");
-
+                result.DESCRIPTION = Message_Type.save_Success.GetDescription(
+                    string.Format("{0},{1},{2},{3}",
+                    Table_Type.A71.ToString(),
+                    Table_Type.A72.ToString(),
+                    Table_Type.A73.ToString(),
+                    Table_Type.A51.ToString()
+                    ));
+                    
                 if (!result.RETURN_FLAG)
                 {
                     List<string> errs = new List<string>();
@@ -295,7 +312,8 @@ namespace Transfer.Controllers
         /// <param name="type"></param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult GetExcel(string type)
+        //public JsonResult GetExcel(string type)
+        public ActionResult GetExcel(string type)
         {
             MSGReturnModel result = new MSGReturnModel();
             string path = string.Empty;
@@ -304,13 +322,11 @@ namespace Transfer.Controllers
                 switch (type)
                 {
                     case "A72":
-                        //path = @"A72.xlsx"; //預設 (2007)
-                        path = @"A72.xls"; //預設 (2003)
+                        path = "A72".GetExelName();
                         result = A7Repository.DownLoadExcel(type, ExcelLocation(path));
                         break;
                     case "A73":
-                        //path = @"A73.xlsx"; //預設 (2007)
-                        path = @"A73.xls"; //預設  (2003)
+                        path = "A73".GetExelName();
                         result = A7Repository.DownLoadExcel(type, ExcelLocation(path));
                         break;
                 }
@@ -323,5 +339,33 @@ namespace Transfer.Controllers
             }
             return Json(result);
         }
+
+        [HttpGet]
+        [DeleteFile]
+        public ActionResult DownloadExcecl(string type)
+        {
+            try
+            {
+                string path = string.Empty;
+                switch (type)
+                {
+                    case "A72":
+                        path = "A72".GetExelName();
+                        break;
+                    case "A73":
+                        path = "A73".GetExelName();
+                        break;
+
+                }
+                //return File(ExcelLocation(path), "application/vnd.ms-excel", path);
+                return File(ExcelLocation(path), "application/octet-stream", path);             
+            }
+            catch (Exception ex)
+            {
+
+            }
+            return null;
+        }
+
     }
 }

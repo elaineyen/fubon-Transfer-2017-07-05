@@ -10,7 +10,8 @@ namespace Transfer
         {
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
                         "~/Scripts/jquery-{version}.js",
-                        "~/Scripts/jquery.blockUI.js"));
+                        "~/Scripts/jquery.blockUI.js",
+                        "~/Scripts/message.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryajax").Include(
                         "~/Scripts/jquery.unobtrusive-ajax*"));
@@ -32,6 +33,7 @@ namespace Transfer
 
             bundles.Add(new ScriptBundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap.js",
+                      "~/Scripts/bootstrap-filestyle.min.js",
                       "~/Scripts/respond.js"));
 
             bundles.Add(new ScriptBundle("~/bundles/Sidebar").Include(

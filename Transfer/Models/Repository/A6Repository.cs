@@ -10,7 +10,7 @@ using Transfer.Utility;
 using Transfer.ViewModels;
 using static Transfer.Enum.Ref;
 
-namespace Transfer.Models.Repositiry
+namespace Transfer.Models.Repository
 {
     public class A6Repository : IA6Repository, IDbEvent
     {
@@ -160,7 +160,7 @@ namespace Transfer.Models.Repositiry
             {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Message_Type
-                                     .save_Fail.GetDescription(null,
+                                     .save_Fail.GetDescription(Table_Type.A62.ToString(),
                                      $"message: {ex.Message}" +
                                      $", inner message {ex.InnerException?.InnerException?.Message}");
             }

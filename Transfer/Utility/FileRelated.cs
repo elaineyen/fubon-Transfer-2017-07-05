@@ -7,6 +7,7 @@ using NPOI.HSSF.UserModel;
 using NPOI.XSSF.UserModel;
 using NPOI.SS.UserModel;
 using Transfer.Enum;
+using System.Configuration;
 //using MExcel = Microsoft.Office.Interop.Excel;
 namespace Transfer.Utility
 {
@@ -73,13 +74,19 @@ namespace Transfer.Utility
             try
             {
 
-                //建立Excel 2003檔案
-                IWorkbook wb = new HSSFWorkbook();
+                string version = "2003"; //default 2003
+                IWorkbook wb = new XSSFWorkbook();
                 ISheet ws;
+                string configVersion = ConfigurationManager.AppSettings["ExcelVersion"];
+                if (!configVersion.IsNullOrWhiteSpace())
+                    version = configVersion;
 
-                ////建立Excel 2007檔案
-                //IWorkbook wb = new XSSFWorkbook();
-                //ISheet ws;
+                //建立Excel 2003檔案
+                if ("2003".Equals(version))
+                    wb = new HSSFWorkbook();
+
+                if("2007".Equals(version))
+                    wb = new XSSFWorkbook();
 
 
                 ws = wb.CreateSheet(sheetName);

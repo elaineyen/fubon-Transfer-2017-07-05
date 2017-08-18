@@ -25,6 +25,7 @@ namespace Transfer.Models
         public string Menu_Detail { get; set; }
         public string Class { get; set; }
         public string Href { get; set; }
+        public int SortNum { get; set; }
     
         public virtual IFRS9_Menu_Main IFRS9_Menu_Main { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]

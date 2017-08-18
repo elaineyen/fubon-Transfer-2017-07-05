@@ -5,7 +5,7 @@ using System.Runtime.Caching;
 using System.Web;
 using Transfer.Models.Interface;
 
-namespace Transfer.Models.Repositiry
+namespace Transfer.Models.Repository
 {
     public class DefaultCacheProvider : ICacheProvider
     {

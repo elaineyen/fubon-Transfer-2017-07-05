@@ -18,8 +18,6 @@ namespace Transfer.Models
         public IFRS9Entities()
             : base("name=IFRS9Entities")
         {
-            Database.Connection.ConnectionString =
-              Database.Connection.ConnectionString.Replace("XXXXX", "1qaz@WSX");
         }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -43,5 +41,7 @@ namespace Transfer.Models
         public virtual DbSet<Loan_Account_Info> Loan_Account_Info { get; set; }
         public virtual DbSet<Loan_IAS39_Info> Loan_IAS39_Info { get; set; }
         public virtual DbSet<Moody_LGD_Info> Moody_LGD_Info { get; set; }
+        public virtual DbSet<Treasury_Securities_Info> Treasury_Securities_Info { get; set; }
+        public virtual DbSet<Transfer_CheckTable> Transfer_CheckTable { get; set; }
     }
 }

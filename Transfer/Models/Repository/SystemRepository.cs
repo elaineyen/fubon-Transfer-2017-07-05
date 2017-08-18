@@ -9,7 +9,7 @@ using Transfer.Utility;
 using Transfer.ViewModels;
 using static Transfer.Enum.Ref;
 
-namespace Transfer.Models.Repositiry
+namespace Transfer.Models.Repository
 {
     public class SystemRepository : ISystemRepository , IDbEvent
     {

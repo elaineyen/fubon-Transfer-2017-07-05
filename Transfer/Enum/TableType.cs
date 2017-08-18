@@ -5,6 +5,9 @@ namespace Transfer.Enum
 {
     public partial class Ref
     {
+        /// <summary>
+        /// 所有Table
+        /// </summary>
         public enum Table_Type
         {
             /// <summary>
@@ -12,6 +15,12 @@ namespace Transfer.Enum
             /// </summary>
             [Description("Bond_Account_Info")]
             A41,
+
+            /// <summary>
+            /// Treasury_Securities_Info
+            /// </summary>
+            [Description("Treasury_Securities_Info")]
+            A42T,
 
             /// <summary>
             /// Grade_Moody_Info

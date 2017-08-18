@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
+using System.Linq;
 using System.Web.Mvc;
 using Transfer.Infrastructure;
-using Transfer.Models;
 using Transfer.Models.Interface;
-using Transfer.Models.Repositiry;
+using Transfer.Models.Repository;
 using Transfer.Utility;
 using Transfer.ViewModels;
 using static Transfer.Enum.Ref;
@@ -18,11 +18,13 @@ namespace Transfer.Controllers
     {
         private IA8Repository A8Repository;
         private ICommon CommonFunction;
-       
+        public ICacheProvider Cache { get; set; }
+
         public A8Controller()
         {
             this.A8Repository = new A8Repository();
             this.CommonFunction = new Common();
+            this.Cache = new DefaultCacheProvider();
         }
 
         /// <summary>
@@ -66,7 +68,7 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region 前端檔案大小不服或不為Excel檔案(驗證)
-                if (FileModel.File.ContentLength == 0 || !ModelState.IsValid)
+                if (!ModelState.IsValid)
                 {
                     result.RETURN_FLAG = false;
                     result.DESCRIPTION = Message_Type.excel_Validate.GetDescription();
@@ -75,11 +77,20 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region 上傳檔案
-                var fileName = Path.GetFileName(FileModel.File.FileName); //檔案名稱
+
+                string pathType = Path.GetExtension(FileModel.File.FileName)
+                      .Substring(1); //上傳的檔案類型
+
+                var fileName = string.Format("{0}.{1}",
+                      Excel_UploadName.A81.GetDescription(),
+                      pathType); //固定轉成此名稱
+
+                Cache.Invalidate(CacheList.A81ExcelName); //清除 Cache
+                Cache.Set(CacheList.A81ExcelName, fileName, 15); //把資料存到 Cache
 
                 #region 檢查是否有FileUploads資料夾,如果沒有就新增 並加入 excel 檔案
 
-                string projectFile = Server.MapPath("~/FileUploads"); //專案資料夾
+                string projectFile = Server.MapPath("~/"+SetFile.FileUploads); //專案資料夾
                 string path = Path.Combine(projectFile, fileName);
 
                 FileRelated.createFile(projectFile); //檢查是否有FileUploads資料夾,如果沒有就新增
@@ -92,9 +103,6 @@ namespace Transfer.Controllers
                 #endregion
 
                 #region 讀取Excel資料 使用ExcelDataReader 並且組成 json
-                string pathType =
-                    Path.GetExtension(FileModel.File.FileName)
-                    .Substring(1); //檔案類型
                 var stream = FileModel.File.InputStream;
                 List<Exhibit10Model> dataModel = A8Repository.getExcel(pathType, stream);
                 if (dataModel.Count > 0)
@@ -132,56 +140,59 @@ namespace Transfer.Controllers
                 #region 抓Excel檔案 轉成 model
                 // Excel 檔案位置
                 DateTime startTime = DateTime.Now;
-                string projectFile = Server.MapPath("~/FileUploads");
-                string fileName = @"Exhibit 10.xlsx"; //預設
-                string configFileName = ConfigurationManager.AppSettings["fileA8Name"];
-                if (!string.IsNullOrWhiteSpace(configFileName))
-                    fileName = configFileName; //config 設定就取代
+                string projectFile = Server.MapPath("~/"+SetFile.FileUploads);
+                string fileName = string.Empty;
+                if (Cache.IsSet(CacheList.A81ExcelName))
+                    fileName = (string)Cache.Get(CacheList.A81ExcelName);  //從Cache 抓資料
+                if (fileName.IsNullOrWhiteSpace())
+                {
+                    result.RETURN_FLAG = false;
+                    result.DESCRIPTION = Message_Type.time_Out.GetDescription();
+                }
                 string path = Path.Combine(projectFile, fileName);
                 FileStream stream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read);
 
                 string pathType = path.Split('.')[1]; //抓副檔名
                 List<Exhibit10Model> dataModel = A8Repository.getExcel(pathType, stream); //Excel轉成 Exhibit10Model
-
-                string proName = "Transfer";
-                string tableName = string.Empty;
                 #endregion
 
                 #region txtlog 檔案名稱
-                string txtpath = "Exhibit10Transfer.txt"; //預設txt名稱
+                string txtpath = SetFile.A81TransferTxtLog; //預設txt名稱
                 string configTxtName = ConfigurationManager.AppSettings["txtLogA8Name"];
                 if (!string.IsNullOrWhiteSpace(configTxtName))
                     txtpath = configTxtName; //有設定webConfig且不為空就取代
                 #endregion
 
                 #region save Moody_Monthly_PD_Info(A81)
-                tableName = Table_Type.A81.GetDescription();
-                MSGReturnModel resultA81 = A8Repository.SaveA8("A81",dataModel); //save to DB
-                bool A81Log = CommonFunction.saveLog("A81",tableName, fileName, proName, 
+                MSGReturnModel resultA81 = A8Repository.SaveA8(Table_Type.A81.ToString(), dataModel); //save to DB
+                bool A81Log = CommonFunction.saveLog(Table_Type.A81, fileName, SetFile.ProgramName, 
                     resultA81.RETURN_FLAG, Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, resultA81.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
+                TxtLog.txtLog(Table_Type.A81, resultA81.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
                 #region save Moody_Quartly_PD_Info(A82)
-                tableName = Table_Type.A82.GetDescription();
-                MSGReturnModel resultA82 = A8Repository.SaveA8("A82",dataModel); //save to DB
-                bool A82Log = CommonFunction.saveLog("A82",tableName, fileName, proName,
+                MSGReturnModel resultA82 = A8Repository.SaveA8(Table_Type.A82.ToString(), dataModel); //save to DB
+                bool A82Log = CommonFunction.saveLog(Table_Type.A82, fileName, SetFile.ProgramName,
                     resultA82.RETURN_FLAG, Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, resultA82.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
+                TxtLog.txtLog(Table_Type.A82, resultA82.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
                 #region save Moody_Predit_PD_Info(A83)
-                tableName = Table_Type.A83.GetDescription();
-                MSGReturnModel resultA83 = A8Repository.SaveA8("A83",dataModel); //save to DB
-                bool A83Log = CommonFunction.saveLog("A83",tableName, fileName, proName,
+                MSGReturnModel resultA83 = A8Repository.SaveA8(Table_Type.A83.ToString(), dataModel); //save to DB
+                bool A83Log = CommonFunction.saveLog(Table_Type.A83, fileName, SetFile.ProgramName,
                     resultA83.RETURN_FLAG, Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(tableName, resultA83.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
+                TxtLog.txtLog(Table_Type.A83, resultA83.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
                 result.RETURN_FLAG = resultA81.RETURN_FLAG &&
                                      resultA82.RETURN_FLAG &&
                                      resultA83.RETURN_FLAG;
-                result.DESCRIPTION = Message_Type.save_Success.GetDescription("A81,A82,A83");
+                result.DESCRIPTION = Message_Type.save_Success.GetDescription(
+                    string.Format("{0},{1},{2}",
+                    Table_Type.A81.ToString(),
+                    Table_Type.A82.ToString(),
+                    Table_Type.A83.ToString()
+                    ));
 
                 if (!result.RETURN_FLAG)
                 {

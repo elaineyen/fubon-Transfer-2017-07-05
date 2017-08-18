@@ -209,6 +209,7 @@
           <Property Name="Menu_Detail" Type="varchar" MaxLength="40" />
           <Property Name="Class" Type="varchar" MaxLength="30" />
           <Property Name="Href" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="SortNum" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="IFRS9_User">
           <Key>
@@ -342,6 +343,37 @@
           <Property Name="WR" Type="float" />
           <Property Name="Default_Value" Type="float" />
         </EntityType>
+        <EntityType Name="Transfer_CheckTable">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="File_Name" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="ReportDate" Type="date" Nullable="false" />
+          <Property Name="Version" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="TransferType" Type="char" MaxLength="1" />
+          <Property Name="Create_date" Type="varchar" MaxLength="8" />
+          <Property Name="Create_time" Type="varchar" MaxLength="8" />
+          <Property Name="End_date" Type="varchar" MaxLength="8" />
+          <Property Name="End_time" Type="varchar" MaxLength="8" />
+        </EntityType>
+        <EntityType Name="Treasury_Securities_Info">
+          <Key>
+            <PropertyRef Name="Bond_Number" />
+            <PropertyRef Name="Lots" />
+            <PropertyRef Name="Report_Date" />
+          </Key>
+          <Property Name="Bond_Number" Type="varchar" MaxLength="40" Nullable="false" />
+          <Property Name="Lots" Type="varchar" MaxLength="4" Nullable="false" />
+          <Property Name="Segment_Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Portfolio_Name" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="Bond_Value" Type="float" Nullable="false" />
+          <Property Name="Ori_Amount" Type="float" Nullable="false" />
+          <Property Name="Principal" Type="float" Nullable="false" />
+          <Property Name="Amort_value" Type="float" Nullable="false" />
+          <Property Name="Processing_Date" Type="date" Nullable="false" />
+          <Property Name="Report_Date" Type="date" Nullable="false" />
+        </EntityType>
         <Association Name="fk_Menu">
           <End Role="IFRS9_Menu_Main" Type="Self.IFRS9_Menu_Main" Multiplicity="1" />
           <End Role="IFRS9_Menu_Sub" Type="Self.IFRS9_Menu_Sub" Multiplicity="*" />
@@ -383,6 +415,8 @@
           <EntitySet Name="Moody_Predit_PD_Info" EntityType="Self.Moody_Predit_PD_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Quartly_PD_Info" EntityType="Self.Moody_Quartly_PD_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Tm_YYYY" EntityType="Self.Moody_Tm_YYYY" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Transfer_CheckTable" EntityType="Self.Transfer_CheckTable" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Treasury_Securities_Info" EntityType="Self.Treasury_Securities_Info" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="fk_Menu" Association="Self.fk_Menu">
             <End Role="IFRS9_Menu_Main" EntitySet="IFRS9_Menu_Main" />
             <End Role="IFRS9_Menu_Sub" EntitySet="IFRS9_Menu_Sub" />
@@ -470,6 +504,8 @@
           <EntitySet Name="Loan_Account_Info" EntityType="IFRS9Model.Loan_Account_Info" />
           <EntitySet Name="Loan_IAS39_Info" EntityType="IFRS9Model.Loan_IAS39_Info" />
           <EntitySet Name="Moody_LGD_Info" EntityType="IFRS9Model.Moody_LGD_Info" />
+          <EntitySet Name="Treasury_Securities_Info" EntityType="IFRS9Model.Treasury_Securities_Info" />
+          <EntitySet Name="Transfer_CheckTable" EntityType="IFRS9Model.Transfer_CheckTable" />
         </EntityContainer>
         <EntityType Name="Moody_Tm_YYYY">
           <Key>
@@ -692,6 +728,7 @@
           <Property Name="Href" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
           <NavigationProperty Name="IFRS9_Menu_Main" Relationship="IFRS9Model.fk_Menu" FromRole="IFRS9_Menu_Sub" ToRole="IFRS9_Menu_Main" />
           <NavigationProperty Name="IFRS9_Menu_Set" Relationship="IFRS9Model.fk_Menu_Id" FromRole="IFRS9_Menu_Sub" ToRole="IFRS9_Menu_Set" />
+          <Property Name="SortNum" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="IFRS9_User">
           <Key>
@@ -786,6 +823,37 @@
           <Property Name="Lien_Position" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
           <Property Name="Recovery_Rate" Type="Double" />
           <Property Name="LGD" Type="Double" />
+        </EntityType>
+        <EntityType Name="Treasury_Securities_Info">
+          <Key>
+            <PropertyRef Name="Bond_Number" />
+            <PropertyRef Name="Lots" />
+            <PropertyRef Name="Report_Date" />
+          </Key>
+          <Property Name="Bond_Number" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="Lots" Type="String" Nullable="false" MaxLength="4" FixedLength="false" Unicode="false" />
+          <Property Name="Segment_Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Portfolio_Name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Bond_Value" Type="Double" Nullable="false" />
+          <Property Name="Ori_Amount" Type="Double" Nullable="false" />
+          <Property Name="Principal" Type="Double" Nullable="false" />
+          <Property Name="Amort_value" Type="Double" Nullable="false" />
+          <Property Name="Processing_Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Report_Date" Type="DateTime" Nullable="false" Precision="0" />
+        </EntityType>
+        <EntityType Name="Transfer_CheckTable">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="File_Name" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="ReportDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Version" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="TransferType" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Create_date" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="Create_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="End_date" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="End_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1062,6 +1130,7 @@
           <EntitySetMapping Name="IFRS9_Menu_Sub">
             <EntityTypeMapping TypeName="IFRS9Model.IFRS9_Menu_Sub">
               <MappingFragment StoreEntitySet="IFRS9_Menu_Sub">
+                <ScalarProperty Name="SortNum" ColumnName="SortNum" />
                 <ScalarProperty Name="Href" ColumnName="Href" />
                 <ScalarProperty Name="Class" ColumnName="Class" />
                 <ScalarProperty Name="Menu_Detail" ColumnName="Menu_Detail" />
@@ -1140,6 +1209,37 @@
                 <ScalarProperty Name="Recovery_Rate" ColumnName="Recovery_Rate" />
                 <ScalarProperty Name="Lien_Position" ColumnName="Lien_Position" />
                 <ScalarProperty Name="Data_Year" ColumnName="Data_Year" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Treasury_Securities_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Treasury_Securities_Info">
+              <MappingFragment StoreEntitySet="Treasury_Securities_Info">
+                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
+                <ScalarProperty Name="Amort_value" ColumnName="Amort_value" />
+                <ScalarProperty Name="Principal" ColumnName="Principal" />
+                <ScalarProperty Name="Ori_Amount" ColumnName="Ori_Amount" />
+                <ScalarProperty Name="Bond_Value" ColumnName="Bond_Value" />
+                <ScalarProperty Name="Portfolio_Name" ColumnName="Portfolio_Name" />
+                <ScalarProperty Name="Segment_Name" ColumnName="Segment_Name" />
+                <ScalarProperty Name="Lots" ColumnName="Lots" />
+                <ScalarProperty Name="Bond_Number" ColumnName="Bond_Number" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Transfer_CheckTable">
+            <EntityTypeMapping TypeName="IFRS9Model.Transfer_CheckTable">
+              <MappingFragment StoreEntitySet="Transfer_CheckTable">
+                <ScalarProperty Name="End_time" ColumnName="End_time" />
+                <ScalarProperty Name="End_date" ColumnName="End_date" />
+                <ScalarProperty Name="Create_time" ColumnName="Create_time" />
+                <ScalarProperty Name="Create_date" ColumnName="Create_date" />
+                <ScalarProperty Name="TransferType" ColumnName="TransferType" />
+                <ScalarProperty Name="Version" ColumnName="Version" />
+                <ScalarProperty Name="ReportDate" ColumnName="ReportDate" />
+                <ScalarProperty Name="File_Name" ColumnName="File_Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
