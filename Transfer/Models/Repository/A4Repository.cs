@@ -235,13 +235,13 @@ namespace Transfer.Models.Repository
         }
         #endregion
 
-        #region Save A42T
+        #region Save A42
         /// <summary>
-        /// A42T save db
+        /// A42 save db
         /// </summary>
         /// <param name="dataModel"></param>
         /// <returns></returns>
-        public MSGReturnModel saveA42T(List<A42TViewModel> dataModel)
+        public MSGReturnModel saveA42(List<A42ViewModel> dataModel)
         {
             MSGReturnModel result = new MSGReturnModel();
             try
@@ -281,7 +281,7 @@ namespace Transfer.Models.Repository
             {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Message_Type
-                        .save_Fail.GetDescription(Table_Type.A42T.ToString(),
+                        .save_Fail.GetDescription(Table_Type.A42.ToString(),
                         $"message: {ex.Message}" +
                         $", inner message {ex.InnerException?.InnerException?.Message}");
             }
@@ -728,18 +728,18 @@ namespace Transfer.Models.Repository
         }
         #endregion
 
-        #region Excel 資料轉成 A42TViewModel
+        #region Excel 資料轉成 A42ViewModel
         /// <summary>
-        /// Excel 資料轉成 A42TViewModel
+        /// Excel 資料轉成 A42ViewModel
         /// </summary>
         /// <param name="pathType">Excel 副檔名</param>
         /// <param name="stream"></param>
         /// <param name="reportDate"></param>
         /// <returns></returns>
-        public List<A42TViewModel> getA42TExcel(string pathType, Stream stream, string processingDate, string reportDate)
+        public List<A42ViewModel> getA42Excel(string pathType, Stream stream, string processingDate, string reportDate)
         {
             DataSet resultData = new DataSet();
-            List<A42TViewModel> dataModel = new List<A42TViewModel>();
+            List<A42ViewModel> dataModel = new List<A42ViewModel>();
 
             try
             {
@@ -761,7 +761,7 @@ namespace Transfer.Models.Repository
                 if (resultData.Tables[0].Rows.Count > 1) //判斷有無資料
                 {
                     dataModel = (from q in resultData.Tables[0].AsEnumerable()
-                                 select getA42TViewModel(q, processingDate, reportDate)).ToList();
+                                 select getA42ViewModel(q, processingDate, reportDate)).ToList();
                 }
             }
             catch (Exception ex)
@@ -912,15 +912,15 @@ namespace Transfer.Models.Repository
         }
         #endregion
 
-        #region datarow 組成 A42TViewModel
+        #region datarow 組成 A42ViewModel
         /// <summary>
-        /// datarow 組成 A42TViewModel
+        /// datarow 組成 A42ViewModel
         /// </summary>
         /// <param name="item">DataRow</param>
-        /// <returns>A42TViewModel</returns>
-        private A42TViewModel getA42TViewModel(DataRow item, string processingDate, string reportDate)
+        /// <returns>A42ViewModel</returns>
+        private A42ViewModel getA42ViewModel(DataRow item, string processingDate, string reportDate)
         {
-            return new A42TViewModel()
+            return new A42ViewModel()
             {
                 Bond_Number = TypeTransfer.objToString(item[0]),
                 Lots = TypeTransfer.objToString(item[1]),

@@ -20,7 +20,7 @@ namespace Transfer.Enum
             /// Treasury_Securities_Info
             /// </summary>
             [Description("Treasury_Securities_Info")]
-            A42T,
+            A42,
 
             /// <summary>
             /// Grade_Moody_Info

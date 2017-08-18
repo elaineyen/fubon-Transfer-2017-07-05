@@ -34,7 +34,7 @@ namespace Transfer.Utility
             FileUploads = "FileUploads";
             FileDownloads = "FileDownloads";
             A41TransferTxtLog = @"DataRequirementsTransfer.txt";
-            A42TransferTxtLog = @"A42TTransfer.txt";
+            A42TransferTxtLog = @"A42Transfer.txt";
             A62TransferTxtLog = @"Exhibit 7Transfer.txt";
             A71TransferTxtLog = @"Exhibit29Transfer.txt";
             A81TransferTxtLog = @"Exhibit10Transfer.txt";

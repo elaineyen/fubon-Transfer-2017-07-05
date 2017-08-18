@@ -5,7 +5,7 @@ using System.Web;
 
 namespace Transfer.ViewModels
 {
-    public class A42TViewModel
+    public class A42ViewModel
     {
         public string Bond_Number { get; set; }
         public string Lots { get; set; }

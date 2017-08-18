@@ -21,7 +21,6 @@ namespace Transfer.Controllers
         private IA4Repository A4Repository;
         private ICommon CommonFunction;
         public ICacheProvider Cache { get; set; }
-        public string A42TDefaultFileName = "A42T.xlsx";
 
         public A4Controller()
         {
@@ -29,11 +28,6 @@ namespace Transfer.Controllers
             this.CommonFunction = new Common();
             this.Cache = new DefaultCacheProvider();
 
-            string configFileName = ConfigurationManager.AppSettings["fileA42TName"];
-            if (!string.IsNullOrWhiteSpace(configFileName))
-            {
-                A42TDefaultFileName = configFileName; //config 有設定就取代
-            }
         }
 
         /// <summary>
@@ -81,11 +75,11 @@ namespace Transfer.Controllers
         }
 
         /// <summary>
-        /// A42T(國庫券月結資料檔)
+        /// A42(國庫券月結資料檔)
         /// </summary>
         /// <returns></returns>
-        [UserAuth("A42T,A4")]
-        public ActionResult A42T()
+        [UserAuth("A42,A4")]
+        public ActionResult A42()
         {
             return View();
         }
@@ -176,7 +170,7 @@ namespace Transfer.Controllers
         /// </summary>
         /// <returns>MSGReturnModel</returns>
         [HttpPost]
-        public JsonResult UploadA42T()
+        public JsonResult UploadA42()
         {
             MSGReturnModel result = new MSGReturnModel();
 
@@ -245,7 +239,7 @@ namespace Transfer.Controllers
 
                     #region 讀取Excel資料 使用ExcelDataReader 並且組成 json
                     var stream = FileModel.InputStream;
-                    List<A42TViewModel> dataModel = A4Repository.getA42TExcel(pathType, stream, processingDate, reportDate);
+                    List<A42ViewModel> dataModel = A4Repository.getA42Excel(pathType, stream, processingDate, reportDate);
                     if (dataModel.Count > 0)
                     {
                         result.RETURN_FLAG = true;
@@ -369,7 +363,7 @@ namespace Transfer.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult TransferA42T(string processingDate, string reportDate)
+        public JsonResult TransferA42(string processingDate, string reportDate)
         {
             MSGReturnModel result = new MSGReturnModel();
 
@@ -393,35 +387,35 @@ namespace Transfer.Controllers
                 FileStream stream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read);
 
                 string pathType = path.Split('.')[1]; //抓副檔名
-                List<A42TViewModel> dataModel = A4Repository.getA42TExcel(pathType, stream, processingDate, reportDate); //Excel轉成 A42TViewModel
+                List<A42ViewModel> dataModel = A4Repository.getA42Excel(pathType, stream, processingDate, reportDate); //Excel轉成 A42ViewModel
                 #endregion
 
                 #region txtlog 檔案名稱
                 string txtpath = SetFile.A42TransferTxtLog; //預設txt名稱
-                string configTxtName = ConfigurationManager.AppSettings["txtLogA42TName"];
+                string configTxtName = ConfigurationManager.AppSettings["txtLogA42Name"];
                 if (!string.IsNullOrWhiteSpace(configTxtName))
                 {
                     txtpath = configTxtName; //有設定webConfig且不為空就取代
                 }
                 #endregion
 
-                #region save Treasury_Securities_Info(A42T)
-                MSGReturnModel resultA42T = A4Repository.saveA42T(dataModel); //save to DB
+                #region save Treasury_Securities_Info(A42)
+                MSGReturnModel resultA42 = A4Repository.saveA42(dataModel); //save to DB
 
-                bool A42TLog = CommonFunction.saveLog(Table_Type.A42T,
-                                                      fileName, SetFile.ProgramName, resultA42T.RETURN_FLAG,
+                bool A42Log = CommonFunction.saveLog(Table_Type.A42,
+                                                      fileName, SetFile.ProgramName, resultA42.RETURN_FLAG,
                                                       Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
-                TxtLog.txtLog(Table_Type.A42T, resultA42T.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
+                TxtLog.txtLog(Table_Type.A42, resultA42.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
                 #endregion
 
-                result.RETURN_FLAG = resultA42T.RETURN_FLAG;
+                result.RETURN_FLAG = resultA42.RETURN_FLAG;
                 result.DESCRIPTION = Message_Type.save_Success
-                    .GetDescription(Table_Type.A42T.ToString());
+                    .GetDescription(Table_Type.A42.ToString());
 
                 if (!result.RETURN_FLAG)
                 {
                     result.DESCRIPTION = Message_Type.save_Fail
-                        .GetDescription(Table_Type.A42T.ToString(), resultA42T.DESCRIPTION);
+                        .GetDescription(Table_Type.A42.ToString(), resultA42.DESCRIPTION);
                 }
             }
             catch (Exception ex)

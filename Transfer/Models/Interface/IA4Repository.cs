@@ -30,11 +30,11 @@ namespace Transfer.Models.Interface
         MSGReturnModel saveA41(List<A41ViewModel> dataModel,string reportDate);
 
         /// <summary>
-        /// save A42T To Db
+        /// save A42 To Db
         /// </summary>
-        /// <param name="dataModel">A42TViewModel</param>
+        /// <param name="dataModel">A42ViewModel</param>
         /// <returns></returns>
-        MSGReturnModel saveA42T(List<A42TViewModel> dataModel);
+        MSGReturnModel saveA42(List<A42ViewModel> dataModel);
 
         /// <summary>
         /// save B01 to DB
@@ -65,11 +65,11 @@ namespace Transfer.Models.Interface
         void SaveChange();
 
         /// <summary>
-        /// Excel資料 轉 A42TViewModel
+        /// Excel資料 轉 A42ViewModel
         /// </summary>
         /// <param name="pathType"></param>
         /// <param name="stream"></param>
         /// <returns></returns>
-        List<A42TViewModel> getA42TExcel(string pathType, Stream stream, string processingDate, string reportDate);
+        List<A42ViewModel> getA42Excel(string pathType, Stream stream, string processingDate, string reportDate);
     }
 }

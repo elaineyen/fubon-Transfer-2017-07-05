@@ -1,6 +1,6 @@
 ﻿@{
     ViewBag.Manu = "A4Main";
-    ViewBag.SubManu = "A42TSub";
+    ViewBag.SubManu = "A42Sub";
     ViewBag.Title = "A42國庫券月結資料檔";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
@@ -20,7 +20,7 @@
             <table>
                 <tr>
                     <td>
-                        @using (Ajax.BeginForm("UploadA42T", "A4",
+                        @using (Ajax.BeginForm("UploadA42", "A4",
                          new AjaxOptions { HttpMethod = "POST" },
                          new { enctype = "multipart/form-data", @id = "form0" }))
                          {
@@ -69,7 +69,7 @@
     $(function () {
         //#region 註冊URL
         var url = {};
-        url.transfer = '@Url.Action("TransferA42T", "A4")';
+        url.transfer = '@Url.Action("TransferA42", "A4")';
         //#endregion 註冊URL
 
         //#region 產生datepicker

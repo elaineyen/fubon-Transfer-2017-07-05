@@ -283,7 +283,7 @@
     <Compile Include="Utility\TypeTransfer.cs" />
     <Compile Include="Utility\FileRelated.cs" />
     <Compile Include="Utility\MSGReturnModel.cs" />
-    <Compile Include="ViewModels\A42TViewModel.cs" />
+    <Compile Include="ViewModels\A42ViewModel.cs" />
     <Compile Include="ViewModels\A81ViewModel.cs" />
     <Compile Include="ViewModels\A41ViewModel.cs" />
     <Compile Include="ViewModels\Exhibit7Model.cs" />
@@ -494,7 +494,7 @@
     <Content Include="Views\A6\Index.cshtml" />
     <Content Include="Views\A6\A62Detail.cshtml" />
     <Content Include="Views\C4\Index.cshtml" />
-    <Content Include="Views\A4\A42T.cshtml" />
+    <Content Include="Views\A4\A42.cshtml" />
     <Content Include="Views\A5\A57Detail.cshtml" />
     <Content Include="Views\A5\A58Detail.cshtml" />
   </ItemGroup>
