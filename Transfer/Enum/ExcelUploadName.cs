@@ -17,7 +17,7 @@ namespace Transfer.Enum
             A41,
 
             /// <summary>
-            /// 
+            /// A42
             /// </summary>
             [Description("A42")]
             A42,

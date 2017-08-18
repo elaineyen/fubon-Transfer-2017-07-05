@@ -104,9 +104,9 @@
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="Table_type" Type="varchar" MaxLength="10" />
-          <Property Name="Table_name" Type="varchar" MaxLength="20" />
+          <Property Name="Table_name" Type="varchar" MaxLength="40" />
           <Property Name="File_name" Type="varchar" MaxLength="30" />
           <Property Name="Program_name" Type="varchar" MaxLength="20" />
           <Property Name="Create_date" Type="varchar" MaxLength="8" />
@@ -435,7 +435,7 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" />
-          <Property Name="Table_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Table_name" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
           <Property Name="File_name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
           <Property Name="Program_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="Create_date" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />

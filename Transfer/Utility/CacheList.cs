@@ -23,6 +23,8 @@ namespace Transfer.Utility
 
         public static string A41ExcelName { get; private set; }
 
+        public static string A42ExcelName { get; private set; }
+
         public static string A62ExcelName { get; private set; }
 
         public static string A71ExcelName { get; private set; }
@@ -35,6 +37,7 @@ namespace Transfer.Utility
             A41ExcelfileData = "A41ExcelfileData";
             A41DbfileData = "A41DbfileData";
             A41ExcelName = "A41ExcelName";
+            A42ExcelName = "A42ExcelName";
             A62ExcelName = "A62ExcelName";
             A71ExcelName = "A71ExcelName";
             A81ExcelName = "A81ExcelName";

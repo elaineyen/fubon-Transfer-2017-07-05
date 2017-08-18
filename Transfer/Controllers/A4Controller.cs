@@ -219,7 +219,15 @@ namespace Transfer.Controllers
                     #endregion
 
                     #region 上傳檔案
-                    var fileName = A42TDefaultFileName;
+                    string pathType = Path.GetExtension(FileModel.FileName)
+                       .Substring(1); //上傳的檔案類型
+
+                    var fileName = string.Format("{0}.{1}",
+                        Excel_UploadName.A42.GetDescription(),
+                        pathType); //固定轉成此名稱
+
+                    Cache.Invalidate(CacheList.A42ExcelName); //清除 Cache
+                    Cache.Set(CacheList.A42ExcelName, fileName, 15); //把資料存到 Cache
 
                     #region 檢查是否有FileUploads資料夾,如果沒有就新增 並加入 excel 檔案
                     string projectFile = Server.MapPath("~/"+ SetFile.FileUploads); //專案資料夾
@@ -236,7 +244,6 @@ namespace Transfer.Controllers
                     #endregion
 
                     #region 讀取Excel資料 使用ExcelDataReader 並且組成 json
-                    string pathType = Path.GetExtension(FileModel.FileName).Substring(1); //檔案類型
                     var stream = FileModel.InputStream;
                     List<A42TViewModel> dataModel = A4Repository.getA42TExcel(pathType, stream, processingDate, reportDate);
                     if (dataModel.Count > 0)
@@ -372,7 +379,15 @@ namespace Transfer.Controllers
                 // Excel 檔案位置
                 DateTime startTime = DateTime.Now;
                 string projectFile = Server.MapPath("~/"+SetFile.FileUploads);
-                string fileName = A42TDefaultFileName; //預設
+                string fileName = string.Empty;
+                if (Cache.IsSet(CacheList.A42ExcelName))
+                    fileName = (string)Cache.Get(CacheList.A42ExcelName);  //從Cache 抓資料
+
+                if (fileName.IsNullOrWhiteSpace())
+                {
+                    result.RETURN_FLAG = false;
+                    result.DESCRIPTION = Message_Type.time_Out.GetDescription();
+                }
 
                 string path = Path.Combine(projectFile, fileName);
                 FileStream stream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read);
