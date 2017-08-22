@@ -66,4 +66,5 @@
 }
 .ui-draggable .ui-dialog-titlebar {
 	cursor: move;
+    background:#307ECC;
 }

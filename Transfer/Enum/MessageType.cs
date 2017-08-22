@@ -29,6 +29,18 @@ namespace Transfer.Enum
             save_Fail,
 
             /// <summary>
+            /// 刪除成功
+            /// </summary>
+            [Description("刪除成功!")]
+            delete_Success,
+
+            /// <summary>
+            /// 刪除失敗
+            /// </summary>
+            [Description("刪除失敗!")]
+            delete_Fail,
+
+            /// <summary>
             /// 沒有找到資料
             /// </summary>
             [Description("沒有找到資料!")]

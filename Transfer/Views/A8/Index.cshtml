@@ -68,8 +68,6 @@
                 contentType: 'application/json'
             })
             .done(function (result) {
-                $.unblockUI(); //畫面打開
-                //alert(result.DESCRIPTION);
                 if (result.RETURN_FLAG)
                     toastr.success(result.DESCRIPTION);
                 else
@@ -99,7 +97,6 @@
                 contentType: false,
                 processData: false,
                 success: function (result) {
-                    $.unblockUI();
                     if (result.RETURN_FLAG) {
                         var colNameArray =
                             ['Trailing', 'Actual_Allcorp', 'Baseline_forecast_Allcorp',
@@ -115,7 +112,6 @@
                     }
                 },
                 error: function (result) {
-                    $.unblockUI();
                     toastr.error(result.DESCRIPTION);
                 }
             });
@@ -163,8 +159,8 @@
                     rowNum: 10, //一頁筆數
                     rowList: [10, 20, 30], //設定一頁幾筆
                     pager: '#' + pagerId,
-                    height: '237',
-                    width: '1030',
+                    height: jqgridCustom.setHeight,
+                    autowidth: true,
                     //sortname: 'id',
                     //viewrecords: true,
                     sortorder: "desc",
@@ -177,6 +173,10 @@
                     serializeRowData: function (data) {
                         return JSON.stringify(data);
                     },
+                    loadComplete: function () {
+                        var table = $(this);
+                        jqgridCustom.updatePagerIcons(table);
+                    }
                 });
                 $("#" + listId).jqGrid('navGrid', '#' + pagerId, { edit: false, add: false, del: false });
             }

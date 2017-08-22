@@ -20,8 +20,8 @@
                 <tr>
                     <td>
                         @using (Ajax.BeginForm("Upload", "A4",
-        new AjaxOptions { HttpMethod = "POST" },
-        new { enctype = "multipart/form-data", @id = "form0" }))
+                                new AjaxOptions { HttpMethod = "POST" },
+                                new { enctype = "multipart/form-data", @id = "form0" }))
                         {
                             <input type="file" name="file" class="filestyle" data-buttonName="btn-primary" data-buttonText="轉檔檔案"/>
                         }
@@ -69,22 +69,7 @@
         //#endregion 註冊URL
 
         //#region 註冊datepicker
-        $("#datepicker").datepicker({
-            changeMonth: true,
-            changeYear: true,
-            dateFormat: 'yy/mm/dd',
-            showOn: "both",
-            buttonText: '<i class="fa fa-calendar fa-2x toggle-btn"></i>',
-            onSelect: function (value) {
-                if (verified.isDate(value, true))
-                    $(this).parent().children().each(function () {
-                        if ($(this).is('label') && $(this).hasClass('error'))
-                            $(this).remove();
-                        if ($(this).is('input') && $(this).hasClass('error'))
-                            $(this).removeClass('error');
-                    })
-            }
-        }).datepicker('setDate', verified.reportDate());
+        created.createDatepicker('datepicker', true, '');
         //#endregion 註冊datepicker
 
 
@@ -280,21 +265,15 @@
                     rowNum: 10, //一頁筆數
                     rowList: [10, 20, 30], //設定一頁幾筆
                     pager: '#' + pagerId,
-                    height: '237',
-                    width: '1030',
-                    //sortname: 'id',
-                    //viewrecords: true,
-                    //sortorder: "desc",
+                    height: jqgridCustom.setHeight,
+                    autowidth: true,
                     caption: title, //標題
-                    //resizable: false,
                     shrinkToFit: false,
-                    //autoencode: true,
-                    //viewsortcols: [true, 'vertical', true],
                     contentType: "application/json",
-                    //ajaxRowOptions: { contentType: "application/json" },
-                    //serializeRowData: function (data) {
-                    //    return JSON.stringify(data);
-                    //},
+                    loadComplete: function () {
+                        var table = $(this);
+                        jqgridCustom.updatePagerIcons(table);
+                    }
                 });
                 $("#" + listId).jqGrid('navGrid', '#' + pagerId, { edit: false, add: false, del: false });
             }

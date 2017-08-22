@@ -146,8 +146,9 @@
                     rowNum: 10, //一頁筆數
                     rowList: [10, 20, 30], //設定一頁幾筆
                     pager: '#' + pagerId,
-                    height: '237',
-                    width: '1030',
+                    height: jqgridCustom.setHeight,
+                    //width: '1030',
+                    autowidth: true,
                     //sortname: 'id',
                     //viewrecords: true,
                     sortorder: "desc",
@@ -160,6 +161,11 @@
                     serializeRowData: function (data) {
                         return JSON.stringify(data);
                     },
+                    loadComplete: function () {
+                        var table = $(this);
+                        jqgridCustom.updatePagerIcons(table);
+                        jqgridCustom.hideFrozenTitle();
+                    }
                 });
                 $("#" + listId).jqGrid('navGrid', '#' + pagerId, { edit: false, add: false, del: false });
                 $("#" + listId).jqGrid('setFrozenColumns');

@@ -1,11 +1,12 @@
 ﻿(function (window, undefind) {
 
     var verified = {};
+    var created = {};
     var dateFormat;
     dateFormat = /^((?!0000)[0-9]{4}[/]((0[1-9]|1[0-2])[/](0[1-9]|1[0-9]|2[0-8])|(0[13-9]|1[0-2])[/](29|30)|(0[13578]|1[02])[/]31)|([0-9]{2}(0[48]|[2468][048]|[13579][26])|(0[48]|[2468][048]|[13579][26])00)[/]02[/]29)$/;
 
     window.verified = verified;
-
+    window.created = created;
     verified.required = function (formid, elementid, message)
     {       
         $("#" + formid).validate({
@@ -45,10 +46,102 @@
         })
     }
 
+    created.createDatepicker = function (datepickerid, reportDateFlag, date)
+    {
+        reportDateFlag = reportDateFlag || false;
+        var d = null;
+        if (!(date === d))
+        {
+            if (reportDateFlag) {
+                d = verified.reportDate();
+            }
+            else {
+                if (verified.isDate(date, false)) {
+                    d = verified.datepickerStrToDate(date);
+                }
+                else {
+                    d = getOnlyDate()
+                }
+            }
+        }
+
+        $("#" + datepickerid).datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: 'yy/mm/dd',
+            showOn: "both",
+            buttonText: '<i class="fa fa-calendar fa-2x toggle-btn"></i>',
+            onSelect: function (value) {
+                if (verified.isDate(value, reportDateFlag))
+                    $(this).parent().children().each(function () {
+                        if ($(this).is('label') && $(this).hasClass('error'))
+                            $(this).remove();
+                        if ($(this).is('input') && $(this).hasClass('error'))
+                            $(this).removeClass('error');
+                    })
+            }
+        }).datepicker('setDate', d);
+    }
+
+    created.createDatepickerRange = function (datepickerStartid,
+        datepickerEndid, reportDateFlag)
+    {
+        var format = 'yy/mm/dd';
+        reportDateFlag = reportDateFlag || false;
+
+        var from = $("#" + datepickerStartid)
+                    .datepicker({
+                        changeMonth: true,
+                        changeYear: true,
+                        dateFormat: format,
+                        showOn: "both",
+                        buttonText: '<i class="fa fa-calendar fa-2x toggle-btn"></i>',
+                        onSelect: function (value) {
+                            to.datepicker("option", "minDate", getDate(this));
+                            if (verified.isDate(value, reportDateFlag)) {                               
+                                $(this).parent().children().each(function () {
+                                    if ($(this).is('label') && $(this).hasClass('error'))
+                                        $(this).remove();
+                                    if ($(this).is('input') && $(this).hasClass('error'))
+                                        $(this).removeClass('error');
+                                })
+                            }
+                        }
+                    });
+        var to = $("#" + datepickerEndid).datepicker({
+            changeMonth: true,
+            changeYear: true,
+            dateFormat: format,
+            showOn: "both",
+            buttonText: '<i class="fa fa-calendar fa-2x toggle-btn"></i>',
+            onSelect: function (value) {
+                from.datepicker("option", "maxDate", getDate(this));
+                if (verified.isDate(value, reportDateFlag)) {
+                    $(this).parent().children().each(function () {
+                        if ($(this).is('label') && $(this).hasClass('error'))
+                            $(this).remove();
+                        if ($(this).is('input') && $(this).hasClass('error'))
+                            $(this).removeClass('error');
+                    })
+                }
+            }
+        });
+
+        function getDate(element) {
+            var date;
+            try {
+                date = $.datepicker.parseDate(format, element.value);
+            } catch (error) {
+                date = null;
+            }
+            return date;
+        }
+    }
+
     verified.isDate = function (value, reportDate) {
         
         reportDate = reportDate || false;
-
+        value = value || '';
         if ((typeof reportDate === 'boolean') && reportDate)
         {
           

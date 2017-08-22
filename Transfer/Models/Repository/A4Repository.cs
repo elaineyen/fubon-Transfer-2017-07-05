@@ -60,21 +60,23 @@ namespace Transfer.Models.Repository
             {
                 if ("Report".Equals(type))
                 {
-                    return new Tuple<bool, List<A41ViewModel>>(true,
-                    (from q in db.Bond_Account_Info
-                     .Where(x => date == x.Report_Date &&
-                               value.Trim().Equals(x.Version)).AsEnumerable()
-                      .OrderBy(x => Convert.ToInt32(x.Reference_Nbr))
-                     select DbToA41Model(q)).ToList());
+                    var data = (from q in db.Bond_Account_Info
+                                            .Where(x => date == x.Report_Date &&
+                                             value.Trim().Equals(x.Version)).AsEnumerable()
+                                            .OrderBy(x => Convert.ToInt32(x.Reference_Nbr))
+                                select DbToA41Model(q)).ToList();
+                    return new Tuple<bool, List<A41ViewModel>>(data.Any(), data);
                 }
                 if ("Bonds".Equals(type))
                 {
-                    return new Tuple<bool, List<A41ViewModel>>(true,
-                    (from q in db.Bond_Account_Info
-                     .Where(x=> date == x.Origination_Date &&
-                                value.Trim().Equals(x.Bond_Number)).AsEnumerable()
-                     .OrderBy(x => Convert.ToInt32( x.Reference_Nbr))
-                     select DbToA41Model(q)).ToList());
+                    var data =
+                     (from q in db.Bond_Account_Info
+                                  .Where(x => date == x.Origination_Date &&
+                                  value.Trim().Equals(x.Bond_Number)).AsEnumerable()
+                                  .OrderBy(x => Convert.ToInt32(x.Reference_Nbr))
+                                             select DbToA41Model(q)).ToList();
+                    return new Tuple<bool, List<A41ViewModel>>(data.Any(), data);
+
                 }
             }
             return new Tuple<bool, List<A41ViewModel>>(false, new List<A41ViewModel>());

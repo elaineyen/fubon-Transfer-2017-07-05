@@ -100,6 +100,15 @@
           <Property Name="Grade_Adjust" Type="int" />
           <Property Name="Moodys_PD" Type="float" />
         </EntityType>
+        <EntityType Name="Group_Product_Code_Mapping">
+          <Key>
+            <PropertyRef Name="Product_Code" />
+          </Key>
+          <Property Name="Group_Product_Code" Type="varchar" MaxLength="3" Nullable="false" />
+          <Property Name="Group_Product" Type="varchar" MaxLength="100" Nullable="false" />
+          <Property Name="Product_Code" Type="varchar" MaxLength="64" Nullable="false" />
+          <Property Name="Processing_Date" Type="date" Nullable="false" />
+        </EntityType>
         <EntityType Name="IFRS9_Log">
           <Key>
             <PropertyRef Name="Id" />
@@ -402,6 +411,7 @@
           <EntitySet Name="Bond_Account_Info" EntityType="Self.Bond_Account_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EL_Data_In" EntityType="Self.EL_Data_In" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Grade_Moody_Info" EntityType="Self.Grade_Moody_Info" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Group_Product_Code_Mapping" EntityType="Self.Group_Product_Code_Mapping" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IFRS9_Log" EntityType="Self.IFRS9_Log" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IFRS9_Main" EntityType="Self.IFRS9_Main" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IFRS9_Menu_Main" EntityType="Self.IFRS9_Menu_Main" Schema="dbo" store:Type="Tables" />
@@ -506,6 +516,7 @@
           <EntitySet Name="Moody_LGD_Info" EntityType="IFRS9Model.Moody_LGD_Info" />
           <EntitySet Name="Treasury_Securities_Info" EntityType="IFRS9Model.Treasury_Securities_Info" />
           <EntitySet Name="Transfer_CheckTable" EntityType="IFRS9Model.Transfer_CheckTable" />
+          <EntitySet Name="Group_Product_Code_Mapping" EntityType="IFRS9Model.Group_Product_Code_Mapping" />
         </EntityContainer>
         <EntityType Name="Moody_Tm_YYYY">
           <Key>
@@ -854,6 +865,15 @@
           <Property Name="Create_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
           <Property Name="End_date" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
           <Property Name="End_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Group_Product_Code_Mapping">
+          <Key>
+            <PropertyRef Name="Product_Code" />
+          </Key>
+          <Property Name="Group_Product_Code" Type="String" Nullable="false" MaxLength="3" FixedLength="false" Unicode="false" />
+          <Property Name="Group_Product" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Product_Code" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="false" />
+          <Property Name="Processing_Date" Type="DateTime" Nullable="false" Precision="0" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -1240,6 +1260,16 @@
                 <ScalarProperty Name="ReportDate" ColumnName="ReportDate" />
                 <ScalarProperty Name="File_Name" ColumnName="File_Name" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Group_Product_Code_Mapping">
+            <EntityTypeMapping TypeName="IFRS9Model.Group_Product_Code_Mapping">
+              <MappingFragment StoreEntitySet="Group_Product_Code_Mapping">
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
+                <ScalarProperty Name="Product_Code" ColumnName="Product_Code" />
+                <ScalarProperty Name="Group_Product" ColumnName="Group_Product" />
+                <ScalarProperty Name="Group_Product_Code" ColumnName="Group_Product_Code" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

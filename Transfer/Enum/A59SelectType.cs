@@ -8,6 +8,12 @@ namespace Transfer.Enum
         public enum A59_SelectType
         {
             /// <summary>
+            /// 全部條件
+            /// </summary>
+            [Description("所有條件")]
+            T0,
+
+            /// <summary>
             /// 報導日+選單條件(購買日評等、基準日最近評等) 債券編號可不輸入
             /// </summary>
             [Description("報導日+選單條件")]

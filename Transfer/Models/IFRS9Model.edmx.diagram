@@ -25,6 +25,7 @@
         <EntityTypeShape EntityType="IFRS9Model.Moody_LGD_Info" Width="1.5" PointX="2.75" PointY="9.5" />
         <EntityTypeShape EntityType="IFRS9Model.Treasury_Securities_Info" Width="1.5" PointX="0.75" PointY="12.75" />
         <EntityTypeShape EntityType="IFRS9Model.Transfer_CheckTable" Width="1.5" PointX="3.375" PointY="12.75" />
+        <EntityTypeShape EntityType="IFRS9Model.Group_Product_Code_Mapping" Width="1.5" PointX="11.375" PointY="12.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

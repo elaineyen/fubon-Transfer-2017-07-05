@@ -165,6 +165,7 @@
     <Compile Include="Controllers\A6Controller.cs" />
     <Compile Include="Controllers\A7Controller.cs" />
     <Compile Include="Controllers\A4Controller.cs" />
+    <Compile Include="Controllers\D0Controller.cs" />
     <Compile Include="Controllers\SystemController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CommonController.cs" />
@@ -190,6 +191,9 @@
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Grade_Moody_Info.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Group_Product_Code_Mapping.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\IFRS9Model.Context.cs">
@@ -228,6 +232,7 @@
     <Compile Include="Models\Interface\IA4Repository.cs" />
     <Compile Include="Models\Interface\IC4Repository.cs" />
     <Compile Include="Models\Interface\IA6Repository.cs" />
+    <Compile Include="Models\Interface\ID0Repository.cs" />
     <Compile Include="Models\Interface\ISystemRepository.cs" />
     <Compile Include="Models\Interface\IA5Repository.cs" />
     <Compile Include="Models\Interface\IA7Repository.cs" />
@@ -259,6 +264,7 @@
     <Compile Include="Models\Repository\A4Repository.cs" />
     <Compile Include="Models\Repository\C4Repository.cs" />
     <Compile Include="Models\Repository\A6Repository.cs" />
+    <Compile Include="Models\Repository\D0Repository.cs" />
     <Compile Include="Models\Repository\SystemRepository.cs" />
     <Compile Include="Models\Repository\A8Repository.cs" />
     <Compile Include="Models\Repository\A5Repository.cs" />
@@ -286,6 +292,7 @@
     <Compile Include="ViewModels\A42ViewModel.cs" />
     <Compile Include="ViewModels\A81ViewModel.cs" />
     <Compile Include="ViewModels\A41ViewModel.cs" />
+    <Compile Include="ViewModels\D05ViewModel.cs" />
     <Compile Include="ViewModels\Exhibit7Model.cs" />
     <Compile Include="ViewModels\Exhibit29Model.cs" />
     <Compile Include="ViewModels\Exhibit10Model.cs" />
@@ -298,6 +305,8 @@
     <Content Include="Content\jquery.jqGrid\ellipsis-xbl.xml" />
     <Content Include="Content\jquery.jqGrid\ui.jqgrid.css" />
     <Content Include="Content\Login.css" />
+    <Content Include="Content\customJqgrid.css" />
+    <Content Include="Content\master.css" />
     <Content Include="Content\Sidebar.css" />
     <Content Include="Content\images\animated-overlay.gif" />
     <Content Include="Content\images\ui-bg_flat_0_aaaaaa_40x100.png" />
@@ -313,6 +322,20 @@
     <Content Include="Content\images\ui-icons_454545_256x240.png" />
     <Content Include="Content\images\ui-icons_888888_256x240.png" />
     <Content Include="Content\images\ui-icons_cd0a0a_256x240.png" />
+    <Content Include="Content\themes\base\images\animated-overlay.gif" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
+    <Content Include="Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
+    <Content Include="Content\themes\base\images\ui-icons_222222_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_454545_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_888888_256x240.png" />
+    <Content Include="Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
     <Content Include="Content\themes\base\jquery-ui.css" />
     <Content Include="Content\themes\base\jquery.ui.accordion.css" />
     <Content Include="Content\themes\base\jquery.ui.all.css" />
@@ -460,6 +483,7 @@
     <Content Include="Scripts\toastr.js" />
     <Content Include="Scripts\toastr.min.js" />
     <Content Include="Scripts\message.js" />
+    <Content Include="Scripts\customJqgrid.js" />
     <Content Include="Scripts\verification.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config">
@@ -497,6 +521,7 @@
     <Content Include="Views\A4\A42.cshtml" />
     <Content Include="Views\A5\A57Detail.cshtml" />
     <Content Include="Views\A5\A58Detail.cshtml" />
+    <Content Include="Views\D0\D05.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

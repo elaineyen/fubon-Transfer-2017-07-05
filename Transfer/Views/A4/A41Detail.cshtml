@@ -64,9 +64,9 @@
             </div>
         </div>
     </div>
+    <div id="dialogtest" title=""></div>
 </div>
 
-<script src="~/Scripts/jquery-ui-1.10.0.min.js"></script> @*jquery-ui*@
 <script src="~/Scripts/i18n/datepicker-zh-TW.js"></script>  @*use datepicker*@
 <script src="~/Scripts/jquery.validate.min.js"></script> @*use validate*@
 <script src="~/Scripts/verification.js"></script> @*use validate*@
@@ -81,22 +81,8 @@
         //#endregion 註冊URL
 
         //#region 產生datepicker
-        $("#datepicker1,#datepicker2").datepicker({
-            changeMonth: true,
-            changeYear: true,
-            dateFormat: 'yy/mm/dd',
-            showOn: "both",
-            buttonText: '<i class="fa fa-calendar fa-2x toggle-btn"></i>',
-            onSelect: function (value) {
-                if (verified.isDate(value))
-                    $(this).parent().children().each(function () {
-                        if ($(this).is('label') && $(this).hasClass('error'))
-                            $(this).remove();
-                        if ($(this).is('input') && $(this).hasClass('error'))
-                            $(this).removeClass('error');
-                    })
-            }
-        }).datepicker('setDate', verified.reportDate());
+        created.createDatepicker('datepicker1', true, '');
+        created.createDatepicker('datepicker2', true, '');
         //#endregion 
 
         //#region 註冊click事件
@@ -113,12 +99,6 @@
         })
         //#endregion 註冊click事件
 
-        //#region 客製化驗證
-        $.validator.addMethod("dateFormate",
-        function (value, element, arg) {
-            return verified.isDate(value);
-        }, message.date);
-        //#endregion
 
         //#region ReportSearch
         function ReportSearch() {           
@@ -259,7 +239,6 @@
                              '資產區隔', '成本匯率', '債券種類',
                              'Stage評估次分類', '資料處理日期', '資料版本'
                             ];
-
                 $('#jqgridDiv').append('<table id="' + listId + '"></table>');
                 $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');
                 $("#" + listId).jqGrid({
@@ -279,11 +258,15 @@
                     rowNum: 10, //一頁筆數
                     rowList: [10, 20, 30], //設定一頁幾筆
                     pager: '#' + pagerId,
-                    height: '237',
-                    width: '1030',
+                    height: jqgridCustom.setHeight,
+                    autowidth: true,
                     caption: title, //標題
                     shrinkToFit: false,
                     contentType: "application/json",
+                    loadComplete: function () {
+                        var table = $(this);
+                        jqgridCustom.updatePagerIcons(table);
+                    }
                 });
                 $("#" + listId).jqGrid('navGrid', '#' + pagerId, { edit: false, add: false, del: false });
                 $("#" + listId).jqGrid('setFrozenColumns');
@@ -291,5 +274,6 @@
             }
         }
         //#endregion createJqgrid
+
     });
 </script>

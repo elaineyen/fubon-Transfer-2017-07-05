@@ -55,28 +55,16 @@
     </div>
 </div>
 
-<script src="~/Scripts/jquery-ui-1.10.0.min.js"></script>
 <script src="~/Scripts/i18n/datepicker-zh-TW.js"></script>
 <script src="~/Scripts/jquery.validate.min.js"></script>
 <script src="~/Scripts/verification.js"></script> @*use validate*@
 <script type="text/javascript">
     $(function () {
-        $("#datepicker").datepicker({
-            changeMonth: true,
-            changeYear: true,
-            dateFormat: 'yy/mm/dd',
-            showOn: "both",
-            buttonText: '<i class="fa fa-calendar fa-2x toggle-btn"></i>',
-            onSelect: function (value) {
-                if (verified.isDate(value,true))
-                    $(this).parent().children().each(function () {
-                        if ($(this).is('label') && $(this).hasClass('error'))
-                            $(this).remove();
-                        if ($(this).is('input') && $(this).hasClass('error'))
-                            $(this).removeClass('error');
-                    })
-            }
-        }).datepicker('setDate', verified.reportDate());
+
+        //#region 產生datepicker
+        created.createDatepicker('datepicker', true, '');
+        //#endregion 產生datepicker
+
         //#region 註冊URL
         var url = {};
         url.transfer = '@Url.Action("TransferToOther", "A4")';

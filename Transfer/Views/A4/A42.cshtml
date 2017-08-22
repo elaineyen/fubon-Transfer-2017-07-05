@@ -60,7 +60,6 @@
     </div>
 </div>
 
-<script src="~/Scripts/jquery-ui-1.10.0.min.js"></script> @*jquery-ui*@
 <script src="~/Scripts/i18n/datepicker-zh-TW.js"></script>  @*use datepicker*@
 <script src="~/Scripts/jquery.validate.min.js"></script> @*use validate*@
 <script src="~/Scripts/verification.js"></script> @*use validate*@
@@ -73,29 +72,7 @@
         //#endregion 註冊URL
 
         //#region 產生datepicker
-        $("#Report_Date").datepicker({
-            changeMonth: true,
-            changeYear: true,
-            dateFormat: 'yy/mm/dd',
-            showOn: "both",
-            buttonText: '<i class="fa fa-calendar fa-2x toggle-btn"></i>',
-            onSelect: function (value) {
-                if (verified.isDate(value))
-                    $(this).parent().children().each(function () {
-                        if ($(this).is('label') && $(this).hasClass('error'))
-                            $(this).remove();
-                        if ($(this).is('input') && $(this).hasClass('error'))
-                            $(this).removeClass('error');
-                    })
-            }
-        }).datepicker('setDate', verified.reportDate());
-        //#endregion
-
-        //#region 客製化驗證
-        $.validator.addMethod("dateFormate",
-        function (value, element, arg) {
-            return verified.isDate(value,true);
-        }, "日期錯誤 (yyyy/mm/dd)");
+        created.createDatepicker('Report_Date', true, '');
         //#endregion
 
         //#region 註冊click事件
@@ -232,8 +209,8 @@
                     rowNum: 10, //一頁筆數
                     rowList: [10, 20, 30], //設定一頁幾筆
                     pager: '#' + pagerId,
-                    height: '237',
-                    width: '100%',
+                    height: jqgridCustom.setHeight,
+                    autowidth: true,
                     sortorder: "desc",
                     caption: title, //標題
                     resizable: false,
@@ -244,6 +221,10 @@
                     serializeRowData: function (data) {
                         return JSON.stringify(data);
                     },
+                    loadComplete: function () {
+                        var table = $(this);
+                        jqgridCustom.updatePagerIcons(table);
+                    }
                 });
 
                 $("#" + listId).jqGrid('navGrid', '#' + pagerId, { edit: false, add: false, del: false });

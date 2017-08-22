@@ -456,6 +456,8 @@ namespace Transfer.Controllers
                             result.RETURN_FLAG = A41Data.Item1;
                             Cache.Invalidate(CacheList.A41DbfileData); //清除
                             Cache.Set(CacheList.A41DbfileData, A41Data.Item2, 15); //把資料存到 Cache
+                        if (!result.RETURN_FLAG)
+                            result.DESCRIPTION = Message_Type.not_Find_Any.GetDescription();
                         break;
                 }
             }

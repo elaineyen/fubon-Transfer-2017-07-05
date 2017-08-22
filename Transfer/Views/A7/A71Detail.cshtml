@@ -116,6 +116,8 @@
                     if (colNameArray[i].indexOf("Default_Value") > -1)
                         colNameArray[i] = colNameArray[i].split('_')[0];
                     colModelArray.push(obj);
+                    //colNameArray.unshift('Actions');
+                    //colModelArray.unshift({name:'act',index:'act', width:75,sortable:false});
                 }
 
                 $('#jqgridDiv').append('<table id="' + listId + '"></table>');
@@ -129,8 +131,9 @@
                     rowNum: 10, //一頁筆數
                     rowList: [10, 20, 30], //設定一頁幾筆
                     pager: '#' + pagerId,
-                    height: '237',
-                    width: '1030',
+                    height: jqgridCustom.setHeight,
+                    //width: '100',
+                    autowidth: true,
                     //sortname: 'id',
                     //viewrecords: true,
                     sortorder: "desc",
@@ -140,9 +143,15 @@
                     autoencode: true,
                     viewsortcols: [true, 'vertical', true],
                     ajaxRowOptions: { contentType: "application/json" },
+                    viewrecords: true ,
                     serializeRowData: function (data) {
                         return JSON.stringify(data);
                     },
+                    loadComplete: function () {
+                        var table = $(this);
+                        jqgridCustom.updatePagerIcons(table);
+                        jqgridCustom.hideFrozenTitle();
+                    }
                 });
                 $("#" + listId).jqGrid('navGrid', '#' + pagerId, { edit: false, add: false, del: false });
                 $("#" + listId).jqGrid('setFrozenColumns');
@@ -150,5 +159,6 @@
             }
         }
         //#endregion createJqgrid
+
     });
 </script>

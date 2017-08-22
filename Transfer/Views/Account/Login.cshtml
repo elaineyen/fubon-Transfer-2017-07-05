@@ -26,7 +26,7 @@
                 @using (Html.BeginForm("Logon", "Account", FormMethod.Post, new { id = "loginFrom" }))
                 {
                     // 跨網站的偽造要求(CSRF)
-                    @Html.AntiForgeryToken()
+                    @*@Html.AntiForgeryToken()*@
                     <input class="form-control" data-toggle="tooltip" title="請輸入帳號"
                             id="userName" type="text" name="userId" placeholder="Username">
                     <input class="form-control" data-toggle="tooltip" title="請輸入密碼"
@@ -59,29 +59,6 @@
         $('form').submit(function () {
             return $('#loginFrom').valid();
         });
-
-        // 表單驗證
-        //$('form').submit(function () {
-        //    var isFormValid = true;
-        //    $(this).find('input').each(function () {
-        //        var $this = $(this);
-        //        // 使用 trim 把空白去除
-        //        if ($.trim($this.val()).length === 0) {
-        //            $this.addClass('error');
-        //            isFormValid = false;
-        //        } else {
-        //            $this.removeClass('error');
-        //        }
-        //    });
-        //    if (!isFormValid)
-        //        toastr.warning("請輸入帳密!")
-        //    return isFormValid;
-        //});
-
-        //$('#userName,#passWord').keyup(function() {
-        //    if($(this).val().trim().length > 0)
-        //        $(this).removeClass('error');
-        //});
     })()
 
 </script>

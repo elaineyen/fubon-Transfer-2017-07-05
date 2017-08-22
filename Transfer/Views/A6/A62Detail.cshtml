@@ -108,7 +108,7 @@
         function createJqgrid(listId, pagerId, data, title, colNameArray)
         {
             var colModelArray = [];
-            var jagridMWidth = 150; //寬度
+            var jagridMWidth = 220; //寬度
             if (data.length > 0)
             {                           
                 for (let i = 0; i < colNameArray.length; i++)
@@ -131,13 +131,13 @@
                     rowNum: 10, //一頁筆數
                     rowList: [10, 20, 30], //設定一頁幾筆
                     pager: '#' + pagerId,
-                    height: '237',
-                    width: '1030',
+                    height: jqgridCustom.setHeight,
+                    autowidth: true,
                     //sortname: 'id',
                     //viewrecords: true,
                     sortorder: "desc",
                     caption: title, //標題
-                    resizable: false,
+                    //resizable: false,
                     shrinkToFit: false,
                     autoencode: true,
                     viewsortcols: [true, 'vertical', true],
@@ -145,6 +145,10 @@
                     serializeRowData: function (data) {
                         return JSON.stringify(data);
                     },
+                    loadComplete: function () {
+                        var table = $(this);
+                        jqgridCustom.updatePagerIcons(table);
+                    }
                 });
                 $("#" + listId).jqGrid('navGrid', '#' + pagerId, { edit: false, add: false, del: false });
                 $("#" + listId).jqGrid('setFrozenColumns');

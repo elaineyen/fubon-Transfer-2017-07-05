@@ -43,5 +43,6 @@ namespace Transfer.Models
         public virtual DbSet<Moody_LGD_Info> Moody_LGD_Info { get; set; }
         public virtual DbSet<Treasury_Securities_Info> Treasury_Securities_Info { get; set; }
         public virtual DbSet<Transfer_CheckTable> Transfer_CheckTable { get; set; }
+        public virtual DbSet<Group_Product_Code_Mapping> Group_Product_Code_Mapping { get; set; }
     }
 }

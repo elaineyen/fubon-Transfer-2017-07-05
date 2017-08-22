@@ -139,6 +139,7 @@
     display: block;
   }
   #main {
+      max-width : none !important;
   	width:calc(100% - 300px);
   	float: right;
       height:100%

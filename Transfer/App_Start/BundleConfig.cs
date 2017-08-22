@@ -9,7 +9,7 @@ namespace Transfer
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
-                        "~/Scripts/jquery-{version}.js",
+                        "~/Scripts/jquery-{version}.js",                       
                         "~/Scripts/jquery.blockUI.js",
                         "~/Scripts/message.js"));
 
@@ -18,7 +18,9 @@ namespace Transfer
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryjqgrid").Include(
                         "~/Scripts/jquery.jqGrid*",
-                        "~/Scripts/i18n/grid.locale-tw*"));
+                        "~/Scripts/i18n/grid.locale-tw*",
+                        "~/Scripts/customJqgrid.js"
+                        ));
 
             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*"));
@@ -36,17 +38,14 @@ namespace Transfer
                       "~/Scripts/bootstrap-filestyle.min.js",
                       "~/Scripts/respond.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/Sidebar").Include(
+            bundles.Add(new ScriptBundle("~/bundles/jqueryUI").Include(
+                      "~/Scripts/jquery-ui-1.10.0.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/Sidebar").Include(                    
                       "~/Scripts/Sidebar.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(
-                      "~/Content/bootstrap.css",
-                      "~/Content/site.css",
-                      "~/Content/jquery.jqGrid/ui.jqgrid.css",
-                      "~/Content/themes/base/minified/jquery-ui.min.css",
-                      "~/Content/Sidebar.css",
-                      "~/Content/font-awesome.min.css",
-                      "~/Content/toastr.css"
+                      "~/Content/master.css"
                       ));
         }
     }
