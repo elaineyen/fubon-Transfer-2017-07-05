@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Web;
 using System.Web.Script.Serialization;
 
 namespace Transfer.Utility
@@ -9,6 +7,7 @@ namespace Transfer.Utility
     public static class TypeTransfer
     {
         #region String To Int?
+
         /// <summary>
         /// string 轉 Int?
         /// </summary>
@@ -21,9 +20,11 @@ namespace Transfer.Utility
                 return i;
             return null;
         }
-        #endregion
 
-        #region String To Double 
+        #endregion String To Int?
+
+        #region String To Double
+
         /// <summary>
         /// string 轉 Double
         /// </summary>
@@ -35,9 +36,11 @@ namespace Transfer.Utility
             double.TryParse(value, out d);
             return d;
         }
-        #endregion
+
+        #endregion String To Double
 
         #region String To Double?
+
         /// <summary>
         /// string 轉 Double?
         /// </summary>
@@ -50,9 +53,11 @@ namespace Transfer.Utility
                 return d;
             return null;
         }
-        #endregion
+
+        #endregion String To Double?
 
         #region string (XX.XX%) To Double?
+
         /// <summary>
         /// string (XX.XX%) To Double?
         /// </summary>
@@ -67,9 +72,11 @@ namespace Transfer.Utility
                 return d / 100;
             return null;
         }
-        #endregion
+
+        #endregion string (XX.XX%) To Double?
 
         #region String To DateTime?
+
         /// <summary>
         /// string 轉 DateTime?
         /// </summary>
@@ -82,9 +89,11 @@ namespace Transfer.Utility
                 return t;
             return null;
         }
-        #endregion
+
+        #endregion String To DateTime?
 
         #region String To DateTime
+
         /// <summary>
         /// string 轉 DateTime
         /// </summary>
@@ -96,9 +105,11 @@ namespace Transfer.Utility
             DateTime.TryParse(value, out t);
             return t;
         }
-        #endregion
+
+        #endregion String To DateTime
 
         #region 民國字串轉西元年
+
         /// <summary>
         /// 民國字串轉西元年
         /// </summary>
@@ -124,9 +135,11 @@ namespace Transfer.Utility
             }
             return null;
         }
-        #endregion
+
+        #endregion 民國字串轉西元年
 
         #region Int? To String
+
         /// <summary>
         /// Int? 轉string (null 回傳 string.Empty)
         /// </summary>
@@ -138,9 +151,11 @@ namespace Transfer.Utility
                 return value.Value.ToString();
             return string.Empty;
         }
-        #endregion
+
+        #endregion Int? To String
 
         #region Int? To Int
+
         /// <summary>
         /// Int? 轉 Int (null 回傳 0)
         /// </summary>
@@ -152,9 +167,11 @@ namespace Transfer.Utility
                 return value.Value;
             return 0;
         }
-        #endregion
+
+        #endregion Int? To Int
 
         #region Double? To String
+
         /// <summary>
         /// Double? 轉string (null 回傳 string.Empty)
         /// </summary>
@@ -166,23 +183,27 @@ namespace Transfer.Utility
                 return value.Value.ToString();
             return string.Empty;
         }
-        #endregion
+
+        #endregion Double? To String
 
         #region Double? To Double
+
         /// <summary>
         /// Double? 轉 Double (null 回傳 0d)
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
         public static double doubleNToDouble(double? value)
-        {            
+        {
             if (value.HasValue)
                 return value.Value;
             return 0d;
         }
-        #endregion
+
+        #endregion Double? To Double
 
         #region DateTime? To String
+
         /// <summary>
         /// DateTime? 轉string (null 回傳 string.Empty)
         /// </summary>
@@ -194,9 +215,11 @@ namespace Transfer.Utility
                 return value.Value.ToString("yyyy/MM/dd");
             return string.Empty;
         }
-        #endregion
+
+        #endregion DateTime? To String
 
         #region obj To String
+
         /// <summary>
         /// object 轉string (null 回傳 string.Empty)
         /// </summary>
@@ -208,9 +231,11 @@ namespace Transfer.Utility
                 return value.ToString();
             return string.Empty;
         }
-        #endregion
+
+        #endregion obj To String
 
         #region obj To double
+
         /// <summary>
         /// object 轉 double
         /// </summary>
@@ -223,9 +248,11 @@ namespace Transfer.Utility
                 double.TryParse(value.ToString(), out d);
             return d;
         }
-        #endregion
 
-        #region  obj To double?  (轉string包含%)
+        #endregion obj To double
+
+        #region obj To double?  (轉string包含%)
+
         /// <summary>
         /// object 轉 double? (轉string包含%)
         /// </summary>
@@ -237,12 +264,14 @@ namespace Transfer.Utility
             if (value != null)
                 if (value.ToString().EndsWith("%"))
                     if (double.TryParse(value.ToString().Split('%')[0], out d))
-                        return d/100;
+                        return d / 100;
             return null;
         }
-        #endregion
+
+        #endregion obj To double?  (轉string包含%)
 
         #region objDataToString(yyyy/MM/dd)
+
         public static string objDateToString(object value)
         {
             DateTime date = DateTime.MinValue;
@@ -250,16 +279,20 @@ namespace Transfer.Utility
                 return date.ToString("yyyy/MM/dd");
             return string.Empty;
         }
-        #endregion
+
+        #endregion objDataToString(yyyy/MM/dd)
 
         #region data To JsonString
+
         public static string dataToJson<T>(List<T> datas)
         {
             return new JavaScriptSerializer().Serialize(datas);
         }
-        #endregion
+
+        #endregion data To JsonString
 
         #region DoubleN multiplication
+
         public static double? DoubleNMultip(double? d1, double? d2)
         {
             if (d1.HasValue && d2.HasValue)
@@ -268,6 +301,7 @@ namespace Transfer.Utility
             }
             return null;
         }
-        #endregion
+
+        #endregion DoubleN multiplication
     }
 }

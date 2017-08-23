@@ -15,25 +15,27 @@ namespace Transfer.Models.Repository
     public class A4Repository : IA4Repository, IDbEvent
     {
         #region 其他
-        protected IFRS9Entities db
-        {
-            get;
-            private set;
-        }
 
         public A4Repository()
         {
             this.db = new IFRS9Entities();
         }
 
-        public void SaveChange()
+        protected IFRS9Entities db
         {
-            throw new NotImplementedException();
+            get;
+            private set;
         }
+
         public void Dispose()
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public void SaveChange()
+        {
+            throw new NotImplementedException();
         }
 
         protected virtual void Dispose(bool disposing)
@@ -47,9 +49,11 @@ namespace Transfer.Models.Repository
                 }
             }
         }
-        #endregion
+
+        #endregion 其他
 
         #region Get Data
+
         /// <summary>
         /// get A41 data
         /// </summary>
@@ -74,16 +78,17 @@ namespace Transfer.Models.Repository
                                   .Where(x => date == x.Origination_Date &&
                                   value.Trim().Equals(x.Bond_Number)).AsEnumerable()
                                   .OrderBy(x => Convert.ToInt32(x.Reference_Nbr))
-                                             select DbToA41Model(q)).ToList();
+                      select DbToA41Model(q)).ToList();
                     return new Tuple<bool, List<A41ViewModel>>(data.Any(), data);
-
                 }
             }
             return new Tuple<bool, List<A41ViewModel>>(false, new List<A41ViewModel>());
         }
-        #endregion
 
-        #region  GetLogData
+        #endregion Get Data
+
+        #region GetLogData
+
         /// <summary>
         /// get IFRS9_data
         /// </summary>
@@ -100,7 +105,7 @@ namespace Transfer.Models.Repository
                     foreach (string tableType in tableTypes)
                     {
                         var items = db.IFRS9_Log
-                            //.AsEnumerable()
+                             //.AsEnumerable()
                              .Where(x => tableType.Equals(x.Table_type) &&
                              debt.Equals(x.Debt_Type)).ToList();
                         if (items.Any())
@@ -123,22 +128,22 @@ namespace Transfer.Models.Repository
             }
             catch
             {
-
             }
             return result;
         }
 
-        #endregion
+        #endregion GetLogData
 
         #region Save DB 部分
 
         #region Save A41
+
         /// <summary>
         /// A41 save db
         /// </summary>
         /// <param name="dataModel"></param>
         /// <returns></returns>
-        public MSGReturnModel saveA41(List<A41ViewModel> dataModel,string reportDate)
+        public MSGReturnModel saveA41(List<A41ViewModel> dataModel, string reportDate)
         {
             MSGReturnModel result = new MSGReturnModel();
             DateTime dt = TypeTransfer.stringToDateTime(reportDate);
@@ -210,7 +215,7 @@ namespace Transfer.Models.Repository
                         Assessment_Sub_Kind = item.Assessment_Sub_Kind,
                         Processing_Date = TypeTransfer.stringToDateTimeN(item.Processing_Date),
                         Version = item.Version,
-                        Bond_Aera = "NTD".Equals(item.Currency_Code) ? "國內":"國外",
+                        Bond_Aera = "NTD".Equals(item.Currency_Code) ? "國內" : "國外",
                         //IH_OS  //IH->自操，OS->委外
                         Amount_TW_Ori_Ex_rate = TypeTransfer.DoubleNMultip(
                             TypeTransfer.stringToDoubleN(item.Ori_Amount),
@@ -235,9 +240,11 @@ namespace Transfer.Models.Repository
             }
             return result;
         }
-        #endregion
+
+        #endregion Save A41
 
         #region Save A42
+
         /// <summary>
         /// A42 save db
         /// </summary>
@@ -290,9 +297,11 @@ namespace Transfer.Models.Repository
 
             return result;
         }
-        #endregion
+
+        #endregion Save A42
 
         #region Save B01
+
         /// <summary>
         /// save B01
         /// </summary>
@@ -428,7 +437,7 @@ namespace Transfer.Models.Repository
                             .Where(x => IAS39Data.Select(y => y.Reference_Nbr)
                             .Contains(x.Reference_Nbr)).ToList();
 
-                        if(IAS39Data.Any())
+                        if (IAS39Data.Any())
                         {
                             db.IFRS9_Main.AddRange(
                                 IAS39Data.Select(x =>
@@ -441,7 +450,7 @@ namespace Transfer.Models.Repository
                                         Principal = x.Principal,
                                         Interest_Receivable = x.Interest_Receivable,
                                         //Principal_Payment_Method_Code =
-                                        //Total_Period = 
+                                        //Total_Period =
                                         Current_Int_Rate =
                                         transferCurrentIntRate(
                                         getLoanAccountInfo(AccountData, x.Reference_Nbr).Current_Int_Rate,
@@ -510,7 +519,6 @@ namespace Transfer.Models.Repository
                         }
                     }
                 }
-
             }
             catch (DbUpdateException ex)
             {
@@ -522,9 +530,11 @@ namespace Transfer.Models.Repository
             }
             return result;
         }
-        #endregion
+
+        #endregion Save B01
 
         #region Save C01
+
         /// <summary>
         /// Save C01
         /// </summary>
@@ -566,7 +576,7 @@ namespace Transfer.Models.Repository
                     {
                         List<string> C01Ids = new List<string>();
                         C01Ids.AddRange(db.EL_Data_In
-                            //.AsEnumerable()
+                        //.AsEnumerable()
                         .Select(x => x.Reference_Nbr).ToList()); //抓取 C01 Reference_Nbr
                         addData = addData.Where(x =>
                         !C01Ids.Contains(x.Reference_Nbr)).ToList(); //排除 save 重複資料
@@ -674,13 +684,15 @@ namespace Transfer.Models.Repository
             }
             return result;
         }
-        #endregion
 
-        #endregion
+        #endregion Save C01
+
+        #endregion Save DB 部分
 
         #region Excel 部分
 
         #region Excel 資料轉成 A41ViewModel
+
         /// <summary>
         /// Excel 資料轉成 A41ViewModel
         /// </summary>
@@ -699,6 +711,7 @@ namespace Transfer.Models.Repository
                     case "xls":
                         reader = ExcelReaderFactory.CreateBinaryReader(stream);
                         break;
+
                     case "xlsx":
                         reader = ExcelReaderFactory.CreateOpenXmlReader(stream);
                         break;
@@ -709,7 +722,7 @@ namespace Transfer.Models.Repository
                 int idNum = 0;
                 if (db.Bond_Account_Info.Any())
                     idNum = db.Bond_Account_Info
-                        .Select(x=>x.Reference_Nbr).Distinct().AsEnumerable()
+                        .Select(x => x.Reference_Nbr).Distinct().AsEnumerable()
                         .Max(x => Convert.ToInt32(x));
                 if (resultData.Tables[0].Rows.Count > 2) //判斷有無資料
                 {
@@ -721,16 +734,17 @@ namespace Transfer.Models.Repository
                         ).ToList();
 
                     //skip(1) 為排除第一行 Excel Title列那行(參數可調)
-
                 }
             }
             catch (Exception ex)
             { }
             return dataModel;
         }
-        #endregion
+
+        #endregion Excel 資料轉成 A41ViewModel
 
         #region Excel 資料轉成 A42ViewModel
+
         /// <summary>
         /// Excel 資料轉成 A42ViewModel
         /// </summary>
@@ -751,6 +765,7 @@ namespace Transfer.Models.Repository
                     case "xls":
                         reader = ExcelReaderFactory.CreateBinaryReader(stream);
                         break;
+
                     case "xlsx":
                         reader = ExcelReaderFactory.CreateOpenXmlReader(stream);
                         break;
@@ -772,13 +787,15 @@ namespace Transfer.Models.Repository
 
             return dataModel;
         }
-        #endregion
 
-        #endregion
+        #endregion Excel 資料轉成 A42ViewModel
+
+        #endregion Excel 部分
 
         #region Private Function
 
         #region datarow 組成 A41ViewModel
+
         /// <summary>
         /// datarow 組成 A41ViewModel
         /// </summary>
@@ -810,7 +827,7 @@ namespace Transfer.Models.Repository
                 Curr_Moodys_Issue = TypeTransfer.objToString(item[8]), //I 最近債項評等_Moody
                 Curr_Fitch_Issue = TypeTransfer.objToString(item[9]), //J 最近債項評等_Fitch
                 Curr_Tw_Issue = TypeTransfer.objToString(item[10]), //K 最近債項評等_中華
-                Ori_Amount = TypeTransfer.objToString(item[11]), //L 原始金額 
+                Ori_Amount = TypeTransfer.objToString(item[11]), //L 原始金額
                 Current_Int_Rate = TypeTransfer.objToString(item[12]), //M 合約利率
                 Origination_Date = TypeTransfer.objDateToString(item[13]), //N 債券購入(認列)日期
                 Maturity_Date = TypeTransfer.objDateToString(item[14]), //O (缺 P=>15) 到期日
@@ -845,9 +862,11 @@ namespace Transfer.Models.Repository
                 Version = TypeTransfer.objToString(item[45]) //AT 資料版本
             };
         }
-        #endregion
+
+        #endregion datarow 組成 A41ViewModel
 
         #region Db 組成 A41ViewModel
+
         /// <summary>
         /// Db 組成 A41ViewModel
         /// </summary>
@@ -857,7 +876,7 @@ namespace Transfer.Models.Repository
         {
             return new A41ViewModel()
             {
-                Reference_Nbr = data.Reference_Nbr.PadLeft(10,'0'),
+                Reference_Nbr = data.Reference_Nbr.PadLeft(10, '0'),
                 Bond_Number = data.Bond_Number,
                 Lots = data.Lots,
                 Segment_Name = data.Segment_Name,
@@ -912,9 +931,11 @@ namespace Transfer.Models.Repository
                 Value_date = TypeTransfer.dateTimeNToString(data.Value_date)
             };
         }
-        #endregion
+
+        #endregion Db 組成 A41ViewModel
 
         #region datarow 組成 A42ViewModel
+
         /// <summary>
         /// datarow 組成 A42ViewModel
         /// </summary>
@@ -936,9 +957,11 @@ namespace Transfer.Models.Repository
                 Report_Date = reportDate
             };
         }
-        #endregion
+
+        #endregion datarow 組成 A42ViewModel
 
         #region get 債券 B01 Product_Code
+
         /// <summary>
         /// get 債券 B01 Product_Code
         /// </summary>
@@ -946,7 +969,6 @@ namespace Transfer.Models.Repository
         /// <returns></returns>
         private string transferProductCode(string value)
         {
-
             if (value.IsNullOrWhiteSpace())
                 return value;
 
@@ -954,16 +976,20 @@ namespace Transfer.Models.Repository
             {
                 case "01":
                     return "Bond_A";
+
                 case "02":
                     return "Bond_B";
+
                 case "04":
                     return "Bond_P";
             }
             return value;
         }
-        #endregion
+
+        #endregion get 債券 B01 Product_Code
 
         #region get Current_Int_Rate To B01
+
         /// <summary>
         /// get Current_Int_Rate To B01
         /// </summary>
@@ -984,9 +1010,11 @@ namespace Transfer.Models.Repository
             //ELSE  Current_Int_Rate/100 END
             return currentIntRate.Value / 100;
         }
-        #endregion
+
+        #endregion get Current_Int_Rate To B01
 
         #region A41 PaymentFrequency To B01
+
         /// <summary>
         /// A41 PaymentFrequency To B01
         /// </summary>
@@ -1014,6 +1042,7 @@ namespace Transfer.Models.Repository
                 {
                     case "A":
                         return 1;
+
                     case "S":
                         return 2;
                 }
@@ -1024,9 +1053,11 @@ namespace Transfer.Models.Repository
 
             return null;
         }
-        #endregion
+
+        #endregion A41 PaymentFrequency To B01
 
         #region Get C01 Duration_Year
+
         /// <summary>
         /// C01 Duration_Year
         /// </summary>
@@ -1036,9 +1067,11 @@ namespace Transfer.Models.Repository
         {
             return (value.Value / 12);
         }
-        #endregion
+
+        #endregion Get C01 Duration_Year
 
         #region Get 債券 C01 Impairment_Stage
+
         /// <summary>
         /// Get 債券 C01 Impairment_Stage
         /// </summary>
@@ -1051,9 +1084,11 @@ namespace Transfer.Models.Repository
                 return null;
             return pro_codes.Contains(value) ? "1" : string.Empty;
         }
-        #endregion
+
+        #endregion Get 債券 C01 Impairment_Stage
 
         #region get Loan_Account_Info
+
         /// <summary>
         /// get Loan_Account_Info
         /// </summary>
@@ -1070,9 +1105,11 @@ namespace Transfer.Models.Repository
             else
                 return new Loan_Account_Info();
         }
-        #endregion
+
+        #endregion get Loan_Account_Info
 
         #region get 房貸 C01 Impairment_Stage
+
         /// <summary>
         /// get 房貸 C01 Impairment_Stage
         /// </summary>
@@ -1090,7 +1127,7 @@ namespace Transfer.Models.Repository
             string Restructure_Ind
             )
         {
-            //WHEN (IAS39_Impaire_Ind="Y"  AND  IAS39_Impaire_Desc <> "逾期 29天" ) THEN 3 
+            //WHEN (IAS39_Impaire_Ind="Y"  AND  IAS39_Impaire_Desc <> "逾期 29天" ) THEN 3
             if ("Y".Equals(Ias39_Impaire_Ind) && !"逾期 29天".Equals(Ias39_Impaire_Desc))
                 return "3";
             //WHEN Delinquent_Days>=100 THEN 3
@@ -1106,16 +1143,17 @@ namespace Transfer.Models.Repository
             if ("Y".Equals(Collateral_Legal_Action_Ind))
                 return "2";
             int d = TypeTransfer.intNToInt(Delinquent_Days);
-            //WHEN Delinquent_Days> 29   AND Delinquent_Days < 90  THEN 2   /*7/7 金控風控建議修改/ 
+            //WHEN Delinquent_Days> 29   AND Delinquent_Days < 90  THEN 2   /*7/7 金控風控建議修改/
             if (d > 29 && d < 90)
                 return "2";
             //WHEN Delinquent_Days<30 THEN 1                                 /*7/7 金控風控建議修改/
             if (d < 30)
                 return "1";
             return null;
-}
-        #endregion
+        }
 
-        #endregion
+        #endregion get 房貸 C01 Impairment_Stage
+
+        #endregion Private Function
     }
 }

@@ -1,15 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using static Transfer.Enum.Ref;
 
 namespace Transfer.Models.Interface
 {
-
     public interface ICommon
     {
+        /// <summary>
+        /// 判斷轉檔紀錄是否有存在
+        /// </summary>
+        /// <param name="fileNames">要判斷的檔案名稱(可多個)</param>
+        /// <param name="reportDate">基準日</param>
+        /// <param name="version">版本</param>
+        /// <returns>回傳成功或失敗</returns>
+        bool checkTransferCheck(
+            List<string> fileNames,
+            DateTime reportDate,
+            string version);
+
         /// <summary>
         /// Log資料存到Sql(IFRS9_Log)
         /// </summary>
@@ -47,17 +55,5 @@ namespace Transfer.Models.Interface
              string version,
              DateTime start,
              DateTime end);
-
-        /// <summary>
-        /// 判斷轉檔紀錄是否有存在
-        /// </summary>
-        /// <param name="fileNames">要判斷的檔案名稱(可多個)</param>
-        /// <param name="reportDate">基準日</param>
-        /// <param name="version">版本</param>
-        /// <returns>回傳成功或失敗</returns>
-        bool checkTransferCheck(
-            List<string> fileNames,
-            DateTime reportDate,
-            string version);
     }
 }

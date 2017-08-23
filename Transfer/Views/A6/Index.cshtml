@@ -4,22 +4,22 @@
     ViewBag.Title = "A6 (上傳檔案)";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="container" id="main" >
+<div class="container" id="main">
     <div class="row main_hand">
         <div class="col-md-12 main_hand_div">
             <table>
                 <tr>
                     <td>
                         @using (Ajax.BeginForm("Upload", "A6",
-                                new AjaxOptions { HttpMethod = "POST" },
-                                new { enctype = "multipart/form-data", @id = "form0" }))
+                    new AjaxOptions { HttpMethod = "POST" },
+                    new { enctype = "multipart/form-data", @id = "form0" }))
                         {
                             <input type="file" name="file" class="filestyle" data-buttonName="btn-primary" data-buttonText="轉檔檔案" style="margin-right:10px" />
                         }
                     </td>
                     <td>
                         <input type="button" class="btn btn-primary" style="margin-right:10px" value="資料上傳" id="fileSubmit" />
-                        <input type="button" class="btn btn-primary" value="轉檔" id="btnTransfer" disabled/>
+                        <input type="button" class="btn btn-primary" value="轉檔" id="btnTransfer" disabled />
                     </td>
                 </tr>
             </table>
@@ -58,8 +58,7 @@
         //#endregion 註冊click事件
 
         //#region 資料上傳(Excel 資料寫入 local sql)
-        function transfer()
-        {
+        function transfer() {
             $.ajax({
                 type: "POST",
                 url: url.transfer,
@@ -75,8 +74,7 @@
         //#endregion 資料上傳(Excel 資料寫入 local sql)
 
         //#region fileSubmitFunction (把檔案上傳到指定資料夾)
-        function fileSubmitFunction()
-        {
+        function fileSubmitFunction() {
             var dataString;
             var action = $("#form0").attr("action");
             if ($("#form0").attr("enctype") == "multipart/form-data") {
@@ -115,8 +113,7 @@
         //#endregion fileSubmitFunction
 
         //#region clearJqgrid (清除JqGrid)
-        function clearJqgrid()
-        {
+        function clearJqgrid() {
             $('#jqgridDiv').children().remove();
         }
         //#endregion clearJqgrid
@@ -128,15 +125,12 @@
         //widthArray (寬度設定 L=> 210 M=>120)
         //data (要秀的資料Json型別Data)
         //title (標題)
-        function createJqgrid(listId, pagerId, colNameArray,data,title)
-        {
+        function createJqgrid(listId, pagerId, colNameArray, data, title) {
             var colModelArray = [];
             //var jagridLWidth = 210;
             var jagridMWidth = 220;
-            if (colNameArray.length > 0)
-            {
-                for (let i = 0; i < colNameArray.length; i++)
-                {
+            if (colNameArray.length > 0) {
+                for (let i = 0; i < colNameArray.length; i++) {
                     var obj = {
                         name: colNameArray[i],
                         index: colNameArray[i],
@@ -144,7 +138,7 @@
                     }
                     colModelArray.push(obj);
                 }
-                
+
                 $('#jqgridDiv').append('<table id="' + listId + '"></table>');
                 $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');
                 $("#" + listId).jqGrid({

@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel;
-using System.Xml.Serialization;
 
 namespace Transfer.Enum
 {
-    public partial class Ref 
+    public partial class Ref
     {
         public enum A59_SelectType
         {

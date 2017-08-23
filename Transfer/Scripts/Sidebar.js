@@ -4,8 +4,7 @@
 //    $('.collapse').toggleClass('in').toggleClass('hidden-xs').toggleClass('visible-xs');
 //});
 (function (window, undefind) {
-    if ($('.menu-list') != null)
-    {
+    if ($('.menu-list') != null) {
         $('.menu-list ul.sub-menu li,.HomeMenu').click(function () {
             $(this).children('a:first')[0].click();
         })
@@ -24,4 +23,3 @@
         }
     }
 })(window);
-

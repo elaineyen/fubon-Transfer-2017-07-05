@@ -9,8 +9,9 @@
         border: none;
         background: none;
     }
+
     .error {
-        color:red;
+        color: red;
     }
 </style>
 <div class="container" id="main">
@@ -25,7 +26,7 @@
                         </td>
                         <td style="padding-top:8px">
                             @*<label>版本 : </label>
-                            <input type="text" id="version" name="version">*@
+                                <input type="text" id="version" name="version">*@
                         </td>
                     </tr>
                     <tr>
@@ -35,7 +36,7 @@
                            (SelectList)ViewBag.selectOption,
                             new { @class = "form-control", @style = "display:inline-block" })
                         </td>
-                        <td style="padding-top:10px"> 
+                        <td style="padding-top:10px">
                             <input type="button" class="btn btn-primary" value="轉檔" id="btnA42Transfer" />
                         </td>
                     </tr>
@@ -81,20 +82,18 @@
         //#endregion 註冊click事件
 
         //#region 轉檔
-        function transferData()
-        {
+        function transferData() {
             var date = $('#datepicker').val();
             var type = $('#transferType').val();
             verified.datepicker("myFrom", "datepicker", true, date);
             if ($('#myFrom').valid()) {
                 callTransfer(type, "", date, type === "All")
             }
-       }
+        }
         //#endregion
 
         var debt = '@Transfer.Enum.Ref.Debt_Type.M.ToString()'; //房貸
-        function callTransfer(type, version, date, next)
-        {
+        function callTransfer(type, version, date, next) {
             $.ajax({
                 type: "POST",
                 data: JSON.stringify({
@@ -110,8 +109,7 @@
             })
             .done(function (result) {
                 getLog(debt);
-                if (result.RETURN_FLAG)
-                {
+                if (result.RETURN_FLAG) {
                     var data = result.Datas.Data;
                     if (data.split(',')[0] === "true") //要轉下一個
                     {
@@ -121,21 +119,18 @@
                             + " 接著轉 : " + data.split(',')[1]);
                         callTransfer(data.split(',')[1], version, date, true);
                     }
-                    else
-                    {
+                    else {
                         toastr.success("success => " + result.DESCRIPTION);
                     }
                 }
-                else
-                {
+                else {
                     toastr.error("error => " + result.DESCRIPTION);
                 }
             });
         }
 
         getLog(debt);
-        function getLog(debt)
-        {
+        function getLog(debt) {
             $.ajax({
                 type: "POST",
                 data: JSON.stringify({
@@ -146,8 +141,7 @@
                 contentType: 'application/json'
             })
             .done(function (result) {
-                if (result.length > 0)
-                {
+                if (result.length > 0) {
                     $('#log').text("")
                         .text(result.replace(new RegExp(",", "g"), "\n"));
                 }

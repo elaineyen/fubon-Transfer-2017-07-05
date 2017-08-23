@@ -4,7 +4,7 @@
     ViewBag.SubManu = "A74Sub";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="container" id="main" >
+<div class="container" id="main">
     <div class="row main_hand">
         <div class="col-md-12 main_hand_div">
                 <input type="button" class="btn btn-primary" value="A51查詢" id="btnA51Search" />
@@ -105,7 +105,7 @@
                 }
 
                 $('#jqgridDiv').append('<table id="' + listId + '"></table>');
-                $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');                
+                $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');
                 $("#" + listId).jqGrid({
                     data: data,
                     datatype: "local",

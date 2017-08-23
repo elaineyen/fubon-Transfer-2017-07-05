@@ -15,7 +15,13 @@ namespace Transfer.Models.Repository
     public class A6Repository : IA6Repository, IDbEvent
     {
         #region 其他
+
         private Common common = new Common();
+
+        public A6Repository()
+        {
+            this.db = new IFRS9Entities();
+        }
 
         protected IFRS9Entities db
         {
@@ -23,20 +29,15 @@ namespace Transfer.Models.Repository
             private set;
         }
 
-        public A6Repository()
+        public void Dispose()
         {
-            this.db = new IFRS9Entities();
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public void SaveChange()
         {
             db.SaveChanges();
-        }
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -50,13 +51,15 @@ namespace Transfer.Models.Repository
                 }
             }
         }
-        #endregion
+
+        #endregion 其他
 
         #region Get Data
 
         #region get A62 Search Year
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         public List<string> GetA62SearchYear()
@@ -71,9 +74,11 @@ namespace Transfer.Models.Repository
             }
             return result;
         }
-        #endregion
+
+        #endregion get A62 Search Year
 
         #region get Moody_LGD_Info(A62)
+
         /// <summary>
         /// get Moody_LGD_Info(A62)
         /// </summary>
@@ -84,7 +89,7 @@ namespace Transfer.Models.Repository
             {
                 List<Exhibit7Model> data = (from item in db.Moody_LGD_Info
                                             //.AsEnumerable()
-                                            .Where(x=> year.Equals("ALL")
+                                            .Where(x => year.Equals("ALL")
                                             || x.Data_Year.Equals(year))
                                             select new Exhibit7Model() //轉型 Datetime
                                             {
@@ -97,14 +102,15 @@ namespace Transfer.Models.Repository
                                                 //LGD = string.Format("{0}%",
                                                 //        (TypeTransfer.doubleNToDouble(item.LGD) * 100).ToString())
                                             }).ToList();
-                if(data.Any())
-                return new Tuple<bool, List<Exhibit7Model>>(true, data);
+                if (data.Any())
+                    return new Tuple<bool, List<Exhibit7Model>>(true, data);
             }
             return new Tuple<bool, List<Exhibit7Model>>(false, new List<Exhibit7Model>());
         }
-        #endregion
 
-        #endregion
+        #endregion get Moody_LGD_Info(A62)
+
+        #endregion Get Data
 
         #region Save Db
 
@@ -141,15 +147,20 @@ namespace Transfer.Models.Repository
                     .GetDescription(Table_Type.A62.ToString());
                 return result;
             }
+
             #region save Moody_LGD_Info(A62)
+
             db.Moody_LGD_Info.AddRange(
-                dataModel.Select(x=> new Moody_LGD_Info() {
+                dataModel.Select(x => new Moody_LGD_Info()
+                {
                     Data_Year = x.Data_Year,
                     Lien_Position = x.Lien_Position,
                     Recovery_Rate = TypeTransfer.stringToDoubleN(x.Recovery_Rate),
                     LGD = TypeTransfer.stringToDoubleN(x.LGD)
                 }));
-            #endregion
+
+            #endregion save Moody_LGD_Info(A62)
+
             try
             {
                 db.SaveChanges();
@@ -166,9 +177,11 @@ namespace Transfer.Models.Repository
             }
             return result;
         }
-        #endregion
+
+        #endregion Save Db
 
         #region Excel 部分
+
         /// <summary>
         /// 把Excel 資料轉換成 Exhibit7Model
         /// </summary>
@@ -187,6 +200,7 @@ namespace Transfer.Models.Repository
                     case "xls":
                         reader = ExcelReaderFactory.CreateBinaryReader(stream);
                         break;
+
                     case "xlsx":
                         reader = ExcelReaderFactory.CreateOpenXmlReader(stream);
                         break;
@@ -213,7 +227,7 @@ namespace Transfer.Models.Repository
                                 Recovery_Rate =
                                 ((TypeTransfer.stringToDouble(dataModel[3].Recovery_Rate)
                                 +
-                                TypeTransfer.stringToDouble(dataModel[4].Recovery_Rate))/2).ToString(),
+                                TypeTransfer.stringToDouble(dataModel[4].Recovery_Rate)) / 2).ToString(),
                                 LGD =
                                 ((TypeTransfer.stringToDouble(dataModel[3].LGD)
                                 +
@@ -221,7 +235,7 @@ namespace Transfer.Models.Repository
                                 //Recovery_Rate =
                                 //string.Format("{0}%",
                                 //((TypeTransfer.doubleNToDouble( //1st Lien Bond
-                                //    TypeTransfer.stringToDoubleNByP(dataModel[3].Recovery_Rate)) 
+                                //    TypeTransfer.stringToDoubleNByP(dataModel[3].Recovery_Rate))
                                 //    +
                                 //TypeTransfer.doubleNToDouble( //2nd Lien Bond
                                 //    TypeTransfer.stringToDoubleNByP(dataModel[4].Recovery_Rate))) / 2)),
@@ -239,13 +253,14 @@ namespace Transfer.Models.Repository
             catch
             { }
             return dataModel;
-
         }
-        #endregion
+
+        #endregion Excel 部分
 
         #region Private Function
 
         #region datarow 組成 Exhibit7Model
+
         /// <summary>
         /// datarow 組成 Exhibit7Model
         /// </summary>
@@ -263,8 +278,9 @@ namespace Transfer.Models.Repository
                 //LGD = string.Format("{0}%", (LGD * 100).ToString())
             };
         }
-        #endregion
 
-        #endregion
+        #endregion datarow 組成 Exhibit7Model
+
+        #endregion Private Function
     }
 }

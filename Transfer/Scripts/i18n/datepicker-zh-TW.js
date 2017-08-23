@@ -1,15 +1,12 @@
 (function (factory) {
     if (typeof define === "function" && define.amd) {
-
         // AMD. Register as an anonymous module.
         define(["../widgets/datepicker"], factory);
     } else {
-
         // Browser globals
         factory(jQuery.datepicker);
     }
 }(function (datepicker) {
-
     datepicker.regional["zh-TW"] = {
         closeText: "關閉",
         prevText: "&#x3C;上個月",
@@ -32,5 +29,4 @@
     datepicker.setDefaults(datepicker.regional["zh-TW"]);
 
     return datepicker.regional["zh-TW"];
-
 }));

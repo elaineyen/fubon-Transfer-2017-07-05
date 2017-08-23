@@ -1,6 +1,6 @@
-(function(a) {
-a.jgrid = a.jgrid || {};
-a.extend(a.jgrid,{
+(function (a) {
+    a.jgrid = a.jgrid || {};
+    a.extend(a.jgrid, {
         defaults:
         {
             recordtext: "regels {0} - {1} van {2}",
@@ -14,7 +14,7 @@ a.extend(a.jgrid,{
             Find: "Zoek",
             Reset: "Herstellen",
             odata: ["gelijk aan", "niet gelijk aan", "kleiner dan", "kleiner dan of gelijk aan", "groter dan", "groter dan of gelijk aan", "begint met", "begint niet met", "is in", "is niet in", "eindigd met", "eindigd niet met", "bevat", "bevat niet"],
-            groupOps: [{ op: "AND", text: "alle" }, { op: "OR", text: "een van de"}],
+            groupOps: [{ op: "AND", text: "alle" }, { op: "OR", text: "een van de" }],
             matchText: " match",
             rulesText: " regels"
         },
@@ -39,10 +39,10 @@ a.extend(a.jgrid,{
                 integer: "Voer a.u.b. een geldig getal in",
                 date: "Voer a.u.b. een geldige waarde in",
                 url: "is geen geldige URL. Prefix is verplicht ('http://' or 'https://')",
-                nodefined : " is not defined!",
-                novalue : " return value is required!",
-                customarray : "Custom function should return array!",
-                customfcheck : "Custom function should be present in case of custom checking!"
+                nodefined: " is not defined!",
+                novalue: " return value is required!",
+                customarray: "Custom function should return array!",
+                customfcheck: "Custom function should be present in case of custom checking!"
             }
         },
         view:
@@ -115,7 +115,7 @@ a.extend(a.jgrid,{
                 dayNames: ["Zo", "Ma", "Di", "Wo", "Do", "Vr", "Za", "Zondag", "Maandag", "Dinsdag", "Woensdag", "Donderdag", "Vrijdag", "Zaterdag"],
                 monthNames: ["Jan", "Feb", "Maa", "Apr", "Mei", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec", "Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli", "Augustus", "September", "October", "November", "December"],
                 AmPm: ["am", "pm", "AM", "PM"],
-                S: function(b) {
+                S: function (b) {
                     return b < 11 || b > 13 ? ["st", "nd", "rd", "th"][Math.min((b - 1) % 10, 3)] : "th"
                 },
                 srcformat: "Y-m-d",

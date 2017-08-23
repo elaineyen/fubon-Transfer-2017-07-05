@@ -1,12 +1,9 @@
 ﻿(function (window, undefind) {
-    
     var jqgridCustom = {};
 
-    window.jqgridCustom = jqgridCustom;  
+    window.jqgridCustom = jqgridCustom;
 
     jqgridCustom.setHeight = '290';
-
-
 
     //#region jqgridCustom.createDialog 範例
     //var obj = [
@@ -17,7 +14,7 @@
     //#endregion
 
     jqgridCustom.createDialog =
-    function (dialogid, data) {        
+    function (dialogid, data) {
         var str = '';
         str += '<input type="hidden" id="actionType" value="" />';
         str += '<form id="' + dialogid + 'From">';
@@ -27,45 +24,46 @@
         var reqobj = function (type, name) {
             this.type = type;
             this.name = name;
-        }
-        for(let m of data)
-        {
+        };
+
+        $.each(data, function (dkey, dvalue) {
             let tr = '<tr>';
             let tdtitle = '<td style="white-space:nowrap; text-align:right">';
             let tdinput = '<td style="white-space:nowrap"><input type="text" ';
             let name = '';
             let type = '';
-            for (let n in m) {
-                if (n === 'name')
-                    name = dialogid + m[n];
-                if (n === 'title')
-                    tdtitle += (m[n] + ' : ');
-                if (n === 'type') {
-                    switch (m[n]) {
+
+            $.each(dvalue, function (key, value) {
+                if (key === 'name')
+                    name = (dialogid + value);
+                if (key === 'title')
+                    tdtitle += (value + ' : ');
+                if (key === 'type') {
+                    switch (value) {
                         case 'date':
                             type = 'date';
-                            tdinput += 'id="' + name + 'datepicker" name="' + name + 'datepicker" ';
+                            tdinput += ('id="' + name + 'datepicker" name="' + name + 'datepicker" ');
                             datepickers.push(name + 'datepicker');
                             break;
                         case 'string':
                         default:
                             type = 'string';
-                            tdinput += 'id="' + name + '" name="' + name + '"  maxlength="3" ';
+                            tdinput += ('id="' + name + '" name="' + name + '"  maxlength="3" ');
                             break;
                     }
                 }
-                if (n === 'max' && type !== 'date')
-                    tdinput += ' maxlength = ' + m[n] + ' ';
-                if (n === 'req' && m[n] === 'true')
-                    reqobjs.push(new reqobj(type, name))
-            }
+                if (key === 'max' && type !== 'date')
+                    tdinput += (' maxlength = ' + value + ' ');
+                if (key === 'req' && value === 'true')
+                    reqobjs.push(new reqobj(type, name));
+            })
             tdtitle += '</td>';
             tdinput += '></td>';
             tr += tdtitle;
             tr += tdinput;
             tr += '</tr>';
             str += tr;
-        }
+        })
         str += '<tr>';
         str += '<td colspan="2" style="white-space:nowrap; text-align:center">'
         str += '<input type="button" class=" btn btn-primary" style="margin-right:30px;margin-top:10px;" id="' + dialogid + 'btnSave" value="儲存" />';
@@ -73,11 +71,11 @@
         str += '<input type="button" class=" btn btn-primary" style="margin-top:10px;" id="' + dialogid + 'btnCancel" value="取消" /></td>';
         str += '</tr>';
         str += '</table>';
-        str += '</form>';    
+        str += '</form>';
         $('#' + dialogid).append(str);
-        for(let p of datepickers)
-        {
-            $("#" + p).datepicker({
+
+        $.each(datepickers, function (key, value) {
+            $("#" + value).datepicker({
                 changeMonth: true,
                 changeYear: true,
                 dateFormat: 'yy/mm/dd',
@@ -92,15 +90,15 @@
                                 $(this).removeClass('error');
                         })
                 }
-            }).datepicker('setDate', verified.reportDate());
-        }
-        for(let o of reqobjs)
-        {
-            if (o.type === 'string')
-                verified.required(dialogid + 'From', o.name, message.required(message.version));
-            if (o.type === 'date')              
-                verified.datepicker(dialogid + 'From', o.name + 'datepicker', false, $('#' + o.name + 'datepicker').val());              
-        }
+            });
+        })
+
+        $.each(reqobjs, function (key, value) {
+            if (value.type === 'string')
+                verified.required(dialogid + 'From', value.name, message.required(message.version));
+            if (value.type === 'date')
+                verified.datepicker(dialogid + 'From', value.name + 'datepicker', false, $('#' + value.name + 'datepicker').val());
+        })
 
         $("#" + dialogid).dialog({
             autoOpen: false,
@@ -121,10 +119,9 @@
     //#endregion
 
     jqgridCustom.randerAction =
-    function (jqGridId, viewId)
-    {
+    function (jqGridId, viewId) {
         var ids = $("#" + jqGridId).jqGrid('getDataIDs');
-       
+
         for (var i = 0; i < ids.length; i++) {
             var divStart = '<div class="btn-group">';
             var edit = '<a class="btn" style="padding-right:4px;padding-left:4px;padding-bottom:0px;padding-top:0px;"' +
@@ -148,23 +145,21 @@
     {
         var replacement =
         {
-            'ui-icon-seek-first' : 'ace-icon fa fa-angle-double-left bigger-140',
-            'ui-icon-seek-prev' : 'ace-icon fa fa-angle-left bigger-140',
-            'ui-icon-seek-next' : 'ace-icon fa fa-angle-right bigger-140',
-            'ui-icon-seek-end' : 'ace-icon fa fa-angle-double-right bigger-140'
+            'ui-icon-seek-first': 'ace-icon fa fa-angle-double-left bigger-140',
+            'ui-icon-seek-prev': 'ace-icon fa fa-angle-left bigger-140',
+            'ui-icon-seek-next': 'ace-icon fa fa-angle-right bigger-140',
+            'ui-icon-seek-end': 'ace-icon fa fa-angle-double-right bigger-140'
         };
-        $('.ui-pg-table:not(.navtable) > tbody > tr > .ui-pg-button > .ui-icon').each(function(){
+        $('.ui-pg-table:not(.navtable) > tbody > tr > .ui-pg-button > .ui-icon').each(function () {
             var icon = $(this);
             var $class = $.trim(icon.attr('class').replace('ui-icon', ''));
-        
-            if($class in replacement) icon.attr('class', 'ui-icon '+replacement[$class]);
+
+            if ($class in replacement) icon.attr('class', 'ui-icon ' + replacement[$class]);
         })
     }
 
     jqgridCustom.hideFrozenTitle =
-    function ()
-    {
+    function () {
         $('.ui-jqgrid-view > .frozen-div').find('.ui-jqgrid-resize').hide()
     }
-
 })(window);

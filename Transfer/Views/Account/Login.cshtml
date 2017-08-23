@@ -10,7 +10,7 @@
 <link rel="stylesheet" href="~/Content/toastr.css" type="text/css" />
 <style>
     #toast-container > div {
-        left :40%;
+        left: 40%;
     }
 </style>
 <html>
@@ -26,11 +26,11 @@
                 @using (Html.BeginForm("Logon", "Account", FormMethod.Post, new { id = "loginFrom" }))
                 {
                     // 跨網站的偽造要求(CSRF)
-                    @*@Html.AntiForgeryToken()*@
+                    @Html.AntiForgeryToken()
                     <input class="form-control" data-toggle="tooltip" title="請輸入帳號"
-                            id="userName" type="text" name="userId" placeholder="Username">
+                           id="userName" type="text" name="userId" placeholder="Username">
                     <input class="form-control" data-toggle="tooltip" title="請輸入密碼"
-                            id="passWord" type="password" name="pwd" placeholder="Password">
+                           id="passWord" type="password" name="pwd" placeholder="Password">
                     <input type="submit" name="login" class="login loginmodal-submit"
                            value="Login">
                 }
@@ -49,7 +49,7 @@
         if(User != null)
             $('#userName').val(User);
         if(Login != null && Login !== "")
-            toastr.warning(Login);        
+            toastr.warning(Login);
         $("#loginFrom").validate({
             rules: {
                 userId: { required: true },
@@ -60,6 +60,4 @@
             return $('#loginFrom').valid();
         });
     })()
-
 </script>
-

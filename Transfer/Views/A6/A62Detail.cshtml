@@ -6,7 +6,7 @@
     ViewBag.Title = "A62 (違約損失資料檔_歷史資料)";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="container" id="main" >
+<div class="container" id="main">
     <div class="row main_hand">
         <div class="col-md-12 main_hand_div">
             <table>
@@ -21,7 +21,7 @@
                         <input type="button" class="btn btn-primary" value="A62查詢" id="btnA62Search" />
                     </td>
                 </tr>
-            </table>            
+            </table>
         </div>
     </div>
     <div class="row main_body" style="overflow:auto;height:100%">
@@ -53,17 +53,14 @@
         })
         //#endregion 註冊click事件
 
-
         //#region 去controller 撈取資料並且用JqGrid套件顯示
-        function showJqgrid(type,year)
-        {
+        function showJqgrid(type, year) {
             clearJqgrid();
             var title = ''; //標頭
             var colNameArray = []; //每個欄位名稱要對應傳入資料屬性
             var widthArray = []; //每個欄位大小 L,M
-            var data ; // json Data 由Ajax 拿到
-            switch (type)
-            {
+            var data; // json Data 由Ajax 拿到
+            switch (type) {
                 case '@(Ref.Table_Type.A62.ToString())':
                     title = '@(Ref.Table_Type.A62.GetDescription())';
                     colNameArray = ['Data_Year', 'Lien_Position',
@@ -80,7 +77,7 @@
                 url: url.getData,
                 contentType: 'application/json'
             })
-            .done(function (result) {               
+            .done(function (result) {
                 if (result.RETURN_FLAG) {
                     data = result.Datas.Data;
                     createJqgrid("list1", "pager1", data, title, colNameArray);
@@ -93,8 +90,7 @@
         //#endregion
 
         //#region clearJqgrid (清除JqGrid)
-        function clearJqgrid()
-        {
+        function clearJqgrid() {
             $('#jqgridDiv').children().remove();
         }
         //#endregion clearJqgrid
@@ -105,14 +101,11 @@
         //data (要秀的資料Json型別Data)
         //colNameArray (設定上方Title *要與Data 傳入Json 屬性相對應)
         //title (標題)
-        function createJqgrid(listId, pagerId, data, title, colNameArray)
-        {
+        function createJqgrid(listId, pagerId, data, title, colNameArray) {
             var colModelArray = [];
             var jagridMWidth = 220; //寬度
-            if (data.length > 0)
-            {                           
-                for (let i = 0; i < colNameArray.length; i++)
-                {
+            if (data.length > 0) {
+                for (let i = 0; i < colNameArray.length; i++) {
                     var obj = {
                         name: colNameArray[i],
                         index: colNameArray[i],
@@ -121,7 +114,7 @@
                     colModelArray.push(obj);
                 }
                 $('#jqgridDiv').append('<table id="' + listId + '"></table>');
-                $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');              
+                $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');
                 $("#" + listId).jqGrid({
                     data: data,
                     datatype: "local",

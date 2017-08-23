@@ -59,13 +59,11 @@
 	z-index: 100;
 }
 
-
 /* Interaction Cues
 ----------------------------------*/
 .ui-state-disabled {
 	cursor: default !important;
 }
-
 
 /* Icons
 ----------------------------------*/
@@ -77,7 +75,6 @@
 	overflow: hidden;
 	background-repeat: no-repeat;
 }
-
 
 /* Misc visuals
 ----------------------------------*/

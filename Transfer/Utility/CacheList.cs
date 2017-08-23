@@ -1,23 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Routing;
-using Transfer.Enum;
-using static Transfer.Enum.Ref;
-
-namespace Transfer.Utility
+﻿namespace Transfer.Utility
 {
     public static class CacheList
     {
         #region A4
-        public static string A41ExcelfileData { get; private set; }
 
         public static string A41DbfileData { get; private set; }
-        #endregion
+        public static string A41ExcelfileData { get; private set; }
+
+        #endregion A4
 
         #region Excel Name
 
@@ -30,7 +20,8 @@ namespace Transfer.Utility
         public static string A71ExcelName { get; private set; }
 
         public static string A81ExcelName { get; private set; }
-        #endregion
+
+        #endregion Excel Name
 
         static CacheList()
         {

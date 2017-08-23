@@ -224,8 +224,8 @@
           <Key>
             <PropertyRef Name="User_Name" />
           </Key>
-          <Property Name="User_Name" Type="varchar" MaxLength="30" Nullable="false" />
-          <Property Name="User_Password" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="User_Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="User_Password" Type="varchar" MaxLength="3000" Nullable="false" />
         </EntityType>
         <EntityType Name="Loan_Account_Info">
           <Key>
@@ -745,8 +745,8 @@
           <Key>
             <PropertyRef Name="User_Name" />
           </Key>
-          <Property Name="User_Name" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
-          <Property Name="User_Password" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="User_Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="User_Password" Type="String" Nullable="false" MaxLength="3000" FixedLength="false" Unicode="false" />
         </EntityType>
         <Association Name="fk_Menu">
           <End Type="IFRS9Model.IFRS9_Menu_Main" Role="IFRS9_Menu_Main" Multiplicity="1" />

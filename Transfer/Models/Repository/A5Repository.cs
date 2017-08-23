@@ -1,28 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Transfer.Models.Interface;
 using Transfer.ViewModels;
 
 namespace Transfer.Models.Repository
 {
-    public class A5Repository : IA5Repository , IDbEvent
+    public class A5Repository : IA5Repository, IDbEvent
     {
+        public A5Repository()
+        {
+            this.db = new IFRS9Entities();
+        }
+
         protected IFRS9Entities db
         {
             get;
             private set;
         }
 
-        public A5Repository()
-        {
-            this.db = new IFRS9Entities();
-        }
-
         public bool CreateA51(List<Exhibit29Model> model)
         {
             throw new NotImplementedException();
+        }
+
+        public void Dispose()
+        {
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public IQueryable<Grade_Moody_Info> GetAll()
@@ -33,11 +38,6 @@ namespace Transfer.Models.Repository
         public void SaveChange()
         {
             throw new NotImplementedException();
-        }
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing)

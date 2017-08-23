@@ -13,32 +13,21 @@ using static Transfer.Enum.Ref;
 
 namespace Transfer.Controllers
 {
-
     [Authorize]
     public class A4Controller : CommonController
     {
-        private string[] selects = { "All", "B01", "C01" };
         private IA4Repository A4Repository;
         private ICommon CommonFunction;
-        public ICacheProvider Cache { get; set; }
+        private string[] selects = { "All", "B01", "C01" };
 
         public A4Controller()
         {
             this.A4Repository = new A4Repository();
             this.CommonFunction = new Common();
             this.Cache = new DefaultCacheProvider();
-
         }
 
-        /// <summary>
-        /// A4(上傳檔案)
-        /// </summary>
-        /// <returns></returns>
-        [UserAuth("Index,A4")]
-        public ActionResult Index()
-        {
-            return View();
-        }
+        public ICacheProvider Cache { get; set; }
 
         /// <summary>
         /// A41(債券明細檔)
@@ -46,6 +35,16 @@ namespace Transfer.Controllers
         /// <returns></returns>
         [UserAuth("A41Detail,A4")]
         public ActionResult A41Detail()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// A42(國庫券月結資料檔)
+        /// </summary>
+        /// <returns></returns>
+        [UserAuth("A42,A4")]
+        public ActionResult A42()
         {
             return View();
         }
@@ -75,201 +74,6 @@ namespace Transfer.Controllers
         }
 
         /// <summary>
-        /// A42(國庫券月結資料檔)
-        /// </summary>
-        /// <returns></returns>
-        [UserAuth("A42,A4")]
-        public ActionResult A42()
-        {
-            return View();
-        }
-
-        /// <summary>
-        /// 選擇檔案後點選資料上傳觸發
-        /// </summary>
-        /// <param name="FileModel"></param>
-        /// <returns>MSGReturnModel</returns>
-        [HttpPost]
-        public JsonResult Upload(ValidateFiles FileModel)
-        {
-            MSGReturnModel result = new MSGReturnModel();
-            try
-            {
-                #region 前端無傳送檔案進來
-                if (FileModel.File == null)
-                {
-                    result.RETURN_FLAG = false;
-                    result.DESCRIPTION = Message_Type.upload_Not_Find.GetDescription();
-                    return Json(result);
-                }
-                #endregion
-
-                #region 前端檔案大小不符或不為Excel檔案(驗證)
-                //ModelState
-                if (!ModelState.IsValid)
-                {
-                    result.RETURN_FLAG = false;
-                    result.DESCRIPTION = Message_Type.excel_Validate.GetDescription();
-                    return Json(result);
-                }
-                #endregion
-
-                #region 上傳檔案
-                string pathType = Path.GetExtension(FileModel.File.FileName)
-                                       .Substring(1); //上傳的檔案類型
-
-                var fileName = string.Format("{0}.{1}",
-                    Excel_UploadName.A41.GetDescription(),
-                    pathType); //固定轉成此名稱
-
-                Cache.Invalidate(CacheList.A41ExcelName); //清除 Cache
-                Cache.Set(CacheList.A41ExcelName, fileName, 15); //把資料存到 Cache
-
-                #region 檢查是否有FileUploads資料夾,如果沒有就新增 並加入 excel 檔案
-
-                string projectFile = Server.MapPath("~/"+ SetFile.FileUploads); //專案資料夾
-                string path = Path.Combine(projectFile, fileName);
-
-                FileRelated.createFile(projectFile); //檢查是否有FileUploads資料夾,如果沒有就新增
-
-                //呼叫上傳檔案 function
-                result = FileRelated.FileUpLoadinPath(path, FileModel.File);
-                if (!result.RETURN_FLAG)
-                    return Json(result);
-                #endregion
-
-                #region 讀取Excel資料 使用ExcelDataReader 並且組成 json
-
-                var stream = FileModel.File.InputStream;
-                List<A41ViewModel> dataModel = A4Repository.getExcel(pathType, stream);
-                if (dataModel.Count > 0)
-                {
-                    result.RETURN_FLAG = true;
-                    Cache.Invalidate(CacheList.A41ExcelfileData); //清除 Cache
-                    Cache.Set(CacheList.A41ExcelfileData, dataModel, 15); //把資料存到 Cache
-                }
-                else
-                {
-                    result.RETURN_FLAG = false;
-                    result.DESCRIPTION = Message_Type.data_Not_Compare.GetDescription();
-                }
-                #endregion
-
-                #endregion
-            }
-            catch (Exception ex)
-            {
-                result.RETURN_FLAG = false;
-                result.DESCRIPTION = ex.Message;
-            }
-            return Json(result);
-        }
-
-        /// <summary>
-        /// 選擇檔案後點選資料上傳觸發
-        /// </summary>
-        /// <returns>MSGReturnModel</returns>
-        [HttpPost]
-        public JsonResult UploadA42()
-        {
-            MSGReturnModel result = new MSGReturnModel();
-
-            //## 如果有任何檔案類型才做
-            if (Request.Files.AllKeys.Any())
-            {
-                var FileModel = Request.Files["UploadedFile"];
-                string processingDate = Request.Form["processingDate"];
-                string reportDate = Request.Form["reportDate"];
-
-                try
-                {
-                    #region 前端無傳送檔案進來
-                    if (FileModel == null)
-                    {
-                        result.RETURN_FLAG = false;
-                        result.DESCRIPTION = Message_Type.upload_Not_Find.GetDescription();
-                        return Json(result);
-                    }
-                    #endregion
-
-                    #region 前端檔案大小不符或不為Excel檔案(驗證)
-                    //ModelState
-                    if (!ModelState.IsValid)
-                    {
-                        result.RETURN_FLAG = false;
-                        result.DESCRIPTION = Message_Type.excel_Validate.GetDescription();
-                        return Json(result);
-                    }
-                    else
-                    {
-                        string ExtensionName = Path.GetExtension(FileModel.FileName).ToLower();
-                        if (ExtensionName != ".xls" && ExtensionName != ".xlsx")
-                        {
-                            result.RETURN_FLAG = false;
-                            result.DESCRIPTION = Message_Type.excel_Validate.GetDescription();
-                            return Json(result);
-                        }
-                    }
-                    #endregion
-
-                    #region 上傳檔案
-                    string pathType = Path.GetExtension(FileModel.FileName)
-                       .Substring(1); //上傳的檔案類型
-
-                    var fileName = string.Format("{0}.{1}",
-                        Excel_UploadName.A42.GetDescription(),
-                        pathType); //固定轉成此名稱
-
-                    Cache.Invalidate(CacheList.A42ExcelName); //清除 Cache
-                    Cache.Set(CacheList.A42ExcelName, fileName, 15); //把資料存到 Cache
-
-                    #region 檢查是否有FileUploads資料夾,如果沒有就新增 並加入 excel 檔案
-                    string projectFile = Server.MapPath("~/"+ SetFile.FileUploads); //專案資料夾
-                    string path = Path.Combine(projectFile, fileName);
-
-                    FileRelated.createFile(projectFile); //檢查是否有FileUploads資料夾,如果沒有就新增
-
-                    //呼叫上傳檔案 function
-                    result = FileRelated.FileUpLoadinPath(path, FileModel);
-                    if (!result.RETURN_FLAG)
-                    {
-                        return Json(result);
-                    }
-                    #endregion
-
-                    #region 讀取Excel資料 使用ExcelDataReader 並且組成 json
-                    var stream = FileModel.InputStream;
-                    List<A42ViewModel> dataModel = A4Repository.getA42Excel(pathType, stream, processingDate, reportDate);
-                    if (dataModel.Count > 0)
-                    {
-                        result.RETURN_FLAG = true;
-                        result.Datas = Json(dataModel); //給JqGrid 顯示
-                    }
-                    else
-                    {
-                        result.RETURN_FLAG = false;
-                        result.DESCRIPTION = Message_Type.data_Not_Compare.GetDescription();
-                    }
-                    #endregion
-                    #endregion
-                }
-                catch (Exception ex)
-                {
-                    result.RETURN_FLAG = false;
-                    result.DESCRIPTION = ex.Message;
-                }
-            }
-            else
-            {
-                result.RETURN_FLAG = false;
-                result.DESCRIPTION = Message_Type.upload_Not_Find.GetDescription();
-                return Json(result);
-            }
-
-            return Json(result);
-        }
-
-        /// <summary>
         /// Get Cache Data
         /// </summary>
         /// <param name="jdata"></param>
@@ -285,12 +89,76 @@ namespace Transfer.Controllers
                     if (Cache.IsSet(CacheList.A41ExcelfileData))
                         data = (List<A41ViewModel>)Cache.Get(CacheList.A41ExcelfileData);  //從Cache 抓資料
                     break;
+
                 case "Db":
                     if (Cache.IsSet(CacheList.A41DbfileData))
                         data = (List<A41ViewModel>)Cache.Get(CacheList.A41DbfileData);
                     break;
             }
             return Json(jdata.modelToJqgridResult(data));
+        }
+
+        /// <summary>
+        /// 前端抓資料時呼叫
+        /// </summary>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult GetData(string type, string searchType, string value, string date)
+        {
+            MSGReturnModel result = new MSGReturnModel();
+            result.RETURN_FLAG = false;
+            result.DESCRIPTION = Message_Type.not_Find_Any.GetDescription(type);
+
+            DateTime d = new DateTime();
+
+            if (!DateTime.TryParse(date, out d))
+            {
+                result.DESCRIPTION = Message_Type.parameter_Error.GetDescription();
+                return Json(result);
+            }
+
+            try
+            {
+                switch (type)
+                {
+                    case "A41":
+                        var A41Data = A4Repository.GetA41(searchType, value, d);
+                        result.RETURN_FLAG = A41Data.Item1;
+                        Cache.Invalidate(CacheList.A41DbfileData); //清除
+                        Cache.Set(CacheList.A41DbfileData, A41Data.Item2, 15); //把資料存到 Cache
+                        if (!result.RETURN_FLAG)
+                            result.DESCRIPTION = Message_Type.not_Find_Any.GetDescription();
+                        break;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = Message_Type.not_Find_Any.GetDescription(type, ex.Message);
+            }
+            return Json(result);
+        }
+
+        /// <summary>
+        /// 抓取資料庫最後一天日期log Data
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult GetLogData(string debt)
+        {
+            List<string> logDatas = A4Repository.GetLogData(selects.ToList(), debt);
+            return Json(string.Join(",", logDatas));
+        }
+
+        /// <summary>
+        /// A4(上傳檔案)
+        /// </summary>
+        /// <returns></returns>
+        [UserAuth("Index,A4")]
+        public ActionResult Index()
+        {
+            return View();
         }
 
         /// <summary>
@@ -304,9 +172,10 @@ namespace Transfer.Controllers
             try
             {
                 #region 抓Excel檔案 轉成 model
+
                 // Excel 檔案位置
                 DateTime startTime = DateTime.Now;
-                string projectFile = Server.MapPath("~/"+SetFile.FileUploads);
+                string projectFile = Server.MapPath("~/" + SetFile.FileUploads);
 
                 string fileName = string.Empty;
                 if (Cache.IsSet(CacheList.A41ExcelName))
@@ -324,22 +193,26 @@ namespace Transfer.Controllers
                 string pathType = path.Split('.')[1]; //抓副檔名
                 List<A41ViewModel> dataModel = A4Repository.getExcel(pathType, stream); //Excel轉成 Exhibit10Model
 
-                #endregion
+                #endregion 抓Excel檔案 轉成 model
 
                 #region txtlog 檔案名稱
+
                 string txtpath = SetFile.A41TransferTxtLog; //預設txt名稱
                 string configTxtName = ConfigurationManager.AppSettings["txtLogA4Name"];
                 if (!string.IsNullOrWhiteSpace(configTxtName))
                     txtpath = configTxtName; //有設定webConfig且不為空就取代
-                #endregion
+
+                #endregion txtlog 檔案名稱
 
                 #region save Bond_Account_Info(A41)
+
                 MSGReturnModel resultA41 = A4Repository.saveA41(dataModel, reportDate); //save to DB
                 bool A41Log = CommonFunction.saveLog(Table_Type.A41,
                     fileName, SetFile.ProgramName, resultA41.RETURN_FLAG,
                     Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(Table_Type.A41, resultA41.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
-                #endregion
+
+                #endregion save Bond_Account_Info(A41)
 
                 result.RETURN_FLAG = resultA41.RETURN_FLAG;
                 result.DESCRIPTION = Message_Type.save_Success.GetDescription(Table_Type.A41.ToString());
@@ -370,9 +243,10 @@ namespace Transfer.Controllers
             try
             {
                 #region 抓Excel檔案 轉成 model
+
                 // Excel 檔案位置
                 DateTime startTime = DateTime.Now;
-                string projectFile = Server.MapPath("~/"+SetFile.FileUploads);
+                string projectFile = Server.MapPath("~/" + SetFile.FileUploads);
                 string fileName = string.Empty;
                 if (Cache.IsSet(CacheList.A42ExcelName))
                     fileName = (string)Cache.Get(CacheList.A42ExcelName);  //從Cache 抓資料
@@ -388,25 +262,30 @@ namespace Transfer.Controllers
 
                 string pathType = path.Split('.')[1]; //抓副檔名
                 List<A42ViewModel> dataModel = A4Repository.getA42Excel(pathType, stream, processingDate, reportDate); //Excel轉成 A42ViewModel
-                #endregion
+
+                #endregion 抓Excel檔案 轉成 model
 
                 #region txtlog 檔案名稱
+
                 string txtpath = SetFile.A42TransferTxtLog; //預設txt名稱
                 string configTxtName = ConfigurationManager.AppSettings["txtLogA42Name"];
                 if (!string.IsNullOrWhiteSpace(configTxtName))
                 {
                     txtpath = configTxtName; //有設定webConfig且不為空就取代
                 }
-                #endregion
+
+                #endregion txtlog 檔案名稱
 
                 #region save Treasury_Securities_Info(A42)
+
                 MSGReturnModel resultA42 = A4Repository.saveA42(dataModel); //save to DB
 
                 bool A42Log = CommonFunction.saveLog(Table_Type.A42,
                                                       fileName, SetFile.ProgramName, resultA42.RETURN_FLAG,
                                                       Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
                 TxtLog.txtLog(Table_Type.A42, resultA42.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
-                #endregion
+
+                #endregion save Treasury_Securities_Info(A42)
 
                 result.RETURN_FLAG = resultA42.RETURN_FLAG;
                 result.DESCRIPTION = Message_Type.save_Success
@@ -428,48 +307,6 @@ namespace Transfer.Controllers
         }
 
         /// <summary>
-        /// 前端抓資料時呼叫
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        [HttpPost]
-        public JsonResult GetData(string type,string searchType,string value,string date)
-        {
-            MSGReturnModel result = new MSGReturnModel();
-            result.RETURN_FLAG = false;
-            result.DESCRIPTION = Message_Type.not_Find_Any.GetDescription(type);
-
-            DateTime d = new DateTime();
-
-            if (!DateTime.TryParse(date, out d))
-            {
-                result.DESCRIPTION = Message_Type.parameter_Error.GetDescription();
-                return Json(result);
-            }
-                
-            try
-            {
-                switch (type)
-                {
-                    case "A41":
-                            var A41Data = A4Repository.GetA41(searchType, value,d);
-                            result.RETURN_FLAG = A41Data.Item1;
-                            Cache.Invalidate(CacheList.A41DbfileData); //清除
-                            Cache.Set(CacheList.A41DbfileData, A41Data.Item2, 15); //把資料存到 Cache
-                        if (!result.RETURN_FLAG)
-                            result.DESCRIPTION = Message_Type.not_Find_Any.GetDescription();
-                        break;
-                }
-            }
-            catch (Exception ex)
-            {
-                result.RETURN_FLAG = false;
-                result.DESCRIPTION = Message_Type.not_Find_Any.GetDescription(type, ex.Message);
-            }
-            return Json(result);
-        }
-
-        /// <summary>
         /// 前端轉檔一系列動作
         /// </summary>
         /// <param name="type">目前要轉檔的表名</param>
@@ -479,7 +316,7 @@ namespace Transfer.Controllers
         /// <param name="debt">M:房貸 B:債券</param>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult TransferToOther(string type, string date, string version, bool next,string debt)
+        public JsonResult TransferToOther(string type, string date, string version, bool next, string debt)
         {
             MSGReturnModel result = new MSGReturnModel();
 
@@ -509,13 +346,14 @@ namespace Transfer.Controllers
                 case "All": //All 也是重B01開始 B01 => C01
                 case "B01":
                     result = A4Repository.saveB01(version, dat, debt);
-                    bool B01Log = CommonFunction.saveLog(Table_Type.B01, fileName, SetFile.ProgramName, 
+                    bool B01Log = CommonFunction.saveLog(Table_Type.B01, fileName, SetFile.ProgramName,
                         result.RETURN_FLAG, debt, startTime, DateTime.Now); //寫sql Log
                     result.Datas = Json(transferMessage(next, Transfer_Table_Type.C01.ToString())); //回傳要不要做下一個transfer
                     break;
+
                 case "C01":
                     result = A4Repository.saveC01(version, dat, debt);
-                    bool C01Log = CommonFunction.saveLog(Table_Type.C01, fileName, SetFile.ProgramName, 
+                    bool C01Log = CommonFunction.saveLog(Table_Type.C01, fileName, SetFile.ProgramName,
                         result.RETURN_FLAG, debt, startTime, DateTime.Now); //寫sql Log
                     result.Datas = Json(transferMessage(false, string.Empty)); //目前到C01 而已
                     break;
@@ -524,26 +362,216 @@ namespace Transfer.Controllers
         }
 
         /// <summary>
-        /// 抓取資料庫最後一天日期log Data
+        /// 選擇檔案後點選資料上傳觸發
         /// </summary>
-        /// <returns></returns>
+        /// <param name="FileModel"></param>
+        /// <returns>MSGReturnModel</returns>
         [HttpPost]
-        public JsonResult GetLogData(string debt)
+        public JsonResult Upload(ValidateFiles FileModel)
         {
-            List<string> logDatas = A4Repository.GetLogData(selects.ToList(), debt);
-            return Json(string.Join(",",logDatas));
+            MSGReturnModel result = new MSGReturnModel();
+            try
+            {
+                #region 前端無傳送檔案進來
+
+                if (FileModel.File == null)
+                {
+                    result.RETURN_FLAG = false;
+                    result.DESCRIPTION = Message_Type.upload_Not_Find.GetDescription();
+                    return Json(result);
+                }
+
+                #endregion 前端無傳送檔案進來
+
+                #region 前端檔案大小不符或不為Excel檔案(驗證)
+
+                //ModelState
+                if (!ModelState.IsValid)
+                {
+                    result.RETURN_FLAG = false;
+                    result.DESCRIPTION = Message_Type.excel_Validate.GetDescription();
+                    return Json(result);
+                }
+
+                #endregion 前端檔案大小不符或不為Excel檔案(驗證)
+
+                #region 上傳檔案
+
+                string pathType = Path.GetExtension(FileModel.File.FileName)
+                                       .Substring(1); //上傳的檔案類型
+
+                var fileName = string.Format("{0}.{1}",
+                    Excel_UploadName.A41.GetDescription(),
+                    pathType); //固定轉成此名稱
+
+                Cache.Invalidate(CacheList.A41ExcelName); //清除 Cache
+                Cache.Set(CacheList.A41ExcelName, fileName, 15); //把資料存到 Cache
+
+                #region 檢查是否有FileUploads資料夾,如果沒有就新增 並加入 excel 檔案
+
+                string projectFile = Server.MapPath("~/" + SetFile.FileUploads); //專案資料夾
+                string path = Path.Combine(projectFile, fileName);
+
+                FileRelated.createFile(projectFile); //檢查是否有FileUploads資料夾,如果沒有就新增
+
+                //呼叫上傳檔案 function
+                result = FileRelated.FileUpLoadinPath(path, FileModel.File);
+                if (!result.RETURN_FLAG)
+                    return Json(result);
+
+                #endregion 檢查是否有FileUploads資料夾,如果沒有就新增 並加入 excel 檔案
+
+                #region 讀取Excel資料 使用ExcelDataReader 並且組成 json
+
+                var stream = FileModel.File.InputStream;
+                List<A41ViewModel> dataModel = A4Repository.getExcel(pathType, stream);
+                if (dataModel.Count > 0)
+                {
+                    result.RETURN_FLAG = true;
+                    Cache.Invalidate(CacheList.A41ExcelfileData); //清除 Cache
+                    Cache.Set(CacheList.A41ExcelfileData, dataModel, 15); //把資料存到 Cache
+                }
+                else
+                {
+                    result.RETURN_FLAG = false;
+                    result.DESCRIPTION = Message_Type.data_Not_Compare.GetDescription();
+                }
+
+                #endregion 讀取Excel資料 使用ExcelDataReader 並且組成 json
+
+                #endregion 上傳檔案
+            }
+            catch (Exception ex)
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = ex.Message;
+            }
+            return Json(result);
         }
 
         /// <summary>
-        /// 判斷轉檔有沒有後續 
+        /// 選擇檔案後點選資料上傳觸發
+        /// </summary>
+        /// <returns>MSGReturnModel</returns>
+        [HttpPost]
+        public JsonResult UploadA42()
+        {
+            MSGReturnModel result = new MSGReturnModel();
+
+            //## 如果有任何檔案類型才做
+            if (Request.Files.AllKeys.Any())
+            {
+                var FileModel = Request.Files["UploadedFile"];
+                string processingDate = Request.Form["processingDate"];
+                string reportDate = Request.Form["reportDate"];
+
+                try
+                {
+                    #region 前端無傳送檔案進來
+
+                    if (FileModel == null)
+                    {
+                        result.RETURN_FLAG = false;
+                        result.DESCRIPTION = Message_Type.upload_Not_Find.GetDescription();
+                        return Json(result);
+                    }
+
+                    #endregion 前端無傳送檔案進來
+
+                    #region 前端檔案大小不符或不為Excel檔案(驗證)
+
+                    //ModelState
+                    if (!ModelState.IsValid)
+                    {
+                        result.RETURN_FLAG = false;
+                        result.DESCRIPTION = Message_Type.excel_Validate.GetDescription();
+                        return Json(result);
+                    }
+                    else
+                    {
+                        string ExtensionName = Path.GetExtension(FileModel.FileName).ToLower();
+                        if (ExtensionName != ".xls" && ExtensionName != ".xlsx")
+                        {
+                            result.RETURN_FLAG = false;
+                            result.DESCRIPTION = Message_Type.excel_Validate.GetDescription();
+                            return Json(result);
+                        }
+                    }
+
+                    #endregion 前端檔案大小不符或不為Excel檔案(驗證)
+
+                    #region 上傳檔案
+
+                    string pathType = Path.GetExtension(FileModel.FileName)
+                       .Substring(1); //上傳的檔案類型
+
+                    var fileName = string.Format("{0}.{1}",
+                        Excel_UploadName.A42.GetDescription(),
+                        pathType); //固定轉成此名稱
+
+                    Cache.Invalidate(CacheList.A42ExcelName); //清除 Cache
+                    Cache.Set(CacheList.A42ExcelName, fileName, 15); //把資料存到 Cache
+
+                    #region 檢查是否有FileUploads資料夾,如果沒有就新增 並加入 excel 檔案
+
+                    string projectFile = Server.MapPath("~/" + SetFile.FileUploads); //專案資料夾
+                    string path = Path.Combine(projectFile, fileName);
+
+                    FileRelated.createFile(projectFile); //檢查是否有FileUploads資料夾,如果沒有就新增
+
+                    //呼叫上傳檔案 function
+                    result = FileRelated.FileUpLoadinPath(path, FileModel);
+                    if (!result.RETURN_FLAG)
+                    {
+                        return Json(result);
+                    }
+
+                    #endregion 檢查是否有FileUploads資料夾,如果沒有就新增 並加入 excel 檔案
+
+                    #region 讀取Excel資料 使用ExcelDataReader 並且組成 json
+
+                    var stream = FileModel.InputStream;
+                    List<A42ViewModel> dataModel = A4Repository.getA42Excel(pathType, stream, processingDate, reportDate);
+                    if (dataModel.Count > 0)
+                    {
+                        result.RETURN_FLAG = true;
+                        result.Datas = Json(dataModel); //給JqGrid 顯示
+                    }
+                    else
+                    {
+                        result.RETURN_FLAG = false;
+                        result.DESCRIPTION = Message_Type.data_Not_Compare.GetDescription();
+                    }
+
+                    #endregion 讀取Excel資料 使用ExcelDataReader 並且組成 json
+
+                    #endregion 上傳檔案
+                }
+                catch (Exception ex)
+                {
+                    result.RETURN_FLAG = false;
+                    result.DESCRIPTION = ex.Message;
+                }
+            }
+            else
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = Message_Type.upload_Not_Find.GetDescription();
+                return Json(result);
+            }
+
+            return Json(result);
+        }
+
+        /// <summary>
+        /// 判斷轉檔有沒有後續
         /// </summary>
         /// <param name="next"></param>
         /// <param name="nextType"></param>
         /// <returns></returns>
-        private string transferMessage(bool next,string nextType )
+        private string transferMessage(bool next, string nextType)
         {
             return next ? "true," + nextType : "false";
         }
-
     }
 }

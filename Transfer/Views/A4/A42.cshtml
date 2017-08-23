@@ -21,13 +21,13 @@
                 <tr>
                     <td>
                         @using (Ajax.BeginForm("UploadA42", "A4",
-                         new AjaxOptions { HttpMethod = "POST" },
-                         new { enctype = "multipart/form-data", @id = "form0" }))
-                         {
+             new AjaxOptions { HttpMethod = "POST" },
+             new { enctype = "multipart/form-data", @id = "form0" }))
+                        {
                             <table>
                                 <tr>
-                                    <td >
-                                        <input type="file" id="file" name="file"  class="filestyle" data-buttonName="btn-primary" data-buttonText="轉檔檔案" />
+                                    <td>
+                                        <input type="file" id="file" name="file" class="filestyle" data-buttonName="btn-primary" data-buttonText="轉檔檔案" />
                                     </td>
                                     <td style="text-align:right">
                                         評估基準日/報導日:
@@ -37,7 +37,7 @@
                                     </td>
                                 </tr>
                             </table>
-                         }
+                        }
                     </td>
                 </tr>
                 <tr>
@@ -90,13 +90,12 @@
         //#endregion 註冊click事件
 
         //#region fileSubmitFunction (把檔案上傳到指定資料夾)
-        function fileSubmitFunction()
-        {
+        function fileSubmitFunction() {
             var d = new Date();
             var month = d.getMonth() + 1;
             var day = d.getDate();
             var processingDate = d.getFullYear() + '/' + (month < 10 ? '0' : '') + month + '/' + (day < 10 ? '0' : '') + day;
-            
+
             var reportDate = $('#Report_Date').val();
 
             verified.datepicker("form0", "Report_Date", true, reportDate);
@@ -117,7 +116,7 @@
                 }
 
                 clearJqgrid();
-                
+
                 $.ajax({
                     type: "POST",
                     url: action,
@@ -157,8 +156,7 @@
         //#endregion fileSubmitFunction
 
         //#region clearJqgrid (清除JqGrid)
-        function clearJqgrid()
-        {
+        function clearJqgrid() {
             $('#jqgridDiv').children().remove();
         }
         //#endregion clearJqgrid
@@ -188,7 +186,7 @@
                                     { name: "Amort_value", index: "Amort_value", width: '90', align: 'right' },
                                     { name: "Processing_Date", index: "Processing_Date", width: '100', align: 'center' },
                                     { name: "Report_Date", index: "Report_Date", width: '130', align: 'center' }
-                                ];
+                ];
 
                 colNameArray =
                             ['債券編號', 'Lots', '債券(資產)名稱',

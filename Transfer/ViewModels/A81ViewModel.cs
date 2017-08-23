@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Web;
+﻿using System.Runtime.Serialization;
 
 namespace Transfer.ViewModels
 {
@@ -13,20 +9,27 @@ namespace Transfer.ViewModels
     public class A81ViewModel
     {
         [DataMember]
-        public string Trailing_12m_Ending { get; set; }
-        [DataMember]
         public string Actual_Allcorp { get; set; }
-        [DataMember]
-        public string Baseline_forecast_Allcorp { get; set; }
-        [DataMember]
-        public string Pessimistic_Forecast_Allcorp { get; set; }
+
         [DataMember]
         public string Actual_SG { get; set; }
+
+        [DataMember]
+        public string Baseline_forecast_Allcorp { get; set; }
+
         [DataMember]
         public string Baseline_forecast_SG { get; set; }
-        [DataMember]
-        public string Pessimistic_Forecast_SG { get; set; }
+
         [DataMember]
         public string Data_Year { get; set; }
+
+        [DataMember]
+        public string Pessimistic_Forecast_Allcorp { get; set; }
+
+        [DataMember]
+        public string Pessimistic_Forecast_SG { get; set; }
+
+        [DataMember]
+        public string Trailing_12m_Ending { get; set; }
     }
 }

@@ -12,26 +12,27 @@ namespace Transfer.Models.Repository
     public class D0Repository : ID0Repository, IDbEvent
     {
         #region 其他
-        protected IFRS9Entities db
-        {
-            get;
-            private set;
-        }
 
         public D0Repository()
         {
             this.db = new IFRS9Entities();
         }
 
-        public void SaveChange()
+        protected IFRS9Entities db
         {
-            throw new NotImplementedException();
+            get;
+            private set;
         }
 
         public void Dispose()
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
+        }
+
+        public void SaveChange()
+        {
+            throw new NotImplementedException();
         }
 
         protected virtual void Dispose(bool disposing)
@@ -45,29 +46,10 @@ namespace Transfer.Models.Repository
                 }
             }
         }
-        #endregion
+
+        #endregion 其他
 
         #region Get Data
-        /// <summary>
-        /// get D05 all data
-        /// </summary>
-        /// <returns></returns>
-        public Tuple<bool, List<D05ViewModel>> getD05All()
-        {
-            if (db.Group_Product_Code_Mapping.Any())
-            {
-                return new Tuple<bool, List<D05ViewModel>>
-                (
-                    true,
-                    (
-                        from q in db.Group_Product_Code_Mapping.AsEnumerable().OrderBy(x => x.Group_Product_Code).ThenBy(x => x.Product_Code)
-                        select DbToD05ViewModel(q)
-                    ).ToList()
-                );
-            }
-
-            return new Tuple<bool, List<D05ViewModel>>(true, new List<D05ViewModel>());
-        }
 
         /// <summary>
         /// get D05 data
@@ -79,7 +61,7 @@ namespace Transfer.Models.Repository
             {
                 var query = from q in db.Group_Product_Code_Mapping
                             select q;
-                 
+
                 if (groupProductCode != "")
                 {
                     query = query.Where(x => x.Group_Product_Code.Contains(groupProductCode));
@@ -101,15 +83,38 @@ namespace Transfer.Models.Repository
                     query = query.Where(x => x.Processing_Date == dProcessDate);
                 }
 
-                return new Tuple<bool, List<D05ViewModel>>((query.Count() > 0 ? true:false), 
+                return new Tuple<bool, List<D05ViewModel>>((query.Count() > 0 ? true : false),
                     query.AsEnumerable().OrderBy(x => x.Group_Product_Code).ThenBy(x => x.Product_Code).Select(x => { return DbToD05ViewModel(x); }).ToList());
             }
 
             return new Tuple<bool, List<D05ViewModel>>(false, new List<D05ViewModel>());
         }
-        #endregion
+
+        /// <summary>
+        /// get D05 all data
+        /// </summary>
+        /// <returns></returns>
+        public Tuple<bool, List<D05ViewModel>> getD05All()
+        {
+            if (db.Group_Product_Code_Mapping.Any())
+            {
+                return new Tuple<bool, List<D05ViewModel>>
+                (
+                    true,
+                    (
+                        from q in db.Group_Product_Code_Mapping.AsEnumerable().OrderBy(x => x.Group_Product_Code).ThenBy(x => x.Product_Code)
+                        select DbToD05ViewModel(q)
+                    ).ToList()
+                );
+            }
+
+            return new Tuple<bool, List<D05ViewModel>>(true, new List<D05ViewModel>());
+        }
+
+        #endregion Get Data
 
         #region Db 組成 D05ViewModel
+
         /// <summary>
         /// Db 組成 D05ViewModel
         /// </summary>
@@ -125,9 +130,11 @@ namespace Transfer.Models.Repository
                 Processing_Date = TypeTransfer.dateTimeNToString(data.Processing_Date)
             };
         }
-        #endregion
+
+        #endregion Db 組成 D05ViewModel
 
         #region Save D05
+
         /// <summary>
         /// D05 save db
         /// </summary>
@@ -180,9 +187,11 @@ namespace Transfer.Models.Repository
 
             return result;
         }
-        #endregion
+
+        #endregion Save D05
 
         #region Delete D05
+
         /// <summary>
         /// D05 delete db
         /// </summary>
@@ -208,7 +217,7 @@ namespace Transfer.Models.Repository
 
             return result;
         }
-        #endregion
 
+        #endregion Delete D05
     }
 }

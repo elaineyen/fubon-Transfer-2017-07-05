@@ -8,20 +8,19 @@ namespace Transfer.Utility
     {
         public static object modelToJqgridResult<T>(
             this jqGridParam jdata,
-            List<T> data) 
+            List<T> data)
         {
             if (0.Equals(data.Count))
-            return new
-            {
-                total = 1,
-                page = 1,
-                records = 0,
-            };
+                return new
+                {
+                    total = 1,
+                    page = 1,
+                    records = 0,
+                };
             if (jdata._search)
             {
                 switch (jdata.searchOper)
                 {
-
                     case "ne": //不等於
                         data = data.Where(x =>
                                 typeof(T).GetProperty(jdata.searchField)
@@ -48,7 +47,7 @@ namespace Transfer.Utility
                     //    break;
                     //case "ni": //不在其中
                     //    break;
-                    case "eq": //等於                       
+                    case "eq": //等於
                     default:
                         data = data.Where(x =>
                                 typeof(T).GetProperty(jdata.searchField)
@@ -57,7 +56,6 @@ namespace Transfer.Utility
                         break;
                 }
             }
-
 
             var count = data.Count;
             int pageIndex = jdata.page;
@@ -71,17 +69,17 @@ namespace Transfer.Utility
                 page = pageIndex,
                 records = count,
                 rows =
-                 !jdata.sidx.IsNullOrWhiteSpace() ? 
+                 !jdata.sidx.IsNullOrWhiteSpace() ?
                  (
                      "asc".Equals(jdata.sord) ?
                      data.Skip((pageIndex - 1) * pageSize).Take(pageSize)
-                     .OrderBy(x=> typeof(T).GetProperty(jdata.sidx).GetValue(x,null))
+                     .OrderBy(x => typeof(T).GetProperty(jdata.sidx).GetValue(x, null))
                      :
                       data.Skip((pageIndex - 1) * pageSize).Take(pageSize)
                      .OrderByDescending(x => typeof(T).GetProperty(jdata.sidx).GetValue(x, null))
                  ) :
                 data.Skip((pageIndex - 1) * pageSize).Take(pageSize)
-            };    
+            };
         }
     }
 }

@@ -4,7 +4,7 @@
     ViewBag.Title = "A8 查詢(A81.A82.A83)";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="container" id="main" >
+<div class="container" id="main">
     <div class="row main_hand">
         <div class="col-md-12 main_hand_div">
             @*<h4>This is suppose to be in the main content</h4>*@
@@ -72,7 +72,7 @@
                     widthArray = ['L', 'M', 'L', 'L', 'M', 'L', 'L', 'M'];
                     width = '1030';
                     break;
-                case "A82": 
+                case "A82":
                     title = 'Moody_Quartly_PD_Info(A82)';
                     colNameArray = ['Data_Year', 'Year_Quartly', 'PD'];
                     widthArray = ['M', 'M', 'M'];
@@ -125,7 +125,7 @@
         {
             var colModelArray = [];
             var jagridLWidth = 210;
-            var jagridMWidth = 120;            
+            var jagridMWidth = 120;
             if (colNameArray.length > 0 && colNameArray.length === widthArray.length)
             {
                 for (let i = 0; i < colNameArray.length; i++)

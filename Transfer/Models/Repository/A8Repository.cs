@@ -12,10 +12,16 @@ using static Transfer.Enum.Ref;
 
 namespace Transfer.Models.Repository
 {
-    public class A8Repository : IA8Repository , IDbEvent
+    public class A8Repository : IA8Repository, IDbEvent
     {
         #region 其他
+
         private Common common = new Common();
+
+        public A8Repository()
+        {
+            this.db = new IFRS9Entities();
+        }
 
         protected IFRS9Entities db
         {
@@ -23,20 +29,15 @@ namespace Transfer.Models.Repository
             private set;
         }
 
-        public A8Repository()
+        public void Dispose()
         {
-            this.db = new IFRS9Entities();
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public void SaveChange()
         {
             db.SaveChanges();
-        }
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -50,11 +51,13 @@ namespace Transfer.Models.Repository
                 }
             }
         }
-        #endregion
+
+        #endregion 其他
 
         #region Get Data
 
         #region get Moody_Monthly_PD_Info(A81)
+
         /// <summary>
         /// get Moody_Monthly_PD_Info(A81)
         /// </summary>
@@ -63,28 +66,29 @@ namespace Transfer.Models.Repository
         {
             if (db.Moody_Monthly_PD_Info.Any())
             {
-  
-                 List<A81ViewModel> data =  (from item in db.Moody_Monthly_PD_Info.AsEnumerable()
-                     select new A81ViewModel() //轉型 Datetime
-                                 {
-                         Trailing_12m_Ending =
-                         item.Trailing_12m_Ending.HasValue ?
-                         item.Trailing_12m_Ending.Value.ToString("yyyy/MM/dd") : string.Empty,
-                         Actual_Allcorp = TypeTransfer.doubleNToString(item.Actual_Allcorp),
-                         Actual_SG = TypeTransfer.doubleNToString(item.Actual_SG),
-                         Baseline_forecast_Allcorp = TypeTransfer.doubleNToString(item.Baseline_forecast_Allcorp),
-                         Baseline_forecast_SG = TypeTransfer.doubleNToString(item.Baseline_forecast_SG),
-                         Pessimistic_Forecast_Allcorp = TypeTransfer.doubleNToString(item.Pessimistic_Forecast_Allcorp),
-                         Pessimistic_Forecast_SG = TypeTransfer.doubleNToString(item.Pessimistic_Forecast_SG),
-                         Data_Year = item.Data_Year
-                     }).ToList();
+                List<A81ViewModel> data = (from item in db.Moody_Monthly_PD_Info.AsEnumerable()
+                                           select new A81ViewModel() //轉型 Datetime
+                                           {
+                                               Trailing_12m_Ending =
+                                               item.Trailing_12m_Ending.HasValue ?
+                                               item.Trailing_12m_Ending.Value.ToString("yyyy/MM/dd") : string.Empty,
+                                               Actual_Allcorp = TypeTransfer.doubleNToString(item.Actual_Allcorp),
+                                               Actual_SG = TypeTransfer.doubleNToString(item.Actual_SG),
+                                               Baseline_forecast_Allcorp = TypeTransfer.doubleNToString(item.Baseline_forecast_Allcorp),
+                                               Baseline_forecast_SG = TypeTransfer.doubleNToString(item.Baseline_forecast_SG),
+                                               Pessimistic_Forecast_Allcorp = TypeTransfer.doubleNToString(item.Pessimistic_Forecast_Allcorp),
+                                               Pessimistic_Forecast_SG = TypeTransfer.doubleNToString(item.Pessimistic_Forecast_SG),
+                                               Data_Year = item.Data_Year
+                                           }).ToList();
                 return new Tuple<bool, List<A81ViewModel>>(true, data);
             }
             return new Tuple<bool, List<A81ViewModel>>(false, new List<A81ViewModel>());
         }
-        #endregion
+
+        #endregion get Moody_Monthly_PD_Info(A81)
 
         #region get Moody_Quartly_PD_Info(A82)
+
         /// <summary>
         /// get Moody_Quartly_PD_Info(A82)
         /// </summary>
@@ -97,9 +101,11 @@ namespace Transfer.Models.Repository
             }
             return new Tuple<bool, List<Moody_Quartly_PD_Info>>(false, new List<Moody_Quartly_PD_Info>());
         }
-        #endregion
+
+        #endregion get Moody_Quartly_PD_Info(A82)
 
         #region get Moody_Predit_PD_Info(A83)
+
         /// <summary>
         /// get Moody_Predit_PD_Info(A83)
         /// </summary>
@@ -112,11 +118,13 @@ namespace Transfer.Models.Repository
             }
             return new Tuple<bool, List<Moody_Predit_PD_Info>>(false, new List<Moody_Predit_PD_Info>());
         }
-        #endregion
 
-        #endregion
+        #endregion get Moody_Predit_PD_Info(A83)
+
+        #endregion Get Data
 
         #region Save Db
+
         /// <summary>
         /// save A81.A82.A83
         /// </summary>
@@ -125,7 +133,7 @@ namespace Transfer.Models.Repository
         /// <returns></returns>
         public MSGReturnModel SaveA8(string type, List<Exhibit10Model> dataModel)
         {
-            MSGReturnModel result = new MSGReturnModel();            
+            MSGReturnModel result = new MSGReturnModel();
             try
             {
                 List<string> A8Type = new List<string>() {
@@ -138,12 +146,14 @@ namespace Transfer.Models.Repository
                     result.DESCRIPTION = Message_Type.parameter_Error.GetDescription();
                     return result;
                 }
+
                 #region save Moody_Monthly_PD_Info(A81)
+
                 if (Table_Type.A81.ToString().Equals(type))
                 {
                     if (db.Moody_Monthly_PD_Info.Any())
-                    db.Moody_Monthly_PD_Info.RemoveRange(
-                        db.Moody_Monthly_PD_Info); //資料全刪除
+                        db.Moody_Monthly_PD_Info.RemoveRange(
+                            db.Moody_Monthly_PD_Info); //資料全刪除
                     int id = 1;
                     foreach (var item in dataModel)
                     {
@@ -168,8 +178,11 @@ namespace Transfer.Models.Repository
                         id += 1;
                     }
                 }
-                #endregion
+
+                #endregion save Moody_Monthly_PD_Info(A81)
+
                 #region save Moody_Quartly_PD_Info(A82)
+
                 if (Table_Type.A82.ToString().Equals(type))
                 {
                     if (db.Moody_Quartly_PD_Info.Any())
@@ -190,12 +203,15 @@ namespace Transfer.Models.Repository
                             case 3:
                                 quartly += "Q1";
                                 break;
+
                             case 6:
                                 quartly += "Q2";
                                 break;
+
                             case 9:
                                 quartly += "Q3";
                                 break;
+
                             case 12:
                                 quartly += "Q4";
                                 break;
@@ -213,8 +229,11 @@ namespace Transfer.Models.Repository
                         id += 1;
                     }
                 }
-                #endregion
+
+                #endregion save Moody_Quartly_PD_Info(A82)
+
                 #region save Moody_Predit_PD_Info(A83)
+
                 if (Table_Type.A83.ToString().Equals(type))
                 {
                     if (db.Moody_Predit_PD_Info.Any())
@@ -260,7 +279,9 @@ namespace Transfer.Models.Repository
                         PD = PD
                     });
                 }
-                #endregion
+
+                #endregion save Moody_Predit_PD_Info(A83)
+
                 SaveChange();
                 result.RETURN_FLAG = true;
                 result.DESCRIPTION = Message_Type.save_Success.GetDescription(type);
@@ -275,9 +296,11 @@ namespace Transfer.Models.Repository
             }
             return result;
         }
-        #endregion
+
+        #endregion Save Db
 
         #region Excel 部分
+
         /// <summary>
         /// 把Excel 資料轉換成 Exhibit10Model
         /// </summary>
@@ -296,6 +319,7 @@ namespace Transfer.Models.Repository
                     case "xls":
                         reader = ExcelReaderFactory.CreateBinaryReader(stream);
                         break;
+
                     case "xlsx":
                         reader = ExcelReaderFactory.CreateOpenXmlReader(stream);
                         break;
@@ -314,13 +338,14 @@ namespace Transfer.Models.Repository
             catch
             { }
             return dataModel;
-
         }
-        #endregion
+
+        #endregion Excel 部分
 
         #region Private Function
 
         #region datarow 組成 Exhibit10Model
+
         /// <summary>
         /// datarow 組成 Exhibit10Model
         /// </summary>
@@ -343,8 +368,9 @@ namespace Transfer.Models.Repository
                 Pessimistic_Forecast_SG = TypeTransfer.objToString(item[6])
             };
         }
-        #endregion
 
-        #endregion
+        #endregion datarow 組成 Exhibit10Model
+
+        #endregion Private Function
     }
 }

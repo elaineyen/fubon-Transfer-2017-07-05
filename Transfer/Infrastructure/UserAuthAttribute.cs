@@ -8,17 +8,18 @@ namespace Transfer.Infrastructure
 {
     public class UserAuthAttribute : AuthorizeAttribute
     {
-        protected IFRS9Entities db
-        {
-            get;
-            private set;
-        }
-
         private string _href;
+
         public UserAuthAttribute(string href)
         {
             _href = href;
             db = new IFRS9Entities();
+        }
+
+        protected IFRS9Entities db
+        {
+            get;
+            private set;
         }
 
         protected override bool AuthorizeCore(HttpContextBase httpContext)

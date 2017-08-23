@@ -1,24 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using Transfer.Infrastructure;
 using Transfer.Models.Interface;
 using Transfer.Models.Repository;
 using Transfer.Utility;
-using Transfer.ViewModels;
 using static Transfer.Enum.Ref;
 
 namespace Transfer.Controllers
 {
-
     [Authorize]
     public class A5Controller : CommonController
     {
         private ICommon CommonFunction;
-        public ICacheProvider Cache { get; set; }
         private List<SelectOption> searchOption = null;
         private List<string> sType = new List<string>() { "購買日評等", "基準日最近評等" };
+
         public A5Controller()
         {
             //this.A4Repository = new A4Repository();
@@ -33,6 +30,8 @@ namespace Transfer.Controllers
                         }));
         }
 
+        public ICacheProvider Cache { get; set; }
+
         /// <summary>
         /// A41(債券明細檔)
         /// </summary>
@@ -41,7 +40,7 @@ namespace Transfer.Controllers
         public ActionResult A57Detail()
         {
             ViewBag.searchOption = new SelectList(searchOption, "Value", "Text");
-            
+
             ViewBag.sType = new SelectList(
                 sType.Select(x => new { Text = x, Value = x }), "Value", "Text");
             return View();
@@ -59,8 +58,5 @@ namespace Transfer.Controllers
                 sType.Select(x => new { Text = x, Value = x }), "Value", "Text");
             return View();
         }
-
-
-
     }
 }

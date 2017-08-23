@@ -9,6 +9,38 @@ namespace Transfer.Models.Interface
     public interface IA7Repository
     {
         /// <summary>
+        /// 下載 Excel
+        /// </summary>
+        /// <param name="type">(A72.A73)</param>
+        /// <param name="path">下載位置</param>
+        /// <returns></returns>
+        MSGReturnModel DownLoadExcel(string type, string path);
+
+        /// <summary>
+        /// Get A51 Data
+        /// </summary>
+        /// <returns></returns>
+        Tuple<bool, List<Grade_Moody_Info>> GetA51();
+
+        /// <summary>
+        /// Get A71 Data
+        /// </summary>
+        /// <returns></returns>
+        Tuple<bool, List<Moody_Tm_YYYY>> GetA71();
+
+        /// <summary>
+        /// Get A71 Data
+        /// </summary>
+        /// <returns></returns>
+        Tuple<bool, List<object>> GetA72();
+
+        /// <summary>
+        /// Get A73 Data
+        /// </summary>
+        /// <returns></returns>
+        Tuple<bool, List<object>> GetA73();
+
+        /// <summary>
         /// Excel資料 轉 Exhibit29Model
         /// </summary>
         /// <param name="pathType"></param>
@@ -17,12 +49,11 @@ namespace Transfer.Models.Interface
         List<Exhibit29Model> getExcel(string pathType, Stream stream);
 
         /// <summary>
-        /// 下載 Excel
+        /// save A51 To Db
         /// </summary>
-        /// <param name="type">(A72.A73)</param>
-        /// <param name="path">下載位置</param>
+        /// <param name="dataModel"></param>
         /// <returns></returns>
-        MSGReturnModel DownLoadExcel(string type, string path);
+        MSGReturnModel saveA51();
 
         /// <summary>
         /// save A71 To Db
@@ -44,36 +75,5 @@ namespace Transfer.Models.Interface
         /// <param name="dataModel"></param>
         /// <returns></returns>
         MSGReturnModel saveA73();
-
-        /// <summary>
-        /// save A51 To Db
-        /// </summary>
-        /// <param name="dataModel"></param>
-        /// <returns></returns>
-        MSGReturnModel saveA51();
-
-        /// <summary>
-        /// Get A71 Data
-        /// </summary>
-        /// <returns></returns>
-        Tuple<bool, List<Moody_Tm_YYYY>> GetA71();
-
-        /// <summary>
-        /// Get A71 Data
-        /// </summary>
-        /// <returns></returns>
-        Tuple<bool, List<object>> GetA72();
-
-        /// <summary>
-        /// Get A73 Data
-        /// </summary>
-        /// <returns></returns>
-        Tuple<bool, List<object>> GetA73();
-
-        /// <summary>
-        /// Get A51 Data
-        /// </summary>
-        /// <returns></returns>
-        Tuple<bool, List<Grade_Moody_Info>> GetA51();
     }
 }

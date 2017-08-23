@@ -4,10 +4,10 @@
     ViewBag.Title = "A71 (轉移矩陣資料檔_Moody)";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="container" id="main" >
+<div class="container" id="main">
     <div class="row main_hand">
         <div class="col-md-12 main_hand_div">
-                <input type="button" class="btn btn-primary" value="A71查詢" id="btnA71Search" />
+            <input type="button" class="btn btn-primary" value="A71查詢" id="btnA71Search" />
         </div>
     </div>
     <div class="row main_body" style="overflow:auto;height:100%">
@@ -40,18 +40,16 @@
         //#endregion 註冊click事件
 
         //#region 去controller 撈取資料並且用JqGrid套件顯示
-        function showJqgrid(type)
-        {
+        function showJqgrid(type) {
             clearJqgrid();
             var title = ''; //標頭
             var colNameArray = []; //每個欄位名稱要對應傳入資料屬性
-            var data ; // json Data 由Ajax 拿到
-            switch (type)
-            {
+            var data; // json Data 由Ajax 拿到
+            switch (type) {
                 case "A71":
                     title = 'Moody_Tm_YYYY(A71)';
                     colNameArray = ['From_To', 'Aaa', 'Aa1', 'Aa2',
-                             'Aa3', 'A1','A2','A3',
+                             'Aa3', 'A1', 'A2', 'A3',
                              'Baa1', 'Baa2', 'Baa3',
                              'Ba1', 'Ba2', 'Ba3',
                              'B1', 'B2', 'B3',
@@ -81,8 +79,7 @@
         //#endregion
 
         //#region clearJqgrid (清除JqGrid)
-        function clearJqgrid()
-        {
+        function clearJqgrid() {
             $('#jqgridDiv').children().remove();
         }
         //#endregion clearJqgrid
@@ -105,9 +102,8 @@
                         index: colNameArray[i],
                         width: jagridMWidth
                     }
-                    
-                    if (colNameArray[i].indexOf("From_To") > -1)
-                    {
+
+                    if (colNameArray[i].indexOf("From_To") > -1) {
                         $.extend(obj, { frozen: true }, { sortable: false });
                         colNameArray[i] = colNameArray[i].replace("_", "&#8260") + ':'; // _ => /
                     }
@@ -121,7 +117,7 @@
                 }
 
                 $('#jqgridDiv').append('<table id="' + listId + '"></table>');
-                $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');                
+                $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');
                 $("#" + listId).jqGrid({
                     data: data,
                     datatype: "local",
@@ -143,7 +139,7 @@
                     autoencode: true,
                     viewsortcols: [true, 'vertical', true],
                     ajaxRowOptions: { contentType: "application/json" },
-                    viewrecords: true ,
+                    viewrecords: true,
                     serializeRowData: function (data) {
                         return JSON.stringify(data);
                     },

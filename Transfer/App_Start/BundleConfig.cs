@@ -1,5 +1,4 @@
-﻿using System.Web;
-using System.Web.Optimization;
+﻿using System.Web.Optimization;
 
 namespace Transfer
 {
@@ -9,7 +8,7 @@ namespace Transfer
         public static void RegisterBundles(BundleCollection bundles)
         {
             bundles.Add(new ScriptBundle("~/bundles/jquery").Include(
-                        "~/Scripts/jquery-{version}.js",                       
+                        "~/Scripts/jquery-{version}.js",
                         "~/Scripts/jquery.blockUI.js",
                         "~/Scripts/message.js"));
 
@@ -41,7 +40,7 @@ namespace Transfer
             bundles.Add(new ScriptBundle("~/bundles/jqueryUI").Include(
                       "~/Scripts/jquery-ui-1.10.0.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/Sidebar").Include(                    
+            bundles.Add(new ScriptBundle("~/bundles/Sidebar").Include(
                       "~/Scripts/Sidebar.js"));
 
             bundles.Add(new StyleBundle("~/Content/css").Include(

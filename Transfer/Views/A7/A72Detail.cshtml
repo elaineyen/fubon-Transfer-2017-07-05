@@ -4,11 +4,11 @@
     ViewBag.Title = "A72 (轉移矩陣資料檔_調整後)";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<div class="container" id="main" >
+<div class="container" id="main">
     <div class="row main_hand">
         <div class="col-md-12 main_hand_div">
-                <input type="button" class="btn btn-primary" value="A72查詢" id="btnA72Search" />
-                <input type="button" class="btn btn-primary" value="下載Excel" id="btnA72Dl" disabled/>
+            <input type="button" class="btn btn-primary" value="A72查詢" id="btnA72Search" />
+            <input type="button" class="btn btn-primary" value="下載Excel" id="btnA72Dl" disabled />
         </div>
     </div>
     <div class="row main_body" style="overflow:auto;height:100%">
@@ -44,8 +44,7 @@
         //#endregion 註冊click事件
 
         //#region 下載Excel 檔案
-        function dlExcel(type)
-        {
+        function dlExcel(type) {
             $.ajax({
                 type: "POST",
                 data: JSON.stringify({
@@ -56,9 +55,8 @@
                 contentType: 'application/json'
             })
             .done(function (result) {
-                if (result.RETURN_FLAG)
-                {
-                    window.location.href = "@Url.RouteUrl(new 
+                if (result.RETURN_FLAG) {
+                    window.location.href = "@Url.RouteUrl(new
                     { Controller = "A7", Action = "DownloadExcecl"})/?type=" + type;
                 }
                 else
@@ -68,15 +66,13 @@
         //#endregion 下載Excel 檔案
 
         //#region 去controller 撈取資料並且用JqGrid套件顯示
-        function showJqgrid(type)
-        {
+        function showJqgrid(type) {
             clearJqgrid();
             var title = ''; //標頭
             var colNameArray = []; //每個欄位名稱要對應傳入資料屬性
             var widthArray = []; //每個欄位大小 L,M
-            var data ; // json Data 由Ajax 拿到
-            switch (type)
-            {
+            var data; // json Data 由Ajax 拿到
+            switch (type) {
                 case "A72":
                     title = 'Tm_Adjust_YYYY(A72)';
                     break;
@@ -90,7 +86,7 @@
                 url: url.getData,
                 contentType: 'application/json'
             })
-            .done(function (result) {               
+            .done(function (result) {
                 if (result.RETURN_FLAG) {
                     data = result.Datas.Data;
                     $('#btnA72Dl').prop('disabled', false);
@@ -104,8 +100,7 @@
         //#endregion
 
         //#region clearJqgrid (清除JqGrid)
-        function clearJqgrid()
-        {
+        function clearJqgrid() {
             $('#jqgridDiv').children().remove();
         }
         //#endregion clearJqgrid
@@ -115,28 +110,24 @@
         //pagerId (下方產生筆數的ID)
         //data (要秀的資料Json型別Data)
         //title (標題)
-        function createJqgrid(listId, pagerId,data,title)
-        {             
+        function createJqgrid(listId, pagerId, data, title) {
             var jagridMWidth = 80; //寬度
             var colModelArray = [];
             var colNameArray = data[0]; //欄位Title 由第一筆資料取的
-            if (data.length > 0)
-            {                           
-                for (let i = 0; i < colNameArray.length; i++)
-                {
+            if (data.length > 0) {
+                for (let i = 0; i < colNameArray.length; i++) {
                     var obj = {
                         name: colNameArray[i],
                         index: colNameArray[i],
                         width: jagridMWidth
                     }
-                    if (colNameArray[i].indexOf("TM") > -1)
-                    {
+                    if (colNameArray[i].indexOf("TM") > -1) {
                         $.extend(obj, { frozen: true }, { sortable: false });
                     }
                     colModelArray.push(obj);
                 }
                 $('#jqgridDiv').append('<table id="' + listId + '"></table>');
-                $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');              
+                $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');
                 $("#" + listId).jqGrid({
                     data: data.slice(1), //資料為第二筆以後
                     datatype: "local",

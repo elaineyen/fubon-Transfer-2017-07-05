@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel;
-using System.Xml.Serialization;
 
 namespace Transfer.Enum
 {
@@ -17,7 +16,7 @@ namespace Transfer.Enum
             /// 債券
             /// </summary>
             [Description("Bonds")]
-            B, 
+            B,
         }
     }
 }

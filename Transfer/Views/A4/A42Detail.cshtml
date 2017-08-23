@@ -12,7 +12,7 @@
 
     .error {
         /*border-color: red;*/
-        color:red;
+        color: red;
     }
 </style>
 <div class="container" id="main">
@@ -37,7 +37,7 @@
                            (SelectList)ViewBag.selectOption,
                             new { @class = "form-control", @style = "display:inline-block" })
                         </td>
-                        <td style="padding-top:10px"> 
+                        <td style="padding-top:10px">
                             <input type="button" class="btn btn-primary" value="轉檔" id="btnA42Transfer" />
                         </td>
                     </tr>
@@ -90,7 +90,7 @@
 
             verified.required('myFrom', 'version', message.required(message.version));
             verified.datepicker('myFrom', 'datepicker', true, date);
-            
+
             if ($('#myFrom').valid()) {
                 callTransfer(type, version, date, type === "All")
             }
@@ -111,7 +111,7 @@
                 dataType: "json",
                 url: url.transfer,
                 contentType: 'application/json',
-                
+
             })
             .done(function (result) {
                 getLog(debt);

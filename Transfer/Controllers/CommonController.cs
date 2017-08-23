@@ -8,7 +8,6 @@ namespace Transfer.Controllers
     [Authorize]
     public class CommonController : Controller
     {
-
         protected class SelectOption
         {
             public string text { get; set; }
@@ -16,11 +15,12 @@ namespace Transfer.Controllers
         }
 
         #region txtlog 設定位置
+
         protected string txtLocation(string path)
         {
             try
             {
-                string projectFile = Server.MapPath("~/"+SetFile.FileUploads); //預設txt位置
+                string projectFile = Server.MapPath("~/" + SetFile.FileUploads); //預設txt位置
                 string configTxtLocation = ConfigurationManager.AppSettings["txtLogLocation"];
                 if (!string.IsNullOrWhiteSpace(configTxtLocation))
                     projectFile = configTxtLocation; //有設定webConfig且不為空就取代
@@ -33,14 +33,16 @@ namespace Transfer.Controllers
                 return string.Empty;
             }
         }
-        #endregion
+
+        #endregion txtlog 設定位置
 
         #region Excel 設定下載位置
+
         protected string ExcelLocation(string path)
         {
             try
             {
-                string projectFile = Server.MapPath("~/"+ SetFile.FileDownloads); //預設Excel下載位置
+                string projectFile = Server.MapPath("~/" + SetFile.FileDownloads); //預設Excel下載位置
                 string configExcelLocation = ConfigurationManager.AppSettings["ExcelDlLocation"];
                 if (!string.IsNullOrWhiteSpace(configExcelLocation))
                     projectFile = configExcelLocation; //有設定webConfig且不為空就取代
@@ -53,6 +55,7 @@ namespace Transfer.Controllers
                 return string.Empty;
             }
         }
-        #endregion
+
+        #endregion Excel 設定下載位置
     }
 }

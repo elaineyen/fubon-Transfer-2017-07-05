@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.DirectoryServices;
-using System.Linq;
-using System.Web;
 
 namespace Transfer.Utility
 {
     public static class LdapAuthentication
     {
-        public static bool isAuthenticatrd(string path, string domain, string userId,string pwd)
+        public static bool isAuthenticatrd(string path, string domain, string userId, string pwd)
         {
             try
             {

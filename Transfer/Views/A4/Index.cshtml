@@ -9,21 +9,22 @@
         border: none;
         background: none;
     }
+
     .error {
         color: red;
     }
 </style>
-<div class="container" id="main" >
+<div class="container" id="main">
     <div class="row main_hand">
         <div class="col-md-12 main_hand_div">
             <table>
                 <tr>
                     <td>
                         @using (Ajax.BeginForm("Upload", "A4",
-                                new AjaxOptions { HttpMethod = "POST" },
-                                new { enctype = "multipart/form-data", @id = "form0" }))
+                    new AjaxOptions { HttpMethod = "POST" },
+                    new { enctype = "multipart/form-data", @id = "form0" }))
                         {
-                            <input type="file" name="file" class="filestyle" data-buttonName="btn-primary" data-buttonText="轉檔檔案"/>
+                            <input type="file" name="file" class="filestyle" data-buttonName="btn-primary" data-buttonText="轉檔檔案" />
                         }
                     </td>
                     <td>
@@ -72,14 +73,12 @@
         created.createDatepicker('datepicker', true, '');
         //#endregion 註冊datepicker
 
-
-
         //#region 註冊click事件
         $('input:button').each(function () {
             var id = $(this).attr('id');
             switch (id) {
                 case 'fileSubmit':
-                    $("#" + id).on('click', function () { vaildateReportDate()});
+                    $("#" + id).on('click', function () { vaildateReportDate() });
                     break;
                 case 'btnTransfer':
                     $("#" + id).click(transfer);
@@ -88,11 +87,8 @@
         })
         //#endregion 註冊click事件
 
-
-
         //#region 驗證ReportDate
-        function vaildateReportDate()
-        {
+        function vaildateReportDate() {
             var date = $('#datepicker').val();
             verified.datepicker("myFrom", "datepicker", true, date);
             if ($('#myFrom').valid()) {
@@ -102,8 +98,7 @@
         //#endregion
 
         //#region 資料上傳(Excel 資料寫入 local sql)
-        function transfer()
-        {           
+        function transfer() {
             if (verified.isDate(reportDate, true)) {
                 $.ajax({
                     type: "POST",
@@ -127,8 +122,7 @@
         //#endregion 資料上傳(Excel 資料寫入 local sql)
 
         //#region fileSubmitFunction (把檔案上傳到指定資料夾)
-        function fileSubmitFunction()
-        {
+        function fileSubmitFunction() {
             var dataString;
             var action = $("#form0").attr("action");
             if ($("#form0").attr("enctype") == "multipart/form-data") {
@@ -200,8 +194,7 @@
         //#endregion fileSubmitFunction
 
         //#region clearJqgrid (清除JqGrid)
-        function clearJqgrid()
-        {
+        function clearJqgrid() {
             $('#jqgridDiv').children().remove();
         }
         //#endregion clearJqgrid
@@ -212,15 +205,12 @@
         //colNameArray (設定上方Title *要與Data 傳入Json 屬性相對應)
         //widthArray (寬度設定 L=> 250 M=>120)
         //title (標題)
-        function createJqgrid(listId, pagerId, colNameArray, widthArray,title)
-        {
+        function createJqgrid(listId, pagerId, colNameArray, widthArray, title) {
             var colModelArray = [];
             var jagridLWidth = 250;
             var jagridMWidth = 120;
-            if (colNameArray.length > 0 && colNameArray.length === widthArray.length)
-            {
-                for (let i = 0; i < colNameArray.length; i++)
-                {
+            if (colNameArray.length > 0 && colNameArray.length === widthArray.length) {
+                for (let i = 0; i < colNameArray.length; i++) {
                     var obj = {
                         name: colNameArray[i],
                         index: colNameArray[i],

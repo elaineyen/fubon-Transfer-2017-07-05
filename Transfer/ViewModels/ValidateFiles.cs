@@ -1,25 +1,12 @@
 ﻿using System;
-using System.IO;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.IO;
 using System.Linq;
 using System.Web;
-using System.ComponentModel.DataAnnotations;
 
 namespace Transfer.ViewModels
 {
-   
-    /// <summary>
-    /// 檔案驗證
-    /// </summary>
-    public class ValidateFiles
-    {
-        [FileSize(30000)]
-        [FileTypes("xls,xlsx")]
-        public HttpPostedFileBase File { get; set; }
-    }
-
-
-
     public class FileSizeAttribute : ValidationAttribute
     {
         private int _maxSize;
@@ -29,18 +16,18 @@ namespace Transfer.ViewModels
             _maxSize = maxSize;
         }
 
+        public override string FormatErrorMessage(string name)
+        {
+            //return string.Format("File size should be within {0}", _maxSize);
+            return string.Format("File No Data");
+        }
+
         public override bool IsValid(object value)
         {
             if (value == null) return true;
 
             //return _maxSize > ((HttpPostedFileWrapper)value).ContentLength;
             return ((HttpPostedFileWrapper)value).ContentLength != 0;
-        }
-
-        public override string FormatErrorMessage(string name)
-        {
-            //return string.Format("File size should be within {0}", _maxSize);
-            return string.Format("File No Data");
         }
     }
 
@@ -53,6 +40,11 @@ namespace Transfer.ViewModels
             _types = types.Split(',').ToList();
         }
 
+        public override string FormatErrorMessage(string name)
+        {
+            return string.Format("Invalid file type. File Types supported are ", String.Join(", ", _types));
+        }
+
         public override bool IsValid(object value)
         {
             if (value == null) return true;
@@ -60,10 +52,15 @@ namespace Transfer.ViewModels
             var fileExt = Path.GetExtension((value as HttpPostedFileWrapper).FileName).Substring(1);
             return _types.Contains(fileExt, StringComparer.OrdinalIgnoreCase);
         }
+    }
 
-        public override string FormatErrorMessage(string name)
-        {
-            return string.Format("Invalid file type. File Types supported are ", String.Join(", ", _types));
-        }
+    /// <summary>
+    /// 檔案驗證
+    /// </summary>
+    public class ValidateFiles
+    {
+        [FileSize(30000)]
+        [FileTypes("xls,xlsx")]
+        public HttpPostedFileBase File { get; set; }
     }
 }

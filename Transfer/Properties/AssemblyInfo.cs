@@ -1,8 +1,7 @@
 ﻿using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 
-// 組件的一般資訊會透過將設定 
+// 組件的一般資訊會透過將設定
 // 控制。變更這些屬性值可修改與組件關聯的
 // 資訊。
 [assembly: AssemblyTitle("Transfer")]
@@ -14,7 +13,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-// ComVisible 為 false 的方式來控制，讓此組件中的類型在 
+// ComVisible 為 false 的方式來控制，讓此組件中的類型在
 // COM 組件中為不可見。如果您需要從
 // COM 存取此組件中的型別，請在該型別上將 ComVisible 屬性設定為 true。
 [assembly: ComVisible(false)]

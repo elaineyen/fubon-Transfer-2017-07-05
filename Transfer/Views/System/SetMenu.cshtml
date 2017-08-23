@@ -19,7 +19,7 @@
                             new { @class = "form-control", @style = "display:inline-block" })
                     </td>
                     <td>
-                        <input type="button" class="btn btn-primary" value="儲存設定" id="btnMenuSave" disabled/>
+                        <input type="button" class="btn btn-primary" value="儲存設定" id="btnMenuSave" disabled />
                     </td>
                 </tr>
             </table>
@@ -28,9 +28,7 @@
     <div class="row main_body" style="overflow:auto;height:100%">
         <div class="col-md-12">
             <div id="menuCheckbox">
-
             </div>
-
         </div>
     </div>
 </div>
@@ -80,8 +78,7 @@
 
         //#region save Menu
         $('#btnMenuSave').on('click', function () {
-            if ($('#setUser').val().trim().length > 0)
-            {
+            if ($('#setUser').val().trim().length > 0) {
                 var data = [];
                 $('input[name="menuSet"]').each(function (i, v) {
                     data.push(CheckBoxListInfo(v.value, v.checked))
@@ -107,8 +104,8 @@
         //#endregion save Menu
 
         function CheckBoxListInfo(
-        Value,
-        IsChecked
+                Value,
+                IsChecked
         ) {
             var obj = {};
             obj['Value'] = Value;

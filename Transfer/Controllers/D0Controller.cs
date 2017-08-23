@@ -12,19 +12,13 @@ namespace Transfer.Controllers
     [Authorize]
     public class D0Controller : CommonController
     {
-        private ID0Repository D0Repository;
         private ICommon CommonFunction;
+        private ID0Repository D0Repository;
 
         public D0Controller()
         {
             this.D0Repository = new D0Repository();
             this.CommonFunction = new Common();
-        }
-
-        // GET: D0
-        public ActionResult Index()
-        {
-            return View();
         }
 
         /// <summary>
@@ -37,7 +31,48 @@ namespace Transfer.Controllers
             return View();
         }
 
+        /// <summary>
+        /// 刪除
+        /// </summary>
+        /// <param name="productCode">產品</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult DeleteD05(string productCode)
+        {
+            MSGReturnModel result = new MSGReturnModel();
+
+            result.RETURN_FLAG = false;
+            result.DESCRIPTION = Message_Type.parameter_Error.GetDescription("D05", result.DESCRIPTION);
+
+            try
+            {
+                MSGReturnModel resultDelete = D0Repository.deleteD05(productCode);
+
+                result.RETURN_FLAG = resultDelete.RETURN_FLAG;
+                result.DESCRIPTION = Message_Type.delete_Success.GetDescription("D05");
+
+                if (!result.RETURN_FLAG)
+                {
+                    result.DESCRIPTION = Message_Type.delete_Fail.GetDescription("D05", resultDelete.DESCRIPTION);
+                }
+            }
+            catch (Exception ex)
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = ex.Message;
+            }
+
+            return Json(result);
+        }
+
+        // GET: D0
+        public ActionResult Index()
+        {
+            return View();
+        }
+
         #region Get Data
+
         /// <summary>
         /// 前端抓資料時呼叫
         /// </summary>
@@ -89,7 +124,8 @@ namespace Transfer.Controllers
 
             return Json(result);
         }
-        #endregion
+
+        #endregion Get Data
 
         /// <summary>
         /// 新增、俢改
@@ -123,40 +159,6 @@ namespace Transfer.Controllers
                 if (!result.RETURN_FLAG)
                 {
                     result.DESCRIPTION = Message_Type.save_Fail.GetDescription("D05", resultSave.DESCRIPTION);
-                }
-            }
-            catch (Exception ex)
-            {
-                result.RETURN_FLAG = false;
-                result.DESCRIPTION = ex.Message;
-            }
-
-            return Json(result);
-        }
-
-        /// <summary>
-        /// 刪除
-        /// </summary>
-        /// <param name="productCode">產品</param>
-        /// <returns></returns>
-        [HttpPost]
-        public JsonResult DeleteD05(string productCode)
-        {
-            MSGReturnModel result = new MSGReturnModel();
-
-            result.RETURN_FLAG = false;
-            result.DESCRIPTION = Message_Type.parameter_Error.GetDescription("D05", result.DESCRIPTION);
-
-            try
-            {
-                MSGReturnModel resultDelete = D0Repository.deleteD05(productCode);
-
-                result.RETURN_FLAG = resultDelete.RETURN_FLAG;
-                result.DESCRIPTION = Message_Type.delete_Success.GetDescription("D05");
-
-                if (!result.RETURN_FLAG)
-                {
-                    result.DESCRIPTION = Message_Type.delete_Fail.GetDescription("D05", resultDelete.DESCRIPTION);
                 }
             }
             catch (Exception ex)

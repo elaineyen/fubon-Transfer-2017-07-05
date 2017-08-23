@@ -21,8 +21,8 @@
                 <table>
                     <tr>
                         <td style="width:600px" class="form-group TS T0 T1 T3">
-                                <label>報導日&emsp; : </label>
-                                <input type="text" id="datepicker" name="datepicker">
+                            <label>報導日&emsp; : </label>
+                            <input type="text" id="datepicker" name="datepicker">
                         </td>
                         <td style="width:400px" class="T0 TS T1 T3 T4">
                             <label>選單條件 : </label>
@@ -33,10 +33,10 @@
                     </tr>
                     <tr>
                         <td style="width:600px; padding-top:5px;" class="TS T0 T2 T4">
-                                <label>購入日期 : </label>
-                                <input type="text" id="from" name="from">
-                                <label> ~&ensp;</label>
-                                <input type="text" id="to" name="to">
+                            <label>購入日期 : </label>
+                            <input type="text" id="from" name="from">
+                            <label> ~&ensp;</label>
+                            <input type="text" id="to" name="to">
                         </td>
                         <td style="width:400px; padding-top:10px;" class="TS T0 T2 T3 T4">
                             <label>債券編號 : </label>
@@ -57,9 +57,9 @@
                     </tr>
                     <tr>
                         <td style="padding-top:10px;">
-                            @using (Ajax.BeginForm("UploadA57", "A7",
-                                         new AjaxOptions { HttpMethod = "POST" },
-                                         new { enctype = "multipart/form-data", @id = "form0" }))
+                            @using (Ajax.BeginForm("UploadA57", "A5",
+new AjaxOptions { HttpMethod = "POST" },
+new { enctype = "multipart/form-data", @id = "form0" }))
                             {
                                 <input type="file" name="file" class="filestyle" data-buttonName="btn-primary" data-buttonText="轉檔檔案" style="margin-right:10px" />
                             }
@@ -93,8 +93,8 @@
     $(function () {
         //#region 註冊URL
         var url = {};
-        url.getData = '@Url.Action("GetData", "A4")';
-        url.getDbData = '@Url.Action("GetCacheData", "A4")';
+        @*url.getData = '@Url.Action("GetData", "A5")';
+        url.getDbData = '@Url.Action("GetCacheData", "A5")';*@
         //#endregion 註冊URL
 
         //#region 註冊datepicker
@@ -103,10 +103,10 @@
         //#endregion 註冊datepicker
 
         //#region 註冊verified
-        verified.datepicker("myFrom", "datepicker", true, $('#datepicker').val());
-        verified.datepicker("myFrom", "from", false, $('#from').val());
-        verified.datepicker("myFrom", "to", false, $('#to').val());
-        verified.required("myFrom", "bondNumber", message.required(message.bondsNumber))
+        verified.datepicker("myForm", "datepicker", true, $('#datepicker').val());
+        verified.datepicker("myForm", "from", false, $('#from').val());
+        verified.datepicker("myForm", "to", false, $('#to').val());
+        verified.required("myForm", "bondNumber", message.required(message.bondsNumber))
         //#endregion 註冊verified
 
         $('#searchType').on('change', function () {
@@ -115,26 +115,25 @@
             $('.' + opencls).show();
         });
 
-        //#region 註冊click事件
-        $('input:button').each(function () {
-            var id = $(this).attr('id');
-            switch (id) {
-                case 'btnA57Search':
-                    $('#' + id).click();
-                    break;
-                case 'btnA57Dl':
-                    $('#' + id).click();
-                    break;
-                case 'fileSubmit':
-                    $('#' + id).click(fileSubmitFunction);
-                    break;
-                case 'btnTransfer':
-                    $('#' + id).click(transfer);
-                    break;              
-            }
-        })
-        //#endregion 註冊click事件
-
+        ////#region 註冊click事件
+        //$('input:button').each(function () {
+        //    var id = $(this).attr('id');
+        //    switch (id) {
+        //        case 'btnA57Search':
+        //            $('#' + id).click();
+        //            break;
+        //        case 'btnA57Dl':
+        //            $('#' + id).click();
+        //            break;
+        //        case 'fileSubmit':
+        //            $('#' + id).click(fileSubmitFunction);
+        //            break;
+        //        case 'btnTransfer':
+        //            $('#' + id).click(transfer);
+        //            break;
+        //    }
+        //})
+        ////#endregion 註冊click事件
 
         //#region 資料上傳(Excel 資料寫入 local sql)
         function transfer() {
@@ -168,7 +167,7 @@
                 type: "POST",
                 url: action,
                 data: dataString,
-                dataType: "json", 
+                dataType: "json",
                 contentType: false,
                 processData: false,
                 success: function (result) {

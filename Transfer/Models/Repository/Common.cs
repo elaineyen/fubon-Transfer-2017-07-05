@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Transfer.Models.Interface;
 using Transfer.Utility;
 using static Transfer.Enum.Ref;
@@ -12,7 +10,9 @@ namespace Transfer.Models.Repository
     public class Common : ICommon
     {
         private IFRS9Entities db = new IFRS9Entities();
+
         #region save sqllog(IFRS9_Log)
+
         /// <summary>
         /// Log資料存到Sql(IFRS9_Log)
         /// </summary>
@@ -59,57 +59,8 @@ namespace Transfer.Models.Repository
             }
             return flag;
         }
-        #endregion
 
-        /// <summary>
-        /// 轉檔紀錄存到Sql(Transfer_CheckTable)
-        /// </summary>
-        /// <param name="fileName">檔案名稱 A41,A42...</param>
-        /// <param name="falg">成功失敗</param>
-        /// <param name="reportDate">基準日</param>
-        /// <param name="version">版本</param>
-        /// <param name="start">轉檔開始時間</param>
-        /// <param name="end">轉檔結束時間</param>
-        /// <returns></returns>
-        public bool saveTransferCheck(
-            string fileName,
-            bool falg,
-            DateTime reportDate,
-            string version,
-            DateTime start,
-            DateTime end)
-        {
-            if (db.Transfer_CheckTable.Any(x =>
-             x.ReportDate == reportDate &&
-             x.Version == version &&
-             x.File_Name == fileName))
-                return false;
-            if (EnumUtil.GetValues<Transfer_Table_Type>()
-                .Select(x => x.ToString()).ToList().Contains(fileName))
-            {
-                db.Transfer_CheckTable.Add(new Transfer_CheckTable()
-                {
-                    File_Name = fileName,
-                    ReportDate = reportDate,
-                    Version = version,
-                    TransferType = falg ? "Y" : "N",
-                    Create_date = start.ToString("yyyyMMdd"),
-                    Create_time = start.ToString("HH:mm:ss"),
-                    End_date = end.ToString("yyyyMMdd"),
-                    End_time = end.ToString("HH:mm:ss"),
-                });
-                try
-                {
-                    db.SaveChanges();
-                    return true;
-                }
-                catch
-                {
-                    return false;
-                }
-            }
-            return false;
-        }
+        #endregion save sqllog(IFRS9_Log)
 
         /// <summary>
         /// 判斷轉檔紀錄是否有存在
@@ -160,6 +111,56 @@ namespace Transfer.Models.Repository
 
             string pureSqlConnection = efstr.Substring(start, length);
             return pureSqlConnection.Replace("XXXXX", "1qaz@WSX");
+        }
+
+        /// <summary>
+        /// 轉檔紀錄存到Sql(Transfer_CheckTable)
+        /// </summary>
+        /// <param name="fileName">檔案名稱 A41,A42...</param>
+        /// <param name="falg">成功失敗</param>
+        /// <param name="reportDate">基準日</param>
+        /// <param name="version">版本</param>
+        /// <param name="start">轉檔開始時間</param>
+        /// <param name="end">轉檔結束時間</param>
+        /// <returns></returns>
+        public bool saveTransferCheck(
+            string fileName,
+            bool falg,
+            DateTime reportDate,
+            string version,
+            DateTime start,
+            DateTime end)
+        {
+            if (db.Transfer_CheckTable.Any(x =>
+             x.ReportDate == reportDate &&
+             x.Version == version &&
+             x.File_Name == fileName))
+                return false;
+            if (EnumUtil.GetValues<Transfer_Table_Type>()
+                .Select(x => x.ToString()).ToList().Contains(fileName))
+            {
+                db.Transfer_CheckTable.Add(new Transfer_CheckTable()
+                {
+                    File_Name = fileName,
+                    ReportDate = reportDate,
+                    Version = version,
+                    TransferType = falg ? "Y" : "N",
+                    Create_date = start.ToString("yyyyMMdd"),
+                    Create_time = start.ToString("HH:mm:ss"),
+                    End_date = end.ToString("yyyyMMdd"),
+                    End_time = end.ToString("HH:mm:ss"),
+                });
+                try
+                {
+                    db.SaveChanges();
+                    return true;
+                }
+                catch
+                {
+                    return false;
+                }
+            }
+            return false;
         }
     }
 }

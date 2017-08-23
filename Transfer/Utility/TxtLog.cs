@@ -7,6 +7,7 @@ namespace Transfer.Utility
     public static class TxtLog
     {
         #region save txtlog
+
         /// <summary>
         /// 寫入 Txt Log
         /// </summary>
@@ -44,9 +45,9 @@ namespace Transfer.Utility
             }
             catch (Exception ex)
             {
-
             }
         }
-        #endregion
+
+        #endregion save txtlog
     }
 }

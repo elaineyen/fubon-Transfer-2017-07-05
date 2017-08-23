@@ -16,44 +16,62 @@
 </style>
 <div class="container" id="main">
     <div class="row main_hand">
-        <div class="col-md-12 main_hand_div">
-            <table>
-                <tr>
-                    <td style="width:600px" class="form-group">
-                        <label>報導日&emsp; : </label>
-                        <input type="text" id="datepicker" name="datepicker">
-                    </td>
-                    <td style="width:400px">
-                        <label>選單條件 : </label>
-                        @Html.DropDownList("sType",
+        <div class="col-md-12 main_hand_div" style="height:220px">
+            <form id="myForm">
+                <table>
+                    <tr>
+                        <td style="width:600px" class="form-group TS T0 T1 T3">
+                            <label>報導日&emsp; : </label>
+                            <input type="text" id="datepicker" name="datepicker">
+                        </td>
+                        <td style="width:400px" class="T0 TS T1 T3 T4">
+                            <label>選單條件 : </label>
+                            @Html.DropDownList("sType",
                            (SelectList)ViewBag.sType,
                             new { @class = "form-control", @style = "display:inline-block" })
-                    </td>
-                </tr>
-                <tr>
-                    <td style="padding-top:5px;padding-bottom:10px">
-                        <label>購入日期 : </label>
-                        <input type="text" id="from" name="from">
-                        <label> ~&ensp;</label>
-                        <input type="text" id="to" name="to">
-                    </td>
-                    <td style="padding-top:10px;padding-bottom:10px">
-                        <label>債券編號 : </label>
-                        <input type="text" id="version" name="version" style="width:300px">
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label>查詢類型 : </label>
-                        @Html.DropDownList("searchType",
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:600px; padding-top:5px;" class="TS T0 T2 T4">
+                            <label>購入日期 : </label>
+                            <input type="text" id="from" name="from">
+                            <label> ~&ensp;</label>
+                            <input type="text" id="to" name="to">
+                        </td>
+                        <td style="width:400px; padding-top:10px;" class="TS T0 T2 T3 T4">
+                            <label>債券編號 : </label>
+                            <input type="text" id="bondNumber" name="bondNumber" style="width:300px">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="width:600px;padding-top:10px">
+                            <label>查詢類型 : </label>
+                            @Html.DropDownList("searchType",
                            (SelectList)ViewBag.searchOption,
                             new { @class = "form-control", @style = "display:inline-block" })
-                    </td>
-                    <td>
-                        <input type="button" class="btn btn-primary" value="A58查詢" id="btnA58Search"/>
-                    </td>
-                </tr>
-            </table>
+                        </td>
+                        <td style="width:400px;padding-top:10px;">
+                            <input type="button" class="btn btn-primary" style="margin-right:13px" value="A57查詢" id="btnA57Search" />
+                            <input type="button" class="btn btn-primary" value="下載A57Excel" id="btnA57Dl" disabled />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-top:10px;">
+                            @using (Ajax.BeginForm("UploadA58", "A5",
+                         new AjaxOptions { HttpMethod = "POST" },
+                         new { enctype = "multipart/form-data", @id = "form0" }))
+                            {
+                                <input type="file" name="file" class="filestyle" data-buttonName="btn-primary" data-buttonText="轉檔檔案" style="margin-right:10px" />
+                            }
+                        </td>
+
+                        <td style="width:400px;padding-top:10px;">
+                            <input type="button" class="btn btn-primary" style="margin-right:10px" value="資料上傳" id="fileSubmit" />
+                            <input type="button" class="btn btn-primary" value="轉檔" id="btnTransfer" disabled />
+                        </td>
+                    </tr>
+                </table>
+            </form>
         </div>
     </div>
     <div class="row main_body" style="overflow:auto;height:100%">
@@ -75,15 +93,46 @@
     $(function () {
         //#region 註冊URL
         var url = {};
-        url.getData = '@Url.Action("GetData", "A4")';
-        url.getDbData = '@Url.Action("GetCacheData", "A4")';
+        url.getData = '@Url.Action("GetData", "A5")';
+        url.getDbData = '@Url.Action("GetCacheData", "A5")';
         //#endregion 註冊URL
 
         //#region 註冊datepicker
-        verified.createDatepicker('datepicker', false, '2017/03/12')
-        verified.createDatepickerRange('from', 'to', true)
+        created.createDatepicker('datepicker', true, '');
+        created.createDatepickerRange('from', 'to', false);
         //#endregion 註冊datepicker
 
+        //#region 註冊verified
+        verified.datepicker("myForm", "datepicker", true, $('#datepicker').val());
+        verified.datepicker("myForm", "from", false, $('#from').val());
+        verified.datepicker("myForm", "to", false, $('#to').val());
+        verified.required("myForm", "bondNumber", message.required(message.bondsNumber))
+        //#endregion 註冊verified
 
+        $('#searchType').on('change', function () {
+            $('.TS').hide();
+            var opencls = $(this).val();
+            $('.' + opencls).show();
+        });
+
+        //#region 註冊click事件
+        $('input:button').each(function () {
+            var id = $(this).attr('id');
+            switch (id) {
+                case 'btnA57Search':
+                    $('#' + id).click();
+                    break;
+                case 'btnA57Dl':
+                    $('#' + id).click();
+                    break;
+                case 'fileSubmit':
+                    $('#' + id).click(fileSubmitFunction);
+                    break;
+                case 'btnTransfer':
+                    $('#' + id).click(transfer);
+                    break;
+            }
+        })
+        //#endregion 註冊click事件
     });
 </script>

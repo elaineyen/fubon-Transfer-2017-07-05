@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace Transfer.ViewModels
+﻿namespace Transfer.ViewModels
 {
     /// <summary>
     /// Exhibit 前段顯示Model
@@ -11,8 +6,8 @@ namespace Transfer.ViewModels
     public class Exhibit7Model
     {
         public string Data_Year { get; set; }
+        public string LGD { get; set; }
         public string Lien_Position { get; set; }
         public string Recovery_Rate { get; set; }
-        public string LGD { get; set; }
     }
 }

@@ -1,19 +1,20 @@
-﻿using System;
+﻿using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
+using NPOI.XSSF.UserModel;
+using System;
+using System.Configuration;
 using System.Data;
 using System.IO;
 using System.Web;
-using NPOI;
-using NPOI.HSSF.UserModel;
-using NPOI.XSSF.UserModel;
-using NPOI.SS.UserModel;
 using Transfer.Enum;
-using System.Configuration;
+
 //using MExcel = Microsoft.Office.Interop.Excel;
 namespace Transfer.Utility
 {
     public static class FileRelated
     {
         #region 上傳檔案到指定路徑
+
         /// <summary>
         /// 檔案上傳
         /// </summary>
@@ -40,9 +41,11 @@ namespace Transfer.Utility
             }
             return result;
         }
-        #endregion
+
+        #endregion 上傳檔案到指定路徑
 
         #region Create 資料夾
+
         /// <summary>
         /// Create 資料夾(判斷如果沒有的話就新增)
         /// </summary>
@@ -57,9 +60,11 @@ namespace Transfer.Utility
             catch
             { }
         }
-        #endregion
+
+        #endregion Create 資料夾
 
         #region Download Excel
+
         /// <summary>
         /// 將 DataTable 資料轉換至 Excel
         /// </summary>
@@ -73,7 +78,6 @@ namespace Transfer.Utility
 
             try
             {
-
                 string version = "2003"; //default 2003
                 IWorkbook wb = null;
                 ISheet ws;
@@ -85,9 +89,8 @@ namespace Transfer.Utility
                 if ("2003".Equals(version))
                     wb = new HSSFWorkbook();
 
-                if("2007".Equals(version))
+                if ("2007".Equals(version))
                     wb = new XSSFWorkbook();
-
 
                 ws = wb.CreateSheet(sheetName);
 
@@ -116,14 +119,13 @@ namespace Transfer.Utility
                         else
                         {
                             ws.GetRow(i + 1).CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
-                        }                            
+                        }
                     }
                 }
 
                 FileStream file = new FileStream(path, FileMode.Create);//產生檔案
                 wb.Write(file);
                 file.Close();
-  
             }
             catch (Exception ex)
             {
@@ -136,6 +138,7 @@ namespace Transfer.Utility
             }
             return result;
         }
-        #endregion
+
+        #endregion Download Excel
     }
 }

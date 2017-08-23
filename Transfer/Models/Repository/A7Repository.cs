@@ -7,7 +7,6 @@ using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using Transfer.Enum;
 using Transfer.Models.Interface;
 using Transfer.Utility;
 using Transfer.ViewModels;
@@ -18,9 +17,16 @@ namespace Transfer.Models.Repository
     public class A7Repository : IA7Repository, IDbEvent
     {
         #region 其他
+
+        private List<string> A73Array = new List<string>() { "TM", "Default" };
         private Common common = new Common();
 
-        private List<string> A73Array = new List<string>() { "TM", "Default" }; //設定 A73要抓的欄位
+        //設定 A73要抓的欄位
+
+        public A7Repository()
+        {
+            this.db = new IFRS9Entities();
+        }
 
         protected IFRS9Entities db
         {
@@ -28,20 +34,15 @@ namespace Transfer.Models.Repository
             private set;
         }
 
-        public A7Repository()
+        public void Dispose()
         {
-            this.db = new IFRS9Entities();
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         public void SaveChange()
         {
             db.SaveChanges();
-        }
-
-        public void Dispose()
-        {
-            this.Dispose(true);
-            GC.SuppressFinalize(this);
         }
 
         protected virtual void Dispose(bool disposing)
@@ -55,11 +56,13 @@ namespace Transfer.Models.Repository
                 }
             }
         }
-        #endregion
+
+        #endregion 其他
 
         #region Get Data
 
         #region Get Moody_Monthly_PD_Info(A71)
+
         /// <summary>
         /// Get A71 Data
         /// </summary>
@@ -72,9 +75,11 @@ namespace Transfer.Models.Repository
             }
             return new Tuple<bool, List<Moody_Tm_YYYY>>(false, new List<Moody_Tm_YYYY>());
         }
-        #endregion
+
+        #endregion Get Moody_Monthly_PD_Info(A71)
 
         #region Get Tm_Adjust_YYYY(A72)
+
         /// <summary>
         /// Get A72 Data
         /// </summary>
@@ -87,7 +92,7 @@ namespace Transfer.Models.Repository
                 DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList()).Item1;
                 odatas.Add(datas.Columns.Cast<DataColumn>()
                      .Select(x => x.ColumnName)
-                     .ToArray()); //第一列 由Columns 組成Title 
+                     .ToArray()); //第一列 由Columns 組成Title
                 for (var i = 0; i < datas.Rows.Count; i++)
                 {
                     List<string> str = new List<string>();
@@ -120,9 +125,11 @@ namespace Transfer.Models.Repository
                 return new Tuple<bool, List<object>>(false, new List<object>());
             }
         }
-        #endregion
+
+        #endregion Get Tm_Adjust_YYYY(A72)
 
         #region Get GM_YYYY(A73)
+
         /// <summary>
         /// Get A73 Data
         /// </summary>
@@ -136,7 +143,7 @@ namespace Transfer.Models.Repository
                 odatas.Add(datas.Columns.Cast<DataColumn>()
                      .Where(x => A73Array.Contains(x.ColumnName))
                      .Select(x => x.ColumnName)
-                     .ToArray()); //第一列 由Columns 組成Title 
+                     .ToArray()); //第一列 由Columns 組成Title
                 for (var i = 0; i < datas.Rows.Count; i++)
                 {
                     List<string> str = new List<string>();
@@ -153,7 +160,7 @@ namespace Transfer.Models.Repository
                                 str.Add("\"" + datas.Columns[j] + "\":" + datas.Rows[i].ItemArray[j].ToString());
                             }
                         }
-                        //object 格式為 'column' : Rows.Data 
+                        //object 格式為 'column' : Rows.Data
                     }
                     odatas.Add(JsonConvert.DeserializeObject<IDictionary<string, object>>
                         ("{" + string.Join(",", str) + "}")); //第二列以後組成 object
@@ -172,9 +179,11 @@ namespace Transfer.Models.Repository
                 return new Tuple<bool, List<object>>(false, new List<object>());
             }
         }
-        #endregion
 
-        #region Get Grade_Moody_Info(A51) 
+        #endregion Get GM_YYYY(A73)
+
+        #region Get Grade_Moody_Info(A51)
+
         /// <summary>
         /// Get A51 Data
         /// </summary>
@@ -190,13 +199,15 @@ namespace Transfer.Models.Repository
                 return new Tuple<bool, List<Grade_Moody_Info>>(false, new List<Grade_Moody_Info>());
             }
         }
-        #endregion
 
-        #endregion
+        #endregion Get Grade_Moody_Info(A51)
 
-        #region save Db 
+        #endregion Get Data
+
+        #region save Db
 
         #region save Moody_Monthly_PD_Info(A71)
+
         /// <summary>
         /// Save  Moody_Monthly_PD_Info(A71)
         /// </summary>
@@ -256,9 +267,11 @@ namespace Transfer.Models.Repository
             }
             return result;
         }
-        #endregion
+
+        #endregion save Moody_Monthly_PD_Info(A71)
 
         #region Save Tm_Adjust_YYYY(A72)
+
         /// <summary>
         /// Save  Tm_Adjust_YYYY(A72)
         /// </summary>
@@ -318,11 +331,13 @@ namespace Transfer.Models.Repository
             }
             return result;
         }
-        #endregion
 
-        #region Save GM_YYYY(A73) 
+        #endregion Save Tm_Adjust_YYYY(A72)
+
+        #region Save GM_YYYY(A73)
+
         /// <summary>
-        /// Save  GM_YYYY(A73) 
+        /// Save  GM_YYYY(A73)
         /// </summary>
         /// <returns></returns>
         public MSGReturnModel saveA73()
@@ -375,11 +390,13 @@ namespace Transfer.Models.Repository
             }
             return result;
         }
-        #endregion
 
-        #region Save Grade_Moody_Info(A51) 
+        #endregion Save GM_YYYY(A73)
+
+        #region Save Grade_Moody_Info(A51)
+
         /// <summary>
-        /// Save  Grade_Moody_Info(A51) 
+        /// Save  Grade_Moody_Info(A51)
         /// </summary>
         /// <returns></returns>
         public MSGReturnModel saveA51()
@@ -391,7 +408,7 @@ namespace Transfer.Models.Repository
                 {
                     if (db.Grade_Moody_Info.Any())
                         db.Grade_Moody_Info.RemoveRange(
-                           db.Grade_Moody_Info.ToList()); //資料全刪除  
+                           db.Grade_Moody_Info.ToList()); //資料全刪除
                     var A51Data = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList());
                     string year = (DateTime.Now.Year - 1).ToString();
                     List<Grade_Moody_Info> A51s = (db.Moody_Tm_YYYY.AsEnumerable().
@@ -423,7 +440,7 @@ namespace Transfer.Models.Repository
                             }
                             else
                             {
-                                alreadyNum.Add(rating_Adjust); //新的合併欄位 
+                                alreadyNum.Add(rating_Adjust); //新的合併欄位
                             }
                         }
                         item.Grade_Adjust = grade_Adjust;
@@ -454,13 +471,15 @@ namespace Transfer.Models.Repository
             }
             return result;
         }
-        #endregion
 
-        #endregion
+        #endregion Save Grade_Moody_Info(A51)
+
+        #endregion save Db
 
         #region Excel 部分
 
         #region Excel 資料轉成 Exhibit29Model
+
         /// <summary>
         /// Excel 資料轉成 Exhibit29Model
         /// </summary>
@@ -479,6 +498,7 @@ namespace Transfer.Models.Repository
                     case "xls":
                         reader = ExcelReaderFactory.CreateBinaryReader(stream);
                         break;
+
                     case "xlsx":
                         reader = ExcelReaderFactory.CreateOpenXmlReader(stream);
                         break;
@@ -493,16 +513,18 @@ namespace Transfer.Models.Repository
                                  select getExhibit29Model(q)).Skip(1).ToList();
                     //skip(1) 為排除Excel Title列那行(參數可調)
                     dataModel = dataModel.Take(dataModel.Count - 1).ToList();
-                    //排除最後一筆 為 * Data in percent 的註解 
+                    //排除最後一筆 為 * Data in percent 的註解
                 }
             }
             catch
             { }
             return dataModel;
         }
-        #endregion
+
+        #endregion Excel 資料轉成 Exhibit29Model
 
         #region 下載 Excel
+
         /// <summary>
         /// 下載 Excel
         /// </summary>
@@ -524,8 +546,9 @@ namespace Transfer.Models.Repository
                         result.DESCRIPTION = FileRelated.DataTableToExcel(datas, path, Table_Type.A72.ToString());
                         result.RETURN_FLAG = string.IsNullOrWhiteSpace(result.DESCRIPTION);
                         break;
+
                     case "A73":
-                        DataTable newData = FromA72GetA73(datas); //要組新的 Table                           
+                        DataTable newData = FromA72GetA73(datas); //要組新的 Table
                         if (newData != null) //有資料
                         {
                             result.DESCRIPTION = FileRelated.DataTableToExcel(newData, path, Table_Type.A73.ToString());
@@ -542,13 +565,15 @@ namespace Transfer.Models.Repository
             }
             return result;
         }
-        #endregion
 
-        #endregion
+        #endregion 下載 Excel
+
+        #endregion Excel 部分
 
         #region Private Function
 
         #region datarow 組成 Exhibit29Model
+
         /// <summary>
         /// datarow 組成 Exhibit29Model
         /// </summary>
@@ -583,9 +608,11 @@ namespace Transfer.Models.Repository
                 Default = TypeTransfer.objToString(item[22]),
             };
         }
-        #endregion
+
+        #endregion datarow 組成 Exhibit29Model
 
         #region DB Moody_Tm_YYYY 組成 DataTable
+
         /// <summary>
         ///  DB Moody_Tm_YYYY 組成 DataTable
         /// </summary>
@@ -600,6 +627,7 @@ namespace Transfer.Models.Repository
             try
             {
                 #region 找出錯誤的參數
+
                 string errorKey = string.Empty; //錯誤起始欄位
                 string last_FromTo = string.Empty; //上一個 From_To
                 double last_value = 0d; //上一個default的參數(#)
@@ -613,14 +641,16 @@ namespace Transfer.Models.Repository
                         {
                             errorKey = string.Empty; //把錯誤Flag 取消掉(到上一筆為止)
                         }
+
                         #region 把現在的參數寄到最後一個裡面
+
                         last_FromTo = item.From_To;
                         last_value = now_default_value;
-                        #endregion
+
+                        #endregion 把現在的參數寄到最後一個裡面
                     }
                     else //現在的參數比上一個還要小
                     {
-
                         if (!errorKey.IsNullOrWhiteSpace()) //上一個是錯誤的,修改錯誤記錄資料
                         {
                             var hestory = overData[errorKey];
@@ -630,15 +660,17 @@ namespace Transfer.Models.Repository
                         else //上一個是對的(這次錯誤需新增錯誤資料)
                         {
                             overData.Add(last_FromTo,
-                                new List<string>() { last_FromTo, item.From_To }); //加入一筆歷史錯誤 
+                                new List<string>() { last_FromTo, item.From_To }); //加入一筆歷史錯誤
                             errorKey = last_FromTo;//紀錄上一筆的FromTo為超過起始欄位
                         }
                         last_value = (last_value + now_default_value) / 2; //default 相加除以2
                     }
                 }
-                #endregion
+
+                #endregion 找出錯誤的參數
 
                 #region 組出DataTable 的欄位
+
                 dt.Columns.Add("TM", typeof(object)); //第一欄固定為TM
                 List<string> errorData = new List<string>(); //錯誤資料
                 List<string> rowData = new List<string>(); //左邊行數欄位
@@ -682,9 +714,11 @@ namespace Transfer.Models.Repository
                 //最後兩欄固定為 WR & Default
                 dt.Columns.Add("WR", typeof(string));
                 dt.Columns.Add("Default", typeof(string));
-                #endregion
+
+                #endregion 組出DataTable 的欄位
 
                 #region 組出資料
+
                 List<string> columnsName = (from q in rowData select q).ToList();
                 columnsName.AddRange(new List<string>() { "WR", "Default" });
                 foreach (var item in rowData) //by 每一行
@@ -789,17 +823,19 @@ namespace Transfer.Models.Repository
                 nrow = dt.NewRow();
                 nrow.ItemArray = (DefaultData.ToArray());
                 dt.Rows.Add(nrow);
-                #endregion
-            }
-            catch 
-            {
 
+                #endregion 組出資料
+            }
+            catch
+            {
             }
             return new Tuple<DataTable, Dictionary<string, List<string>>>(dt, overData);
         }
-        #endregion
+
+        #endregion DB Moody_Tm_YYYY 組成 DataTable
 
         #region 抓DB的資料
+
         /// <summary>
         /// 抓DB的資料
         /// </summary>
@@ -854,9 +890,11 @@ namespace Transfer.Models.Repository
                 return TypeTransfer.doubleNToDouble(db.Default_Value);
             return 0d;
         }
-        #endregion
+
+        #endregion 抓DB的資料
 
         #region A72 資料轉 A73
+
         /// <summary>
         /// A72 資料轉 A73
         /// </summary>
@@ -864,7 +902,7 @@ namespace Transfer.Models.Repository
         /// <returns></returns>
         private DataTable FromA72GetA73(DataTable dt)
         {
-            DataTable newData = new DataTable(); //要組新的 Table     
+            DataTable newData = new DataTable(); //要組新的 Table
             try
             {
                 foreach (var itme in A73Array)
@@ -894,13 +932,14 @@ namespace Transfer.Models.Repository
             }
             catch
             {
-
             }
             return newData;
         }
-        #endregion
+
+        #endregion A72 資料轉 A73
 
         #region Create Table(DataTable 組 sql Create Table)
+
         /// <summary>
         /// 動態建Table sql 語法
         /// </summary>
@@ -966,9 +1005,9 @@ namespace Transfer.Models.Repository
 
             return sqlsc + sqlInsert;
         }
-        #endregion
 
-        #endregion
+        #endregion Create Table(DataTable 組 sql Create Table)
 
+        #endregion Private Function
     }
 }

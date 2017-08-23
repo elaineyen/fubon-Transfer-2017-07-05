@@ -2,63 +2,45 @@
 using System.Collections.Generic;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Web;
 using Transfer.Controllers;
 using Transfer.Models.Interface;
 using Transfer.Utility;
-using Transfer.ViewModels;
 using static Transfer.Enum.Ref;
 
 namespace Transfer.Models.Repository
 {
-    public class SystemRepository : ISystemRepository , IDbEvent
+    public class SystemRepository : ISystemRepository, IDbEvent
     {
+        public SystemRepository()
+        {
+            this.db = new IFRS9Entities();
+        }
+
         protected IFRS9Entities db
         {
             get;
             private set;
         }
 
-        public SystemRepository()
-        {
-            this.db = new IFRS9Entities();
-        }
-
-        public void SaveChange()
-        {
-            throw new NotImplementedException();
-        }
         public void Dispose()
         {
             this.Dispose(true);
             GC.SuppressFinalize(this);
         }
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                if (this.db != null)
-                {
-                    this.db.Dispose();
-                    this.db = null;
-                }
-            }
-        }
-
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="userName"></param>
         /// <returns></returns>
-        public List<CheckBoxListInfo> getMenu (string userName)
+        public List<CheckBoxListInfo> getMenu(string userName)
         {
             List<CheckBoxListInfo> resultData = new List<CheckBoxListInfo>();
             List<string> Menu_Ids = db.IFRS9_Menu_Set.AsEnumerable()
                     .Where(x => userName.Equals(x.User_Name))
-                    .Select(x=>x.Menu_Id).ToList();
+                    .Select(x => x.Menu_Id).ToList();
             resultData.AddRange(db.IFRS9_Menu_Sub.AsEnumerable()
-                .Where(x=> !"System".Equals(x.Menu))
+                .Where(x => !"System".Equals(x.Menu))
                 .Select(x =>
                 {
                     //return new CheckBoxListInfo(
@@ -76,7 +58,7 @@ namespace Transfer.Models.Repository
         }
 
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <returns></returns>
         public List<string> getUser()
@@ -89,8 +71,13 @@ namespace Transfer.Models.Repository
             return result;
         }
 
+        public void SaveChange()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
-        /// 
+        ///
         /// </summary>
         /// <param name="menuSub"></param>
         /// <param name="userName"></param>
@@ -111,8 +98,8 @@ namespace Transfer.Models.Repository
                 IFRS9_Menu_Set set = sets.FirstOrDefault(x => item.Value.Equals(x.Menu_Id));
                 if (set != null) //原本有設定
                 {
-                    if (!item.IsChecked) //設定無權限                   
-                        db.IFRS9_Menu_Set.Remove(set);                 
+                    if (!item.IsChecked) //設定無權限
+                        db.IFRS9_Menu_Set.Remove(set);
                 }
                 else //原本無設定
                 {
@@ -124,7 +111,8 @@ namespace Transfer.Models.Repository
                         });
                 }
             }
-            try {
+            try
+            {
                 db.SaveChanges();
                 result.RETURN_FLAG = true;
                 result.DESCRIPTION = Message_Type.save_Success.GetDescription();
@@ -138,6 +126,18 @@ namespace Transfer.Models.Repository
                     $", inner message {ex.InnerException?.InnerException?.Message}");
             }
             return result;
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                if (this.db != null)
+                {
+                    this.db.Dispose();
+                    this.db = null;
+                }
+            }
         }
     }
 }

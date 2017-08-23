@@ -11,12 +11,15 @@ namespace Transfer.ViewModels
     public class D05ViewModel
     {
         [DataMember]
-        public string Group_Product_Code { get; set; }
-        [DataMember]
         public string Group_Product { get; set; }
+
         [DataMember]
-        public string Product_Code { get; set; }
+        public string Group_Product_Code { get; set; }
+
         [DataMember]
         public string Processing_Date { get; set; }
+
+        [DataMember]
+        public string Product_Code { get; set; }
     }
 }

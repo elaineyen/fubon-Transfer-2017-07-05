@@ -1,5 +1,4 @@
 ﻿(function (window, undefind) {
-
     var verified = {};
     var created = {};
     var dateFormat;
@@ -7,8 +6,7 @@
 
     window.verified = verified;
     window.created = created;
-    verified.required = function (formid, elementid, message)
-    {       
+    verified.required = function (formid, elementid, message) {
         $("#" + formid).validate({
             errorPlacement: function (error, element) {
                 error.appendTo(element.parent());
@@ -22,8 +20,7 @@
         })
     }
 
-    verified.datepicker = function (formid, datepickerid, reportDateFlag,date)
-    {      
+    verified.datepicker = function (formid, datepickerid, reportDateFlag, date) {
         reportDateFlag = reportDateFlag || false;
 
         $("#" + formid).validate({
@@ -46,12 +43,10 @@
         })
     }
 
-    created.createDatepicker = function (datepickerid, reportDateFlag, date)
-    {
+    created.createDatepicker = function (datepickerid, reportDateFlag, date) {
         reportDateFlag = reportDateFlag || false;
         var d = null;
-        if (!(date === d))
-        {
+        if (!(date === d)) {
             if (reportDateFlag) {
                 d = verified.reportDate();
             }
@@ -84,8 +79,7 @@
     }
 
     created.createDatepickerRange = function (datepickerStartid,
-        datepickerEndid, reportDateFlag)
-    {
+        datepickerEndid, reportDateFlag) {
         var format = 'yy/mm/dd';
         reportDateFlag = reportDateFlag || false;
 
@@ -98,7 +92,7 @@
                         buttonText: '<i class="fa fa-calendar fa-2x toggle-btn"></i>',
                         onSelect: function (value) {
                             to.datepicker("option", "minDate", getDate(this));
-                            if (verified.isDate(value, reportDateFlag)) {                               
+                            if (verified.isDate(value, reportDateFlag)) {
                                 $(this).parent().children().each(function () {
                                     if ($(this).is('label') && $(this).hasClass('error'))
                                         $(this).remove();
@@ -139,61 +133,50 @@
     }
 
     verified.isDate = function (value, reportDate) {
-        
         reportDate = reportDate || false;
         value = value || '';
-        if ((typeof reportDate === 'boolean') && reportDate)
-        {
-          
+        if ((typeof reportDate === 'boolean') && reportDate) {
             return dateFormat.test(value) ? verifiedReportDate(value) : false;
-        }           
+        }
         else
             return dateFormat.test(value);
     }
 
-    verified.reportDate = function ()
-    {
+    verified.reportDate = function () {
         var d = getOnlyDate();
         var day = d.getDate();
-        if (day <= 5)
-        {
+        if (day <= 5) {
             d.setDate(1); //設定為當月份的第一天
             d.setDate(d.getDate() - 1); //將日期-1為上月的最後一天
             return d;
         }
-        else
-        {
+        else {
             d.setDate(25);
             return d;
-        }         
+        }
     }
 
     //formate string(yyyy/MM/dd) to date 失敗回傳 false
-    verified.datepickerStrToDate = function (value)
-    {
-        if(dateFormat.test(value))
-        {
+    verified.datepickerStrToDate = function (value) {
+        if (dateFormat.test(value)) {
             var d = value.split('/');
-            return new Date(d[0]+'-'+d[1]+'-'+d[2]);
+            return new Date(d[0] + '-' + d[1] + '-' + d[2]);
         }
         return false;
     }
 
-    function verifiedReportDate(value)
-    {
-        if(dateFormat.test(value))
-        {
+    function verifiedReportDate(value) {
+        if (dateFormat.test(value)) {
             var datepicker = verified.datepickerStrToDate(value);
-            if(!datepicker)
-            {
+            if (!datepicker) {
                 return false;
             }
-            if(datepicker.getDate() === 25)
+            if (datepicker.getDate() === 25)
                 return true;
             var d = getOnlyDate();
             d.setMonth(datepicker.getMonth() + 1);
             d.setDate(1);
-            d.setDate(d.getDate() - 1);            
+            d.setDate(d.getDate() - 1);
             if (datepicker.getTime() === d.getTime())
                 return true;
             return false;
@@ -201,30 +184,28 @@
         return false;
     }
 
-    function getOnlyDate()
-    {
+    function getOnlyDate() {
         var d = new Date();
         d = new Date(d.getFullYear() + '-' + padLeft((d.getMonth() + 1), 2) + '-' + (d.getDate()));
         return d;
     }
- 
-    function padLeft(str,lenght,padStr){
-        if(typeof lenght != 'number')
-            return str;
-        padStr = padStr || '0';
-        if(str.length >= lenght)
-            return str;
-        else
-            return padLeft(padStr +str,lenght+ padStr);
-    }
-    function padRight(str,lenght,padStr){
-        if(typeof lenght != 'number')
-            return str;
-        padStr = padStr || '0';
-        if(str.length >= lenght)
-            return str;
-        else
-            return padRight(str+padStr,lenght,padStr);
-    }
 
+    function padLeft(str, lenght, padStr) {
+        if (typeof lenght != 'number')
+            return str;
+        padStr = padStr || '0';
+        if (str.length >= lenght)
+            return str;
+        else
+            return padLeft(padStr + str, lenght + padStr);
+    }
+    function padRight(str, lenght, padStr) {
+        if (typeof lenght != 'number')
+            return str;
+        padStr = padStr || '0';
+        if (str.length >= lenght)
+            return str;
+        else
+            return padRight(str + padStr, lenght, padStr);
+    }
 })(window);
