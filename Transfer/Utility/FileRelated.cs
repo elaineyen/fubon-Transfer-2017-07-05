@@ -5,8 +5,10 @@ using System;
 using System.Configuration;
 using System.Data;
 using System.IO;
+using System.Linq;
 using System.Web;
 using Transfer.Enum;
+using static Transfer.Enum.Ref;
 
 //using MExcel = Microsoft.Office.Interop.Excel;
 namespace Transfer.Utility
@@ -72,7 +74,7 @@ namespace Transfer.Utility
         /// <param name="path">檔案放置位置</param>
         /// <param name="sheetName">寫入之sheet名稱</param>
         /// <returns>失敗時回傳錯誤訊息</returns>
-        public static string DataTableToExcel(DataTable dt, string path, string sheetName)
+        public static string DataTableToExcel(DataTable dt, string path, Excel_DownloadName type)
         {
             string result = string.Empty;
 
@@ -92,36 +94,32 @@ namespace Transfer.Utility
                 if ("2007".Equals(version))
                     wb = new XSSFWorkbook();
 
-                ws = wb.CreateSheet(sheetName);
+                ws = wb.CreateSheet(type.GetDescription());
 
-                ws.CreateRow(0);//第一行為欄位名稱
-                for (int i = 0; i < dt.Columns.Count; i++)
-                {
-                    ws.GetRow(0).CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
-                }
+                ExcelSetValue(ws, dt, type);
 
-                for (int i = 0; i < dt.Rows.Count; i++)
-                {
-                    ws.CreateRow(i + 1);
-                    for (int j = 0; j < dt.Columns.Count; j++)
-                    {
-                        if (sheetName.IndexOf("A7") > -1) //A7 系列
-                        {
-                            if (0.Equals(j)) //第一行固定為 string
-                            {
-                                ws.GetRow(i + 1).CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
-                            }
-                            else //後面皆為 double
-                            {
-                                ws.GetRow(i + 1).CreateCell(j).SetCellValue(Convert.ToDouble(dt.Rows[i][j]));
-                            }
-                        }
-                        else
-                        {
-                            ws.GetRow(i + 1).CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
-                        }
-                    }
-                }
+                //for (int i = 0; i < dt.Rows.Count; i++)
+                //{
+                //    ws.CreateRow(i + 1);
+                //    for (int j = 0; j < dt.Columns.Count; j++)
+                //    {
+                //        if (sheetName.IndexOf("A7") > -1) //A7 系列
+                //        {
+                //            if (0.Equals(j)) //第一行固定為 string
+                //            {
+                //                ws.GetRow(i + 1).CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
+                //            }
+                //            else //後面皆為 double
+                //            {
+                //                ws.GetRow(i + 1).CreateCell(j).SetCellValue(Convert.ToDouble(dt.Rows[i][j]));
+                //            }
+                //        }
+                //        else
+                //        {
+                //            ws.GetRow(i + 1).CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
+                //        }
+                //    }
+                //}
 
                 FileStream file = new FileStream(path, FileMode.Create);//產生檔案
                 wb.Write(file);
@@ -140,5 +138,48 @@ namespace Transfer.Utility
         }
 
         #endregion Download Excel
+
+        #region
+
+        private static void ExcelSetValue(ISheet ws, DataTable dt, Excel_DownloadName type)
+        {
+            ws.CreateRow(0);//第一行為欄位名稱
+            for (int i = 0; i < dt.Columns.Count; i++)
+            {
+                ws.GetRow(0).CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
+            }
+
+            if (type == Excel_DownloadName.A59)
+            {
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    ws.CreateRow(i + 1);
+                    for (int j = 0; j < dt.Columns.Count; j++)
+                    {
+                        ws.GetRow(i + 1).CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
+                    }
+                }
+            }
+            if (type == Excel_DownloadName.A72 || type == Excel_DownloadName.A73)
+            {
+                for (int i = 0; i < dt.Rows.Count; i++)
+                {
+                    ws.CreateRow(i + 1);
+                    for (int j = 0; j < dt.Columns.Count; j++)
+                    {
+                        if (0.Equals(j)) //第一行固定為 string
+                        {
+                            ws.GetRow(i + 1).CreateCell(j).SetCellValue(dt.Rows[i][j].ToString());
+                        }
+                        else //後面皆為 double
+                        {
+                            ws.GetRow(i + 1).CreateCell(j).SetCellValue(Convert.ToDouble(dt.Rows[i][j]));
+                        }
+                    }
+                }
+            }
+        }
+
+        #endregion
     }
 }

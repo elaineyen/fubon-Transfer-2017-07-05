@@ -22,3 +22,8 @@ select,
 textarea {
     max-width: 280px;
 }
+
+input:not(.form-control)[type=text] {
+    height:30px;
+    padding-left:10px;
+}

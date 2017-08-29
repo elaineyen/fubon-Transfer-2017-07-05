@@ -1,7 +1,10 @@
 ﻿using System.Configuration;
 using System.IO;
 using System.Web.Mvc;
+using Transfer.Infrastructure;
+using System.Linq;
 using Transfer.Utility;
+using static Transfer.Enum.Ref;
 
 namespace Transfer.Controllers
 {
@@ -57,5 +60,30 @@ namespace Transfer.Controllers
         }
 
         #endregion Excel 設定下載位置
+
+        #region downloadExel
+
+        [HttpGet]
+        [DeleteFile]
+        public ActionResult DownloadExcecl(string type)
+        {
+            try
+            {
+                string path = string.Empty;
+                if (EnumUtil.GetValues<Excel_DownloadName>()
+                    .Any(x => x.ToString().Equals(type)))
+                {
+                    path = type.GetExelName();
+                    //return File(ExcelLocation(path), "application/vnd.ms-excel", path);
+                    return File(ExcelLocation(path), "application/octet-stream", path);
+                }
+            }
+            catch
+            {
+            }
+            return null;
+        }
+
+        #endregion downloadExel
     }
 }

@@ -29,7 +29,7 @@ namespace Transfer.ViewModels
         public string Asset_Type { get; set; }
 
         [DataMember]
-        public string Balloon_Date { get; set; }
+        public string Baloon_Freq { get; set; }
 
         [DataMember]
         public string Bond_Aera { get; set; }
@@ -168,5 +168,8 @@ namespace Transfer.ViewModels
 
         [DataMember]
         public string Version { get; set; }
+
+        [DataMember]
+        public string Portfolio_Name { get; set; }
     }
 }

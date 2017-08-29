@@ -1,7 +1,7 @@
 ﻿@{
     ViewBag.Manu = "D0Main";
-    ViewBag.SubManu = "D05Sub";
-    ViewBag.Title = "D05(套用產品組合代碼)";
+    ViewBag.SubManu = "D05MortgageSub";
+    ViewBag.Title = "D05(套用產品組合代碼-房貸)";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <style>
@@ -25,28 +25,26 @@
             <form id="myForm1">
                 <table style="width:100%;margin-top:5px">
                     <tr>
-                        <td style="width:40%">
+                        <td style="white-space:nowrap">
                             <label>套用產品群代碼 :</label>
-                            <input type="text" id="Group_Product_Code" name="Group_Product_Code" maxlength="3">
+                            @Html.DropDownList("Group_Product_Code",
+                             (SelectList)ViewBag.GroupProduct,
+                             new { @class = "form-control", @style = "display:inline-block" })
                         </td>
                         <td>
-                            <label>產品群別說明 :</label>
-                            <input type="text" id="Group_Product" name="Group_Product" style="width:500px" maxlength="100">
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="white-space:nowrap">
                             <label>產品 :</label>
                             <input type="text" id="Product_Code" name="Product_Code" style="width:235px" maxlength="64">
                         </td>
-                        <td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
                             <label>資料處理日期 :</label>
                             <input type="text" id="Processing_Date" name="Processing_Date" maxlength="10">
                         </td>
                     </tr>
                 </table>
             </form>
-            <table style="margin-top:4px" align="center">
+            <table align="center">
                 <tr>
                     <td id="tdSearch">
                         <input type="button" class="btn btn-primary" value="查詢" id="btnSearch" />
@@ -80,15 +78,9 @@
                     套用產品群代碼：
                 </td>
                 <td style="white-space:nowrap">
-                    <input type="text" name="editGroup_Product_Code" id="editGroup_Product_Code" maxlength="3">
-                </td>
-            </tr>
-            <tr>
-                <td style="white-space:nowrap; text-align:right">
-                    產品群別說明：
-                </td>
-                <td style="white-space:nowrap">
-                    <input type="text" name="editGroup_Product" id="editGroup_Product" maxlength="100">
+                    @Html.DropDownList("editGroup_Product_Code",
+                             (SelectList)ViewBag.GroupProduct,
+                             new { @class = "form-control", @style = "display:inline-block" })
                 </td>
             </tr>
             <tr>
@@ -141,18 +133,18 @@
         created.createDatepicker('Processing_Date', false, null);
         //#endregion
 
-        //#region 一開始就出現全部資料
-        GetAllData();
+        //#region Set Default
+        var debtType = '@Transfer.Enum.Ref.GroupProductCode.M.ToString()';
         //#endregion
 
         //#region 取得全部資料
         function GetAllData() {
-            showJqgrid("1", "", "", "", "");
+            showJqgrid("1", "", "", "");
         }
         //#endregion
 
         //#region 去controller 撈取資料並且用JqGrid套件顯示
-        function showJqgrid(type, groupProductCode, groupProduct, productCode, processingDate) {
+        function showJqgrid(type, groupProductCode, productCode, processingDate) {
             clearJqgrid();
 
             var title = ''; //標頭
@@ -160,19 +152,22 @@
             var dataString = "";
             var urlString = "";
 
-            title = 'D05套用產品組合代碼';
+            title = '@ViewBag.Title';
             colNameArray = ['Group_Product_Code', 'Group_Product',
                             'Product_Code', 'Processing_Date'];
 
             switch (type) {
                 case "1":
-                    dataString = "";
+                    dataString = JSON.stringify({
+                        debtType: debtType
+                    });
+
                     urlString = url.getAllData;
                     break;
                 case "2":
                     dataString = JSON.stringify({
+                        debtType: debtType,
                         groupProductCode: groupProductCode,
-                        groupProduct: groupProduct,
                         productCode: productCode,
                         processingDate: processingDate
                     });
@@ -236,7 +231,7 @@
                                     { name: "Processing_Date", index: "Processing_Date", align: 'center' },
                 ];
 
-                colNameArray = ['Actions','套用產品群代碼', '產品群別說明',
+                colNameArray = ['Actions', '套用產品群代碼', '產品群別說明',
                                 '產品', '資料處理日期'];
 
                 $('#jqgridDiv').append('<table id="' + listId + '"></table>');
@@ -258,7 +253,7 @@
                     autowidth: true,
                     shrinkToFit: false,
                     viewsortcols: [true, 'vertical', true],
-                    viewrecords :true,
+                    viewrecords: true,
                     ajaxRowOptions: { contentType: "application/json" },
                     serializeRowData: function (data) {
                         return JSON.stringify(data);
@@ -304,7 +299,6 @@
         //#region SearchReset
         function SearchReset() {
             $('#Group_Product_Code').val("");
-            $('#Group_Product').val("");
             $('#Product_Code').val("");
             $('#Processing_Date').val("");
         }
@@ -313,7 +307,6 @@
         //#region SearchData
         function SearchData() {
             var groupProductCode = $('#Group_Product_Code').val().trim();
-            var groupProduct = $('#Group_Product').val().trim();
             var productCode = $('#Product_Code').val().trim();
             var processingDate = $('#Processing_Date').val().trim();
 
@@ -324,7 +317,7 @@
                 }
             }
 
-            showJqgrid("2", groupProductCode, groupProduct, productCode, processingDate);
+            showJqgrid("2", groupProductCode, productCode, processingDate);
         }
         //#endregion
 
@@ -344,19 +337,7 @@
 
         //#region AddData
         function AddData() {
-            $("#dialogEdit").dialog({ title: "新增" });
-
-            $("#actionType").val("Add");
-
-            $('#editGroup_Product_Code').val("").prop('disabled', false);
-            $('#editGroup_Product').val("").prop('disabled', false);
-            $('#editProduct_Code').val("").prop('disabled', false);
-            $('#spanProcessing_Date').html("").prop('disabled', true);
-
-            $('#btnSave').show();
-            $('#btnDelete').hide();
-
-            $("#dialogEdit").dialog("open");
+            SetAction("Add", null, "新增");
         }
         //#endregion
 
@@ -364,16 +345,10 @@
         function SaveData() {
             var actionType = $('#actionType').val();
             var groupProductCode = $('#editGroup_Product_Code').val().trim();
-            var groupProduct = $('#editGroup_Product').val().trim();
             var productCode = $('#editProduct_Code').val().trim();
 
             if (groupProductCode == "") {
                 toastr.error("套用產品群代碼 必填");
-                return false;
-            }
-
-            if (groupProduct == "") {
-                toastr.error("產品群別說明 必填");
                 return false;
             }
 
@@ -385,9 +360,9 @@
             $.ajax({
                 type: "POST",
                 data: JSON.stringify({
+                    debtType: debtType,
                     actionType: actionType,
                     groupProductCode: groupProductCode,
-                    groupProduct: groupProduct,
                     productCode: productCode
                 }),
                 dataType: "json",
@@ -402,7 +377,7 @@
                     toastr.success(result.DESCRIPTION);
                     $("#dialogEdit").dialog("close");
                     SearchReset();
-                    SearchData();
+                    GetAllData();
                 }
                 else {
                     toastr.error(result.DESCRIPTION);
@@ -431,7 +406,7 @@
                         toastr.success(result.DESCRIPTION);
                         $("#dialogEdit").dialog("close");
                         SearchReset();
-                        SearchData();
+                        GetAllData();
                     }
                     else {
                         toastr.error(result.DESCRIPTION);
@@ -442,69 +417,77 @@
         //#endregion
     });
 
-    function D05list1Edit(id) {
-        $("#dialogEdit").dialog({ title: "修改" });
+    //#region SetAction
+    function SetAction(actionType, id, dialogTitle) {
+        $("#actionType").val(actionType);
 
-        $("#actionType").val("Modify");
+        $("#dialogEdit").dialog({
+            title: dialogTitle,
+            position: { my: "center", at: "center", of: window },
+        });
 
-        if (id == null) {
-            alert("請選取要修改的資料行");
-            return false;
+        if (actionType == "Add") {
+            $('#editGroup_Product_Code').val("");
+            $('#editProduct_Code').val("");
+            $('#spanProcessing_Date').html("");
+        }
+        else {
+            if (id == null) {
+                alert("請選取要" + dialogTitle + "的資料行");
+                return false;
+            }
+
+            $('#editGroup_Product_Code').val($("#list1").getCell(id, "Group_Product_Code"));
+            $('#editProduct_Code').val($("#list1").getCell(id, "Product_Code"));
+            $('#spanProcessing_Date').html($("#list1").getCell(id, "Processing_Date"));
         }
 
-        $('#editGroup_Product_Code').val($("#list1").getCell(id, "Group_Product_Code")).prop('disabled', false);
-        $('#editGroup_Product').val($("#list1").getCell(id, "Group_Product")).prop('disabled', false);
-        $('#editProduct_Code').val($("#list1").getCell(id, "Product_Code")).prop('disabled', true);
-        $('#spanProcessing_Date').html($("#list1").getCell(id, "Processing_Date")).prop('disabled', true);
+        $('#editGroup_Product_Code').prop('disabled', true);
+        $('#editProduct_Code').prop('disabled', true);
+        $('#spanProcessing_Date').prop('disabled', true);
 
-        $('#btnSave').show();
-        $('#btnDelete').hide();
+        switch (actionType) {
+            case "Add":
+            case "Modify":
+                $('#editGroup_Product_Code').prop('disabled', false);
+                $('#editProduct_Code').prop('disabled', false);
+                $('#spanProcessing_Date').prop('disabled', false);
+
+                if (actionType == "Modify") {
+                    $('#editProduct_Code').prop('disabled', true);
+                }
+
+                $('#btnSave').show();
+                $('#btnDelete').hide();
+
+                break;
+            case "View":
+                $('#btnSave').hide();
+                $('#btnDelete').hide();
+
+                break;
+            case "Delete":
+                $('#btnSave').hide();
+                $('#btnDelete').show();
+
+                break;
+        }
 
         $("#dialogEdit").dialog("open");
     }
+    //#endregion
+
+    function D05list1Edit(id) {
+        SetAction("Modify", id, "修改");
+    }
 
     function D05list1View(id) {
-        $("#dialogEdit").dialog({ title: "檢視" });
-
-        $("#actionType").val("View");
-
-        if (id == null) {
-            alert("請選取要檢視的資料行");
-            return false;
-        }
-
-        $('#editGroup_Product_Code').val($("#list1").getCell(id, "Group_Product_Code")).prop('disabled', true);
-        $('#editGroup_Product').val($("#list1").getCell(id, "Group_Product")).prop('disabled', true);
-        $('#editProduct_Code').val($("#list1").getCell(id, "Product_Code")).prop('disabled', true);
-        $('#spanProcessing_Date').html($("#list1").getCell(id, "Processing_Date")).prop('disabled', true);
-
-        $('#btnSave').hide();
-        $('#btnDelete').hide();
-
-        $("#dialogEdit").dialog("open");
+        SetAction("View", id, "檢視");
     }
 
     //#region DeleteData
     function D05list1Dele(id) {
-        $("#dialogEdit").dialog({ title: "刪除" });
-
-        $("#actionType").val("Delete");
-
-        if (id == null) {
-            alert("請選取要刪除的資料行");
-            return false;
-        }
-        else {
-            $('#editGroup_Product_Code').val($("#list1").getCell(id, "Group_Product_Code")).prop('disabled', true);
-            $('#editGroup_Product').val($("#list1").getCell(id, "Group_Product")).prop('disabled', true);
-            $('#editProduct_Code').val($("#list1").getCell(id, "Product_Code")).prop('disabled', true);
-            $('#spanProcessing_Date').html($("#list1").getCell(id, "Processing_Date")).prop('disabled', true);
-
-            $('#btnSave').hide();
-            $('#btnDelete').show();
-
-            $("#dialogEdit").dialog("open");
-        }
+        SetAction("Delete", id, "刪除");
     }
     //#endregion
 </script>

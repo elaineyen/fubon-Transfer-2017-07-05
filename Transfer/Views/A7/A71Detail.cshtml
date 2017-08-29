@@ -1,4 +1,6 @@
-﻿@{
+﻿@using Transfer.Utility;
+@using Transfer.Enum;
+@{
     ViewBag.Manu = "A7Main";
     ViewBag.SubManu = "A71Sub";
     ViewBag.Title = "A71 (轉移矩陣資料檔_Moody)";
@@ -33,7 +35,7 @@
             var id = $(this).attr('id');
             switch (id) {
                 case 'btnA71Search':
-                    $("#" + id).on('click', function () { showJqgrid('A71') });
+                    $("#" + id).on('click', function () { showJqgrid('@Ref.Table_Type.A71.ToString()') });
                     break;
             }
         })
@@ -42,21 +44,14 @@
         //#region 去controller 撈取資料並且用JqGrid套件顯示
         function showJqgrid(type) {
             clearJqgrid();
-            var title = ''; //標頭
-            var colNameArray = []; //每個欄位名稱要對應傳入資料屬性
-            var data; // json Data 由Ajax 拿到
-            switch (type) {
-                case "A71":
-                    title = 'Moody_Tm_YYYY(A71)';
-                    colNameArray = ['From_To', 'Aaa', 'Aa1', 'Aa2',
+            var title = '@Ref.Table_Type.A71.GetDescription()'; //標頭
+            var colNameArray = ['From_To', 'Aaa', 'Aa1', 'Aa2',
                              'Aa3', 'A1', 'A2', 'A3',
                              'Baa1', 'Baa2', 'Baa3',
                              'Ba1', 'Ba2', 'Ba3',
                              'B1', 'B2', 'B3',
                              'Caa1', 'Caa2', 'Caa3',
-                             'Ca_C', 'WR', 'Default_Value'];
-                    break;
-            }
+                             'Ca_C', 'WR', 'Default_Value']; //每個欄位名稱要對應傳入資料屬性
             $.ajax({
                 type: "POST",
                 data: JSON.stringify({
@@ -68,7 +63,7 @@
             })
             .done(function (result) {
                 if (result.RETURN_FLAG) {
-                    data = result.Datas.Data;
+                    var data = result.Datas.Data; // json Data 由Ajax 拿到
                     createJqgrid("list1", "pager1", colNameArray, data, title);
                 }
                 else {

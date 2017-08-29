@@ -27,7 +27,7 @@ namespace Transfer.Models
         public Nullable<double> Current_Int_Rate { get; set; }
         public Nullable<double> EIR { get; set; }
         public string Impairment_Stage { get; set; }
-        public string Version { get; set; }
+        public Nullable<int> Version { get; set; }
         public string Lien_position { get; set; }
         public Nullable<double> Ori_Amount { get; set; }
         public Nullable<double> Principal { get; set; }

@@ -19,6 +19,7 @@ namespace Transfer.Controllers
         private IA4Repository A4Repository;
         private ICommon CommonFunction;
         private string[] selects = { "All", "B01", "C01" };
+        private string[] selectsMortgage = { "All", "B01", "C01", "C02" };
 
         public A4Controller()
         {
@@ -69,7 +70,8 @@ namespace Transfer.Controllers
         public ActionResult A43Detail()
         {
             ViewBag.selectOption = new SelectList(
-                selects.Select(x => new { Text = x, Value = x }), "Value", "Text");
+                selectsMortgage.Select(x => new { Text = x, Value = x }), "Value", "Text");
+
             return View();
         }
 
@@ -147,6 +149,10 @@ namespace Transfer.Controllers
         [HttpPost]
         public JsonResult GetLogData(string debt)
         {
+            if (Debt_Type.M.ToString().Equals(debt))
+            {
+                selects = selectsMortgage;
+            }
             List<string> logDatas = A4Repository.GetLogData(selects.ToList(), debt);
             return Json(string.Join(",", logDatas));
         }
@@ -355,9 +361,17 @@ namespace Transfer.Controllers
                     result = A4Repository.saveC01(version, dat, debt);
                     bool C01Log = CommonFunction.saveLog(Table_Type.C01, fileName, SetFile.ProgramName,
                         result.RETURN_FLAG, debt, startTime, DateTime.Now); //寫sql Log
-                    result.Datas = Json(transferMessage(false, string.Empty)); //目前到C01 而已
+                    result.Datas = Json(transferMessage(next, Transfer_Table_Type.C02.ToString()));
+                    break;
+
+                case "C02":
+                    result = A4Repository.saveC02(version, dat, debt);
+                    bool C02Log = CommonFunction.saveLog(Table_Type.C02, fileName, SetFile.ProgramName,
+                        result.RETURN_FLAG, debt, startTime, DateTime.Now); //寫sql Log
+                    result.Datas = Json(transferMessage(false, string.Empty)); //目前到C02 而已
                     break;
             }
+
             return Json(result);
         }
 

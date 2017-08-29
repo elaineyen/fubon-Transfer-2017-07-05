@@ -85,13 +85,13 @@ namespace Transfer.Models.Repository
         public MSGReturnModel saveMenu(List<CheckBoxListInfo> menuSub, string userName)
         {
             MSGReturnModel result = new MSGReturnModel();
-            if (!menuSub.Any())
+            if (!menuSub.Any() && userName.IsNullOrWhiteSpace())
             {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Message_Type.parameter_Error.GetDescription();
                 return result;
             }
-            List<IFRS9_Menu_Set> sets = db.IFRS9_Menu_Set.AsEnumerable()
+            List<IFRS9_Menu_Set> sets = db.IFRS9_Menu_Set
                 .Where(x => userName.Equals(x.User_Name)).ToList();
             foreach (CheckBoxListInfo item in menuSub)
             {

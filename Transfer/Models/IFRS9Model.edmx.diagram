@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
- <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
@@ -11,9 +11,6 @@
         <EntityTypeShape EntityType="IFRS9Model.Moody_Quartly_PD_Info" Width="1.5" PointX="0.75" PointY="4.125" IsExpanded="true" />
         <EntityTypeShape EntityType="IFRS9Model.Moody_Tm_YYYY" Width="1.5" PointX="2.75" PointY="3.75" />
         <EntityTypeShape EntityType="IFRS9Model.Grade_Moody_Info" Width="1.5" PointX="0.75" PointY="6.125" />
-        <EntityTypeShape EntityType="IFRS9Model.Bond_Account_Info" Width="1.5" PointX="4.875" PointY="0.75" />
-        <EntityTypeShape EntityType="IFRS9Model.IFRS9_Main" Width="1.5" PointX="7" PointY="0.75" />
-        <EntityTypeShape EntityType="IFRS9Model.EL_Data_In" Width="1.5" PointX="9" PointY="0.75" />
         <EntityTypeShape EntityType="IFRS9Model.IFRS9_Menu_Main" Width="1.5" PointX="9.125" PointY="7.375" />
         <EntityTypeShape EntityType="IFRS9Model.IFRS9_Menu_Set" Width="1.5" PointX="11.25" PointY="9.875" />
         <EntityTypeShape EntityType="IFRS9Model.IFRS9_Menu_Sub" Width="1.5" PointX="9.125" PointY="9.875" />
@@ -23,9 +20,22 @@
         <EntityTypeShape EntityType="IFRS9Model.Loan_Account_Info" Width="1.5" PointX="11.25" PointY="0.75" />
         <EntityTypeShape EntityType="IFRS9Model.Loan_IAS39_Info" Width="1.5" PointX="13.5" PointY="0.75" />
         <EntityTypeShape EntityType="IFRS9Model.Moody_LGD_Info" Width="1.5" PointX="2.75" PointY="9.5" />
-        <EntityTypeShape EntityType="IFRS9Model.Treasury_Securities_Info" Width="1.5" PointX="0.75" PointY="12.75" />
-        <EntityTypeShape EntityType="IFRS9Model.Transfer_CheckTable" Width="1.5" PointX="3.375" PointY="12.75" />
-        <EntityTypeShape EntityType="IFRS9Model.Group_Product_Code_Mapping" Width="1.5" PointX="11.375" PointY="12.75" />
+        <EntityTypeShape EntityType="IFRS9Model.Treasury_Securities_Info" Width="1.5" PointX="0.75" PointY="10.875" />
+        <EntityTypeShape EntityType="IFRS9Model.Transfer_CheckTable" Width="1.5" PointX="2.875" PointY="11.625" />
+        <EntityTypeShape EntityType="IFRS9Model.Group_Product" Width="1.5" PointX="11.125" PointY="13.25" />
+        <EntityTypeShape EntityType="IFRS9Model.Group_Product_Code_Mapping" Width="1.5" PointX="13.375" PointY="15.25" />
+        <AssociationConnector Association="IFRS9Model.FK_Group_Product_Code_Mapping_Group_Product" />
+        <EntityTypeShape EntityType="IFRS9Model.Flow_Info" Width="1.5" PointX="8.5" PointY="13.75" />
+        <AssociationConnector Association="IFRS9Model.FK_Flow_Info_Flow_Info" />
+        <EntityTypeShape EntityType="IFRS9Model.EL_Data_Out" Width="1.5" PointX="15.625" PointY="14.25" />
+        <AssociationConnector Association="IFRS9Model.FK_EL_Data_Out_Group_Product_Code_Mapping" />
+        <EntityTypeShape EntityType="IFRS9Model.Bond_Account_Info" Width="1.5" PointX="4.875" PointY="0.75" />
+        <EntityTypeShape EntityType="IFRS9Model.Bond_Rating_Info" Width="1.5" PointX="17.5" PointY="0.875" />
+        <EntityTypeShape EntityType="IFRS9Model.Bond_Rating_Summary" Width="1.5" PointX="15.5" PointY="0.875" />
+        <EntityTypeShape EntityType="IFRS9Model.Rating_History" Width="1.5" PointX="15.625" PointY="19.125" />
+        <AssociationConnector Association="IFRS9Model.FK_Rating_History_Group_Product_Code_Mapping" />
+        <EntityTypeShape EntityType="IFRS9Model.EL_Data_In" Width="1.5" PointX="9.125" PointY="0.75" />
+        <EntityTypeShape EntityType="IFRS9Model.IFRS9_Main" Width="1.5" PointX="7" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

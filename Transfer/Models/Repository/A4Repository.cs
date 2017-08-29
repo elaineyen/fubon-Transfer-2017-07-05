@@ -19,9 +19,16 @@ namespace Transfer.Models.Repository
         public A4Repository()
         {
             this.db = new IFRS9Entities();
+            this.common = new Common();
         }
 
         protected IFRS9Entities db
+        {
+            get;
+            private set;
+        }
+
+        protected Common common
         {
             get;
             private set;
@@ -146,97 +153,142 @@ namespace Transfer.Models.Repository
         public MSGReturnModel saveA41(List<A41ViewModel> dataModel, string reportDate)
         {
             MSGReturnModel result = new MSGReturnModel();
-            DateTime dt = TypeTransfer.stringToDateTime(reportDate);
+            DateTime start = DateTime.Now;
+            //DateTime dt = TypeTransfer.stringToDateTime(reportDate);
+            string type = Table_Type.A41.ToString();
+
+            if (!dataModel.Any())
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = Message_Type.not_Find_Any.GetDescription();
+                return result;
+            }
+            var dts = dataModel.Select(x => x.Report_Date).Distinct();
+            var vers = dataModel.Select(x => x.Version).Distinct();
+            if (dts.Count() > 1 || vers.Count() > 1)
+            {
+                //report Date 大於一種判斷要不要防呆
+            }
+            DateTime dt = TypeTransfer.stringToDateTime(dts.First());
+            int verInt = 0;
+            string ver = vers.First();
+            if (!Int32.TryParse(ver, out verInt))
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = Message_Type.parameter_Error.GetDescription();
+                return result;
+            }
+                
+            if (db.Bond_Account_Info.Any() &&
+                (!common.checkTransferCheck(type, type, dt, ver) ||
+                 db.Bond_Account_Info
+                .FirstOrDefault(x => x.Report_Date != null &&
+                                      x.Report_Date == dt &&
+                                      x.Version == verInt) != null))
+            //資料裡面已經有相同的 Report_Date , version
+            {
+                common.saveTransferCheck(
+                    type,
+                    false,
+                    dt,
+                    ver,
+                    start,
+                    DateTime.Now
+                );
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = Message_Type.already_Save.GetDescription();
+                return result;
+            }
+            foreach (var item in dataModel)
+            {
+                db.Bond_Account_Info.Add(
+                new Bond_Account_Info()
+                {
+                    Reference_Nbr = item.Reference_Nbr,
+                    Bond_Number = item.Bond_Number,
+                    Lots = item.Lots,
+                    Segment_Name = item.Segment_Name,
+                    CURR_SP_Issuer = item.Curr_Sp_Issuer,
+                    CURR_Moodys_Issuer = item.Curr_Moodys_Issuer,
+                    CURR_Fitch_Issuer = item.Curr_Fitch_Issuer,
+                    CURR_TW_Issuer = item.Curr_Tw_Issuer,
+                    CURR_SP_Issue = item.Curr_Sp_Issue,
+                    CURR_Moodys_Issue = item.Curr_Moodys_Issue,
+                    CURR_Fitch_Issue = item.Curr_Fitch_Issue,
+                    CURR_TW_Issue = item.Curr_Tw_Issue,
+                    Ori_Amount = TypeTransfer.stringToDoubleN(item.Ori_Amount),
+                    Current_Int_Rate = TypeTransfer.stringToDoubleN(item.Current_Int_Rate),
+                    Origination_Date = TypeTransfer.stringToDateTimeN(item.Origination_Date),
+                    Maturity_Date = TypeTransfer.stringToDateTimeN(item.Maturity_Date),
+                    Principal_Payment_Method_Code = item.Principal_Payment_Method_Code,
+                    Payment_Frequency = item.Payment_Frequency,
+                    Baloon_Freq = item.Baloon_Freq,
+                    ISSUER_AREA = item.Issuer_Area,
+                    Industry_Sector = item.Industry_Sector,
+                    PRODUCT = item.Product,
+                    FINANCE_INSTRUMENTS = item.Finance_Instruments,
+                    IAS39_CATEGORY = item.Ias39_Category,
+                    Principal = TypeTransfer.stringToDoubleN(item.Principal),
+                    Amort_Amt_Tw = TypeTransfer.stringToDoubleN(item.Amort_Amt_Tw),
+                    Interest_Receivable = TypeTransfer.stringToDoubleN(item.Interest_Receivable),
+                    Interest_Receivable_tw = TypeTransfer.stringToDoubleN(item.Interest_Receivable_tw),
+                    Interest_Rate_Type = item.Interest_Rate_Type,
+                    IMPAIR_YN = item.Impair_Yn,
+                    EIR = TypeTransfer.stringToDoubleN(item.Eir),
+                    Currency_Code = item.Currency_Code,
+                    Report_Date = TypeTransfer.stringToDateTimeN(item.Report_Date),
+                    ISSUER = item.Issuer,
+                    Country_Risk = item.Country_Risk,
+                    Ex_rate = TypeTransfer.stringToDoubleN(item.Ex_rate),
+                    Lien_position = item.Lien_position,
+                    Portfolio = item.Portfolio,
+                    //Dept = item.Dept,
+                    ASSET_SEG = item.Asset_Seg,
+                    Ori_Ex_rate = TypeTransfer.stringToDoubleN(item.Ori_Ex_rate),
+                    Bond_Type = item.Bond_Type,
+                    Assessment_Sub_Kind = item.Assessment_Sub_Kind,
+                    Processing_Date = TypeTransfer.stringToDateTimeN(item.Processing_Date),
+                    Version = TypeTransfer.stringToIntN(item.Version),
+                    Bond_Aera = "NTD".Equals(item.Currency_Code) ? "國內" : "國外",
+                    //IH_OS  //IH->自操，OS->委外
+                    Amount_TW_Ori_Ex_rate = TypeTransfer.DoubleNMultip(
+                        TypeTransfer.stringToDoubleN(item.Ori_Amount),
+                        TypeTransfer.stringToDoubleN(item.Ori_Ex_rate)),
+                    Amort_Amt_Ori_Tw = TypeTransfer.DoubleNMultip(
+                        TypeTransfer.stringToDoubleN(item.Principal),
+                        TypeTransfer.stringToDoubleN(item.Ori_Ex_rate)),
+                    //Market_Value_Ori = //需為已乘上單位數的市價
+                    //Market_Value_TW = //(57)Market_Value_Ori*(41)Ex_rate
+                });
+            }
             try
             {
-                if (!dataModel.Any())
-                {
-                    result.RETURN_FLAG = false;
-                    result.DESCRIPTION = Message_Type.not_Find_Any.GetDescription();
-                    return result;
-                }
-                if (db.Bond_Account_Info.Any() &&
-                    db.Bond_Account_Info
-                    .FirstOrDefault(x => x.Report_Date != null
-                    && x.Report_Date == dt) != null)
-                //資料裡面已經有相同的 Report_Date ?? 是否需加入 version
-                {
-                    result.RETURN_FLAG = false;
-                    result.DESCRIPTION = Message_Type.already_Save.GetDescription();
-                    return result;
-                }
-                foreach (var item in dataModel)
-                {
-                    db.Bond_Account_Info.Add(
-                    new Bond_Account_Info()
-                    {
-                        Reference_Nbr = item.Reference_Nbr,
-                        Bond_Number = item.Bond_Number,
-                        Lots = item.Lots,
-                        Segment_Name = item.Segment_Name,
-                        Curr_Sp_Issuer = item.Curr_Sp_Issuer,
-                        Curr_Moodys_Issuer = item.Curr_Moodys_Issuer,
-                        Curr_Fitch_Issuer = item.Curr_Fitch_Issuer,
-                        Curr_Tw_Issuer = item.Curr_Tw_Issuer,
-                        Curr_Sp_Issue = item.Curr_Sp_Issue,
-                        Curr_Moodys_Issue = item.Curr_Moodys_Issue,
-                        Curr_Fitch_Issue = item.Curr_Fitch_Issue,
-                        Curr_Tw_Issue = item.Curr_Tw_Issue,
-                        Ori_Amount = TypeTransfer.stringToDoubleN(item.Ori_Amount),
-                        Current_Int_Rate = TypeTransfer.stringToDoubleN(item.Current_Int_Rate),
-                        Origination_Date = TypeTransfer.stringToDateTimeN(item.Origination_Date),
-                        Maturity_Date = TypeTransfer.stringToDateTimeN(item.Maturity_Date),
-                        Principal_Payment_Method_Code = item.Principal_Payment_Method_Code,
-                        Payment_Frequency = item.Payment_Frequency,
-                        Balloon_Date = item.Balloon_Date,
-                        Issuer_Area = item.Issuer_Area,
-                        Industry_Sector = item.Industry_Sector,
-                        Product = item.Product,
-                        Finance_Instruments = item.Finance_Instruments,
-                        Ias39_Category = item.Ias39_Category,
-                        Principal = TypeTransfer.stringToDoubleN(item.Principal),
-                        Amort_Amt_Tw = TypeTransfer.stringToDoubleN(item.Amort_Amt_Tw),
-                        Interest_Receivable = TypeTransfer.stringToDoubleN(item.Interest_Receivable),
-                        Interest_Receivable_tw = TypeTransfer.stringToDoubleN(item.Interest_Receivable_tw),
-                        Interest_Rate_Type = item.Interest_Rate_Type,
-                        Impair_Yn = item.Impair_Yn,
-                        Eir = TypeTransfer.stringToDoubleN(item.Eir),
-                        Currency_Code = item.Currency_Code,
-                        Report_Date = dt,
-                        Issuer = item.Issuer,
-                        Country_Risk = item.Country_Risk,
-                        Ex_rate = TypeTransfer.stringToDoubleN(item.Ex_rate),
-                        Lien_position = item.Lien_position,
-                        Portfolio = item.Portfolio,
-                        Dept = item.Dept,
-                        Asset_Seg = item.Asset_Seg,
-                        Ori_Ex_rate = TypeTransfer.stringToDoubleN(item.Ori_Ex_rate),
-                        Bond_Type = item.Bond_Type,
-                        Assessment_Sub_Kind = item.Assessment_Sub_Kind,
-                        Processing_Date = TypeTransfer.stringToDateTimeN(item.Processing_Date),
-                        Version = item.Version,
-                        Bond_Aera = "NTD".Equals(item.Currency_Code) ? "國內" : "國外",
-                        //IH_OS  //IH->自操，OS->委外
-                        Amount_TW_Ori_Ex_rate = TypeTransfer.DoubleNMultip(
-                            TypeTransfer.stringToDoubleN(item.Ori_Amount),
-                            TypeTransfer.stringToDoubleN(item.Ori_Ex_rate)),
-                        Amort_Amt_Ori_Tw = TypeTransfer.DoubleNMultip(
-                            TypeTransfer.stringToDoubleN(item.Principal),
-                            TypeTransfer.stringToDoubleN(item.Ori_Ex_rate)),
-                        //Market_Value_Ori = //需為已乘上單位數的市價
-                        //Market_Value_TW = //(57)Market_Value_Ori*(41)Ex_rate
-                    });
-                }
                 db.SaveChanges(); //Save
+                common.saveTransferCheck(
+                       type,
+                       true,
+                       dt,
+                       ver,
+                       start,
+                       DateTime.Now
+                   );
                 result.RETURN_FLAG = true;
             }
             catch (DbUpdateException ex)
             {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Message_Type
-                        .save_Fail.GetDescription(Table_Type.A41.ToString(),
+                        .save_Fail.GetDescription(type,
                         $"message: {ex.Message}" +
                         $", inner message {ex.InnerException?.InnerException?.Message}");
+                common.saveTransferCheck(
+                        type,
+                        false,
+                        dt,
+                        ver,
+                        start,
+                        DateTime.Now
+                    );
             }
             return result;
         }
@@ -244,7 +296,6 @@ namespace Transfer.Models.Repository
         #endregion Save A41
 
         #region Save A42
-
         /// <summary>
         /// A42 save db
         /// </summary>
@@ -262,8 +313,15 @@ namespace Transfer.Models.Repository
                     return result;
                 }
 
-                var query = db.Treasury_Securities_Info.AsEnumerable().Where(x => x.Report_Date.ToString("yyyy/MM/dd") == dataModel[0].Report_Date);
-                db.Treasury_Securities_Info.RemoveRange(query);
+                foreach (var item in dataModel)
+                {
+                    var query = db.Treasury_Securities_Info.AsEnumerable()
+                               .Where(x => x.Bond_Number == item.Bond_Number
+                                           && x.Lots == item.Lots
+                                           && x.Report_Date.ToString("yyyy/MM/dd") == item.Report_Date);
+
+                    db.Treasury_Securities_Info.RemoveRange(query);
+                }
 
                 foreach (var item in dataModel)
                 {
@@ -297,7 +355,6 @@ namespace Transfer.Models.Repository
 
             return result;
         }
-
         #endregion Save A42
 
         #region Save B01
@@ -322,9 +379,9 @@ namespace Transfer.Models.Repository
                     if (db.Bond_Account_Info.Any())
                     {
                         List<Bond_Account_Info> addData = //這次要新增的資料
-                            db.Bond_Account_Info.AsEnumerable()
+                            db.Bond_Account_Info
                             .Where(x => x.Report_Date != null &&
-                            date.Equals(x.Report_Date.Value) //抓取相同的Report_date
+                            date == x.Report_Date.Value //抓取相同的Report_date
                             && version.Equals(x.Version)).ToList();  //抓取相同的 Verison
                         if (!addData.Any())
                         {
@@ -360,19 +417,19 @@ namespace Transfer.Models.Repository
                                    Interest_Receivable = x.Interest_Receivable, //
                                    Principal_Payment_Method_Code = x.Principal_Payment_Method_Code, //
                                    //Total_Period = //
-                                   Current_Int_Rate = transferCurrentIntRate(x.Current_Int_Rate, x.Eir),//
+                                   Current_Int_Rate = transferCurrentIntRate(x.Current_Int_Rate, x.EIR),//
                                    //Current_Pd = //
                                    //Current_Lgd = //
                                    //Remaining_Month = //
-                                   Eir = TypeTransfer.doubleNToDouble(x.Eir) <= 0d ?
-                                          0.00001 : x.Eir.Value / 100, //
+                                   Eir = TypeTransfer.doubleNToDouble(x.EIR) <= 0d ?
+                                          0.00001 : x.EIR.Value / 100, //
                                    //CPD_Segment_Code = //
                                    //Processing_Date = //
                                    Product_Code = transferProductCode(x.Principal_Payment_Method_Code), //
                                    //Department = //
                                    //PD_Model_Code = //
                                    //18 //Current_Rating_Code = x.
-                                   Report_Date = x.Report_Date,
+                                   Report_Date = x.Report_Date.Value,
                                    Maturity_Date = x.Maturity_Date, //
                                    //Account_Code = //
                                    //BadCredit_Ind = //
@@ -429,13 +486,11 @@ namespace Transfer.Models.Repository
                     {
                         List<Loan_IAS39_Info> IAS39Data =
                             db.Loan_IAS39_Info
-                            //.AsEnumerable()
-                            .Where(x => date.Equals(x.Report_Date)).ToList();
+                            .Where(x => date == x.Report_Date).ToList();
+                        var ref_Nbrs = IAS39Data.Select(y => y.Reference_Nbr);
                         List<Loan_Account_Info> AccountData =
-                            db.Loan_Account_Info
-                            //.AsEnumerable()
-                            .Where(x => IAS39Data.Select(y => y.Reference_Nbr)
-                            .Contains(x.Reference_Nbr)).ToList();
+                            db.Loan_Account_Info.Where(x =>
+                            ref_Nbrs.Contains(x.Reference_Nbr)).ToList();
 
                         if (IAS39Data.Any())
                         {
@@ -461,11 +516,11 @@ namespace Transfer.Models.Repository
                                         Eir = x.EIR <= 0d ? 0.00001 : x.EIR / 100, //
                                         //CPD_Segment_Code
                                         //Processing_Date
-                                        Product_Code = "Loan01",
+                                        Product_Code = Product_Code.M.GetDescription(),
                                         //Department
                                         //PD_Model_Code
                                         Current_Rating_Code = getLoanAccountInfo(AccountData, x.Reference_Nbr).Current_Rating_Code,
-                                        //Report_Date
+                                        Report_Date = date,
                                         Maturity_Date = TypeTransfer.stringToADDateTimeN(
                                             getLoanAccountInfo(AccountData, x.Reference_Nbr).Lexp_Date),
                                         //Account_Code
@@ -554,15 +609,15 @@ namespace Transfer.Models.Repository
                 {
                     List<string> reportCodes = new List<string>();
                     if (Debt_Type.M.ToString().Equals(type)) //房貸
-                        reportCodes.Add("Loan01");
+                        reportCodes.Add(Product_Code.M.GetDescription());
                     if (Debt_Type.B.ToString().Equals(type)) //債券
                         reportCodes = new List<string> { "Bond_A", "Bond_B", "Bond_P" };
                     List<IFRS9_Main> addData = //這次要新增的資料
                     db.IFRS9_Main
                     //.AsEnumerable()
                     .Where(x => x.Report_Date != null &&
-                    date.Equals(x.Report_Date.Value) //抓取相同的Report_date
-                    && version.Equals(x.Version) //抓取相同的 Verison
+                    date == x.Report_Date  //抓取相同的Report_date
+                    //&& version.Equals(x.Version) //抓取相同的 Verison
                     && reportCodes.Contains(x.Product_Code)).ToList();  //抓取符合的 Product_Code
 
                     if (!addData.Any())
@@ -595,7 +650,7 @@ namespace Transfer.Models.Repository
                         db.EL_Data_In.AddRange(
                            addData.Select(x => new EL_Data_In()
                            {
-                               Report_Date = x.Report_Date.Value, //評估基準日/報導日
+                               Report_Date = x.Report_Date, //評估基準日/報導日
                                Processing_Date = now.Date, //資料處理日期
                                Product_Code = x.Product_Code, //產品
                                Reference_Nbr = x.Reference_Nbr, //案件編號/帳號
@@ -637,7 +692,7 @@ namespace Transfer.Models.Repository
                         db.EL_Data_In.AddRange(
                            addData.Select(x => new EL_Data_In()
                            {
-                               Report_Date = x.Report_Date.Value, //評估基準日/報導日
+                               Report_Date = x.Report_Date, //評估基準日/報導日
                                Processing_Date = now.Date, //資料處理日期
                                Product_Code = x.Product_Code, //產品
                                Reference_Nbr = x.Reference_Nbr, //案件編號/帳號
@@ -687,6 +742,95 @@ namespace Transfer.Models.Repository
 
         #endregion Save C01
 
+        #region Save C02
+        /// <summary>
+        /// Save C02
+        /// </summary>
+        /// <param name="version"></param>
+        /// <param name="date">Report_Date</param>
+        /// <param name="type">M = 房貸</param>
+        /// <returns></returns>
+        public MSGReturnModel saveC02(string version, DateTime date, string type)
+        {
+            MSGReturnModel result = new MSGReturnModel();
+            result.RETURN_FLAG = false;
+            result.DESCRIPTION = Message_Type
+                    .not_Find_Any.GetDescription(Table_Type.C02.ToString());
+            try
+            {
+                if (db.Loan_Account_Info.Any())
+                {
+                    List<string> reportCodes = new List<string>();
+
+                    if (Debt_Type.M.ToString().Equals(type)) //房貸
+                    {
+                        string productCode = GroupProductCode.M.GetDescription();
+                        productCode = db.Group_Product_Code_Mapping.Where(x => x.Group_Product_Code.StartsWith(productCode)).FirstOrDefault().Product_Code;
+
+                        reportCodes.Add(productCode);
+                    }
+
+                    List<Loan_Account_Info> addData = //這次要新增的資料
+                    db.Loan_Account_Info.AsEnumerable()
+                    .Where(x => x.Report_Date != null
+                                && x.Report_Date >= date.AddMonths(-13)
+                                && x.Report_Date <= date).ToList();
+
+                    if (!addData.Any())
+                    {
+                        result.DESCRIPTION = Message_Type
+                            .query_Not_Find.GetDescription(Table_Type.C02.ToString());
+
+                        return result;
+                    }
+
+                    if (db.Rating_History.Any())
+                    {
+                        foreach (var item in addData)
+                        {
+                            var query = db.Rating_History
+                                       .Where(x => x.Reference_Nbr == item.Reference_Nbr
+                                                   && x.Rating_Date == item.Rating_Date);
+
+                            db.Rating_History.RemoveRange(query);
+                        }
+                    }
+
+                    DateTime now = DateTime.Now;
+
+                    if (Debt_Type.M.ToString().Equals(type)) //房貸
+                    {
+                        db.Rating_History.AddRange(
+                           addData.Select(x => new Rating_History()
+                           {
+                               Data_ID = "",
+                               Processing_Date = now.Date.ToString("yyyy/MM/dd"), //資料處理日期
+                               Product_Code = reportCodes[0], //產品
+                               Reference_Nbr = x.Reference_Nbr, //案件編號/帳號
+                               Current_Rating_Code = x.Current_Rating_Code, //月評等等級
+                               Rating_Date = x.Rating_Date
+                           }));
+                    }
+
+                    db.SaveChanges();
+                    result.RETURN_FLAG = true;
+                    result.DESCRIPTION = Message_Type
+                        .save_Success.GetDescription(Table_Type.C02.ToString());
+                }
+            }
+            catch (DbUpdateException ex)
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = Message_Type
+                        .save_Fail.GetDescription(Table_Type.C02.ToString(),
+                        $"message: {ex.Message}" +
+                        $", inner message {ex.InnerException?.InnerException?.Message}");
+            }
+
+            return result;
+        }
+        #endregion Save C02
+
         #endregion Save DB 部分
 
         #region Excel 部分
@@ -724,7 +868,7 @@ namespace Transfer.Models.Repository
                     idNum = db.Bond_Account_Info
                         .Select(x => x.Reference_Nbr).Distinct().AsEnumerable()
                         .Max(x => Convert.ToInt32(x));
-                if (resultData.Tables[0].Rows.Count > 2) //判斷有無資料
+                if (resultData.Tables[1].Rows.Count > 2) //判斷有無資料
                 {
                     dataModel = resultData.Tables[1].AsEnumerable().Skip(1) //第二頁籤第二行開始
                         .Select((x, y) =>
@@ -833,7 +977,7 @@ namespace Transfer.Models.Repository
                 Maturity_Date = TypeTransfer.objDateToString(item[14]), //O (缺 P=>15) 到期日
                 Principal_Payment_Method_Code = Principal_Payment_Method_Code,
                 Payment_Frequency = TypeTransfer.objDateToString(item[16]), //Q 票面利率週期
-                Balloon_Date = TypeTransfer.objToString(item[17]), //R (缺 S=>18) 贖回日期(本金一次贖回)
+                Baloon_Freq = TypeTransfer.objToString(item[17]), //R (缺 S=>18) 贖回日期(本金一次贖回)
                 Issuer_Area = TypeTransfer.objToString(item[19]), //T Issuer所屬區域
                 Industry_Sector = TypeTransfer.objToString(item[20]), //U 對手產業別
                 Product = TypeTransfer.objToString(item[21]), //V 債券產品別(揭露使用)
@@ -880,47 +1024,47 @@ namespace Transfer.Models.Repository
                 Bond_Number = data.Bond_Number,
                 Lots = data.Lots,
                 Segment_Name = data.Segment_Name,
-                Curr_Sp_Issuer = data.Curr_Sp_Issuer,
-                Curr_Moodys_Issuer = data.Curr_Moodys_Issuer,
-                Curr_Fitch_Issuer = data.Curr_Fitch_Issuer,
-                Curr_Tw_Issuer = data.Curr_Tw_Issuer,
-                Curr_Sp_Issue = data.Curr_Sp_Issue,
-                Curr_Moodys_Issue = data.Curr_Moodys_Issue,
-                Curr_Fitch_Issue = data.Curr_Fitch_Issue,
-                Curr_Tw_Issue = data.Curr_Tw_Issue,
+                Curr_Sp_Issuer = data.CURR_SP_Issuer,
+                Curr_Moodys_Issuer = data.CURR_Moodys_Issuer,
+                Curr_Fitch_Issuer = data.CURR_Fitch_Issuer,
+                Curr_Tw_Issuer = data.CURR_TW_Issuer,
+                Curr_Sp_Issue = data.CURR_SP_Issue,
+                Curr_Moodys_Issue = data.CURR_Moodys_Issue,
+                Curr_Fitch_Issue = data.CURR_Fitch_Issue,
+                Curr_Tw_Issue = data.CURR_TW_Issue,
                 Ori_Amount = TypeTransfer.doubleNToString(data.Ori_Amount),
                 Current_Int_Rate = TypeTransfer.doubleNToString(data.Current_Int_Rate),
                 Origination_Date = TypeTransfer.dateTimeNToString(data.Origination_Date),
                 Maturity_Date = TypeTransfer.dateTimeNToString(data.Maturity_Date),
                 Principal_Payment_Method_Code = data.Principal_Payment_Method_Code,
                 Payment_Frequency = data.Payment_Frequency,
-                Balloon_Date = data.Balloon_Date,
-                Issuer_Area = data.Issuer_Area,
+                Baloon_Freq = data.Baloon_Freq,
+                Issuer_Area = data.ISSUER_AREA,
                 Industry_Sector = data.Industry_Sector,
-                Product = data.Product,
-                Finance_Instruments = data.Finance_Instruments,
-                Ias39_Category = data.Ias39_Category,
+                Product = data.PRODUCT,
+                Finance_Instruments = data.FINANCE_INSTRUMENTS,
+                Ias39_Category = data.IAS39_CATEGORY,
                 Principal = TypeTransfer.doubleNToString(data.Principal),
                 Amort_Amt_Tw = TypeTransfer.doubleNToString(data.Amort_Amt_Tw),
                 Interest_Receivable = TypeTransfer.doubleNToString(data.Interest_Receivable),
                 Interest_Receivable_tw = TypeTransfer.doubleNToString(data.Interest_Receivable_tw),
                 Interest_Rate_Type = data.Interest_Rate_Type,
-                Impair_Yn = data.Impair_Yn,
-                Eir = TypeTransfer.doubleNToString(data.Eir),
+                Impair_Yn = data.IMPAIR_YN,
+                Eir = TypeTransfer.doubleNToString(data.EIR),
                 Currency_Code = data.Currency_Code,
                 Report_Date = TypeTransfer.dateTimeNToString(data.Report_Date),
-                Issuer = data.Issuer,
+                Issuer = data.ISSUER,
                 Country_Risk = data.Country_Risk,
                 Ex_rate = TypeTransfer.doubleNToString(data.Ex_rate),
                 Lien_position = data.Lien_position,
                 Portfolio = data.Portfolio,
-                Dept = data.Dept,
-                Asset_Seg = data.Asset_Seg,
+                //Dept = data.Dept,
+                Asset_Seg = data.ASSET_SEG,
                 Ori_Ex_rate = TypeTransfer.doubleNToString(data.Ori_Ex_rate),
                 Bond_Type = data.Bond_Type,
                 Assessment_Sub_Kind = data.Assessment_Sub_Kind,
                 Processing_Date = TypeTransfer.dateTimeNToString(data.Processing_Date),
-                Version = data.Version,
+                Version = TypeTransfer.intNToString(data.Version),
                 Bond_Aera = data.Bond_Aera,
                 Asset_Type = data.Asset_Type,
                 IH_OS = data.IH_OS,
@@ -975,13 +1119,13 @@ namespace Transfer.Models.Repository
             switch (value)
             {
                 case "01":
-                    return "Bond_A";
+                    return Product_Code.B_A.GetDescription();
 
                 case "02":
-                    return "Bond_B";
+                    return Product_Code.B_B.GetDescription();
 
                 case "04":
-                    return "Bond_P";
+                    return Product_Code.B_P.GetDescription();
             }
             return value;
         }

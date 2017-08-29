@@ -14,9 +14,21 @@ namespace Transfer.Models
     
     public partial class Group_Product_Code_Mapping
     {
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
+        public Group_Product_Code_Mapping()
+        {
+            this.EL_Data_Out = new HashSet<EL_Data_Out>();
+            this.Rating_History = new HashSet<Rating_History>();
+        }
+    
         public string Group_Product_Code { get; set; }
-        public string Group_Product { get; set; }
         public string Product_Code { get; set; }
         public System.DateTime Processing_Date { get; set; }
+    
+        public virtual Group_Product Group_Product { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<EL_Data_Out> EL_Data_Out { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Rating_History> Rating_History { get; set; }
     }
 }

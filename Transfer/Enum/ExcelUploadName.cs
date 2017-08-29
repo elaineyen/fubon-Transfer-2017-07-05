@@ -22,6 +22,12 @@ namespace Transfer.Enum
             A42,
 
             /// <summary>
+            /// A59
+            /// </summary>
+            [Description("A59")]
+            A59,
+
+            /// <summary>
             /// Exhibit 7
             /// </summary>
             [Description("Exhibit 7")]

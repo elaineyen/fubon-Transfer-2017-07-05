@@ -31,9 +31,6 @@ namespace Transfer.Models
         public virtual DbSet<Moody_Quartly_PD_Info> Moody_Quartly_PD_Info { get; set; }
         public virtual DbSet<Moody_Tm_YYYY> Moody_Tm_YYYY { get; set; }
         public virtual DbSet<Grade_Moody_Info> Grade_Moody_Info { get; set; }
-        public virtual DbSet<Bond_Account_Info> Bond_Account_Info { get; set; }
-        public virtual DbSet<IFRS9_Main> IFRS9_Main { get; set; }
-        public virtual DbSet<EL_Data_In> EL_Data_In { get; set; }
         public virtual DbSet<IFRS9_Menu_Main> IFRS9_Menu_Main { get; set; }
         public virtual DbSet<IFRS9_Menu_Set> IFRS9_Menu_Set { get; set; }
         public virtual DbSet<IFRS9_Menu_Sub> IFRS9_Menu_Sub { get; set; }
@@ -43,6 +40,15 @@ namespace Transfer.Models
         public virtual DbSet<Moody_LGD_Info> Moody_LGD_Info { get; set; }
         public virtual DbSet<Treasury_Securities_Info> Treasury_Securities_Info { get; set; }
         public virtual DbSet<Transfer_CheckTable> Transfer_CheckTable { get; set; }
+        public virtual DbSet<Group_Product> Group_Product { get; set; }
         public virtual DbSet<Group_Product_Code_Mapping> Group_Product_Code_Mapping { get; set; }
+        public virtual DbSet<Flow_Info> Flow_Info { get; set; }
+        public virtual DbSet<EL_Data_Out> EL_Data_Out { get; set; }
+        public virtual DbSet<Bond_Account_Info> Bond_Account_Info { get; set; }
+        public virtual DbSet<Bond_Rating_Info> Bond_Rating_Info { get; set; }
+        public virtual DbSet<Bond_Rating_Summary> Bond_Rating_Summary { get; set; }
+        public virtual DbSet<Rating_History> Rating_History { get; set; }
+        public virtual DbSet<EL_Data_In> EL_Data_In { get; set; }
+        public virtual DbSet<IFRS9_Main> IFRS9_Main { get; set; }
     }
 }

@@ -15,7 +15,7 @@ namespace Transfer.Enum
             /// <summary>
             /// 報導日+選單條件(購買日評等、基準日最近評等) 債券編號可不輸入
             /// </summary>
-            [Description("報導日+選單條件")]
+            [Description("報導日+選單條件+資料版本")]
             T1,
 
             /// <summary>
@@ -27,7 +27,7 @@ namespace Transfer.Enum
             /// <summary>
             /// 報導日+選單條件(購買日評等、基準日最近評等)+債券編號 購買日可不輸入
             /// </summary>
-            [Description("報導日+選單條件+債券編號")]
+            [Description("報導日+選單條件+債券編號+資料版本")]
             T3,
 
             /// <summary>

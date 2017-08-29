@@ -68,6 +68,15 @@ namespace Transfer.Models.Interface
         MSGReturnModel saveC01(string version, DateTime date, string type);
 
         /// <summary>
+        /// save C02 to DB
+        /// </summary>
+        /// <param name="version">version</param>
+        /// <param name="date">Report_Date</param>
+        /// <param name="type">M = 房貸</param>
+        /// <returns></returns>
+        MSGReturnModel saveC02(string version, DateTime date, string type);
+
+        /// <summary>
         ///
         /// </summary>
         void SaveChange();

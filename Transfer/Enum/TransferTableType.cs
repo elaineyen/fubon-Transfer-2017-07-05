@@ -50,6 +50,12 @@ namespace Transfer.Enum
             /// </summary>
             [Description("EL_Data_In")]
             C01,
+
+            /// <summary>
+            /// Rating_History
+            /// </summary>
+            [Description("Rating_History")]
+            C02,
         }
     }
 }

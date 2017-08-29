@@ -6,6 +6,38 @@
 
     window.verified = verified;
     window.created = created;
+
+    verified.minlength = function (formid, elementid, value, msg) {
+        value = value || 10;
+        msg = msg || message.minlength(value);
+        $("#" + formid).validate({
+            errorPlacement: function (error, element) {
+                error.appendTo(element.parent());
+            }
+        });
+        $('#' + elementid).rules('add', {
+            minlength: value,
+            messages: {
+                minlength: msg,
+            }
+        })
+    }
+    verified.maxlength = function (formid, elementid, value, msg) {
+        value = value || 10;
+        msg = msg || message.maxlength(value);
+        $("#" + formid).validate({
+            errorPlacement: function (error, element) {
+                error.appendTo(element.parent());
+            }
+        });
+        $('#' + elementid).rules('add', {
+            maxlength: value,
+            messages: {
+                maxlength: msg,
+            }
+        })
+    }
+
     verified.required = function (formid, elementid, message) {
         $("#" + formid).validate({
             errorPlacement: function (error, element) {
@@ -20,7 +52,7 @@
         })
     }
 
-    verified.datepicker = function (formid, datepickerid, reportDateFlag, date) {
+    verified.datepicker = function (formid, datepickerid, reportDateFlag) {
         reportDateFlag = reportDateFlag || false;
 
         $("#" + formid).validate({
@@ -33,14 +65,24 @@
         })
 
         //#region 客製化驗證
+        $.validator.addMethod("reportDateFormate",
+        function (value, element, arg) {
+            return verified.isDate(value, true);
+        }, message.reportDate);
+
         $.validator.addMethod("dateFormate",
         function (value, element, arg) {
-            return verified.isDate(value, reportDateFlag);
-        }, reportDateFlag ? message.reportDate : message.date);
+            return verified.isDate(value, false);
+        }, message.date);
         //#endregion
+        if (reportDateFlag)
         $('#' + datepickerid).rules('add', {
-            dateFormate: true,
+            reportDateFormate: true,
         })
+        else
+            $('#' + datepickerid).rules('add', {
+                dateFormate: true,
+            })
     }
 
     created.createDatepicker = function (datepickerid, reportDateFlag, date) {
@@ -76,6 +118,14 @@
                     })
             }
         }).datepicker('setDate', d);
+    }
+
+    created.clearDatepickerRangeValue = function (
+        datepickerStartid, datepickerEndid) {
+        $("#" + datepickerStartid).val('');
+        $("#" + datepickerStartid).datepicker("option", "maxDate", null);
+        $("#" + datepickerEndid).val('');
+        $('#' + datepickerEndid).datepicker("option", "minDate", null);
     }
 
     created.createDatepickerRange = function (datepickerStartid,

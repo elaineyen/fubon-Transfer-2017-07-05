@@ -14,7 +14,8 @@ namespace Transfer.Models.Interface
         /// <param name="version">版本</param>
         /// <returns>回傳成功或失敗</returns>
         bool checkTransferCheck(
-            List<string> fileNames,
+            string fileName,
+            string checkName,
             DateTime reportDate,
             string version);
 

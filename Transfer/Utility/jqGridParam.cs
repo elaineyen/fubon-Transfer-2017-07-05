@@ -1,4 +1,7 @@
-﻿namespace Transfer.Utility
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
+
+namespace Transfer.Utility
 {
     public class jqGridParam
     {
@@ -10,5 +13,30 @@
         public string searchString { get; set; }
         public string sidx { get; set; }
         public string sord { get; set; }
+    }
+
+    public class jqGridData<T>
+    {
+        public jqGridData()
+        {
+            colNames = new List<string>();
+            colModel = new List<jqGridColModel>();
+            Datas = new List<T>();
+        }
+        public List<string> colNames { get; set; }
+        public List<jqGridColModel> colModel { get; set; }
+        public List<T> Datas { get; set; }
+    }
+
+    public class jqGridColModel
+    {
+        public jqGridColModel()
+        {
+            align = "left";
+        }
+        public string name { get; set; }
+        public string index { get; set; }
+        public string align { get; set; }
+        public int? width { get; set; }
     }
 }

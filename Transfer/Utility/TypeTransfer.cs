@@ -209,10 +209,12 @@ namespace Transfer.Utility
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static string dateTimeNToString(DateTime? value)
+        public static string dateTimeNToString(DateTime? value, int number = 10)
         {
             if (value.HasValue)
-                return value.Value.ToString("yyyy/MM/dd");
+                return 8.Equals(number) ?
+                    value.Value.ToString("yyyyMMdd") :
+                    value.Value.ToString("yyyy/MM/dd");
             return string.Empty;
         }
 

@@ -22,7 +22,7 @@ namespace Transfer.Utility
                 string txtData = string.Empty;
                 try //試著抓取舊資料
                 {
-                    txtData = File.ReadAllText(folderPath);
+                    txtData = File.ReadAllText(folderPath, System.Text.Encoding.Default);
                 }
                 catch { }
                 string txt = string.Format("{0}({1})_{2}_{3}",

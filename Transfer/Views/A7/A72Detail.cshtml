@@ -1,4 +1,6 @@
-﻿@{
+﻿@using Transfer.Utility;
+@using Transfer.Enum;
+@{
     ViewBag.Manu = "A7Main";
     ViewBag.SubManu = "A72Sub";
     ViewBag.Title = "A72 (轉移矩陣資料檔_調整後)";
@@ -35,10 +37,10 @@
             var id = $(this).attr('id');
             switch (id) {
                 case 'btnA72Search':
-                    $("#" + id).on('click', function () { showJqgrid('A72') });
+                    $("#" + id).on('click', function () { showJqgrid('@Ref.Table_Type.A72.ToString()') });
                     break;
                 case 'btnA72Dl':
-                    $("#" + id).on('click', function () { dlExcel('A72') });
+                    $("#" + id).on('click', function () { dlExcel('@Ref.Excel_DownloadName.A72.ToString()') });
             }
         })
         //#endregion 註冊click事件
@@ -68,15 +70,10 @@
         //#region 去controller 撈取資料並且用JqGrid套件顯示
         function showJqgrid(type) {
             clearJqgrid();
-            var title = ''; //標頭
+            var title = '@Ref.Table_Type.A72.GetDescription()'; //標頭
             var colNameArray = []; //每個欄位名稱要對應傳入資料屬性
             var widthArray = []; //每個欄位大小 L,M
             var data; // json Data 由Ajax 拿到
-            switch (type) {
-                case "A72":
-                    title = 'Tm_Adjust_YYYY(A72)';
-                    break;
-            }
             $.ajax({
                 type: "POST",
                 data: JSON.stringify({

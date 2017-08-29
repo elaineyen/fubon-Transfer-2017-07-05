@@ -1,4 +1,5 @@
-﻿@{
+﻿@using Transfer.Enum;
+@{
     ViewBag.Manu = "A4Main";
     ViewBag.SubManu = "A48Sub";
     ViewBag.Title = "執行減損計算 (債券)";
@@ -97,7 +98,7 @@
         }
         //#endregion
 
-        var debt = '@Transfer.Enum.Ref.Debt_Type.B.ToString()'; //債券
+        var debt = '@Ref.Debt_Type.B.ToString()'; //債券
         function callTransfer(type, version, date, next) {
             $.ajax({
                 type: "POST",

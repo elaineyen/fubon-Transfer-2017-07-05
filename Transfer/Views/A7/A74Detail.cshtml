@@ -1,4 +1,6 @@
-﻿@{
+﻿@using Transfer.Utility;
+@using Transfer.Enum;
+@{
     ViewBag.Title = "A51 (信評主標尺對應檔)";
     ViewBag.Manu = "A7Main";
     ViewBag.SubManu = "A74Sub";
@@ -7,7 +9,7 @@
 <div class="container" id="main">
     <div class="row main_hand">
         <div class="col-md-12 main_hand_div">
-                <input type="button" class="btn btn-primary" value="A51查詢" id="btnA51Search" />
+            <input type="button" class="btn btn-primary" value="A51查詢" id="btnA51Search" />
         </div>
     </div>
     <div class="row main_body" style="overflow:auto;height:100%">
@@ -33,29 +35,20 @@
             var id = $(this).attr('id');
             switch (id) {
                 case 'btnA51Search':
-                    $("#" + id).on('click', function () { showJqgrid('A51') });
+                    $("#" + id).on('click', function () { showJqgrid('@Ref.Table_Type.A51.ToString()') });
                     break;
             }
         })
         //#endregion 註冊click事件
 
         //#region 去controller 撈取資料並且用JqGrid套件顯示
-        function showJqgrid(type)
-        {
+        function showJqgrid(type) {
             clearJqgrid();
-            var title = ''; //標頭
-            var colNameArray = []; //每個欄位名稱要對應傳入資料屬性
-            var data ; // json Data 由Ajax 拿到
-            switch (type)
-            {
-                case "A51":
-                    title = 'Grade_Moody_Info(A51)';
-                    colNameArray = ['Data_Year', 'Rating',
+            var title = '@Ref.Table_Type.A51.GetDescription()'; //標頭
+            var colNameArray = ['Data_Year', 'Rating',
                         'PD_Grade', 'Rating_Adjust',
                         'Grade_Adjust', 'Moodys_PD'
-                    ];
-                    break;
-            }
+            ]; //每個欄位名稱要對應傳入資料屬性
             $.ajax({
                 type: "POST",
                 data: JSON.stringify({
@@ -67,7 +60,7 @@
             })
             .done(function (result) {
                 if (result.RETURN_FLAG) {
-                    data = result.Datas.Data;
+                    var data = result.Datas.Data;
                     createJqgrid("list1", "pager1", colNameArray, data, title);
                 }
                 else {
@@ -78,8 +71,7 @@
         //#endregion
 
         //#region clearJqgrid (清除JqGrid)
-        function clearJqgrid()
-        {
+        function clearJqgrid() {
             $('#jqgridDiv').children().remove();
         }
         //#endregion clearJqgrid
@@ -99,7 +91,7 @@
                     var obj = {
                         name: colNameArray[i],
                         index: colNameArray[i],
-                        width:  jagridMWidth
+                        width: jagridMWidth
                     }
                     colModelArray.push(obj);
                 }

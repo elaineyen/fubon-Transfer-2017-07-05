@@ -28,6 +28,18 @@ namespace Transfer.Enum
             A51,
 
             /// <summary>
+            /// Bond_Rating_Info
+            /// </summary>
+            [Description("Bond_Rating_Info")]
+            A57,
+
+            /// <summary>
+            /// Bond_Rating_Summary
+            /// </summary>
+            [Description("Bond_Rating_Summary")]
+            A58,
+
+            /// <summary>
             /// Moody_Recovery_Info
             /// </summary>
             [Description("Moody_Recovery_Info")]
@@ -86,6 +98,12 @@ namespace Transfer.Enum
             /// </summary>
             [Description("EL_Data_In")]
             C01,
+
+            /// <summary>
+            /// Rating_History
+            /// </summary>
+            [Description("Rating_History")]
+            C02,
         }
     }
 }

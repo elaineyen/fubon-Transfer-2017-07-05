@@ -65,22 +65,29 @@ namespace Transfer.Models.Repository
         /// <summary>
         /// 判斷轉檔紀錄是否有存在
         /// </summary>
-        /// <param name="fileNames">要判斷的檔案名稱(可多個)</param>
+        /// <param name="fileNames">檔案名稱</param>
+        /// <param name="checkName">要判斷的檔案名稱</param>
         /// <param name="reportDate">基準日</param>
         /// <param name="version">版本</param>
         /// <returns></returns>
         public bool checkTransferCheck(
-            List<string> fileNames,
+            string fileName,
+            string checkName,
             DateTime reportDate,
             string version)
         {
-            if (!fileNames.Any())
+            if (fileName.IsNullOrWhiteSpace() || checkName.IsNullOrWhiteSpace())
                 return false;
-            if (db.Transfer_CheckTable
-                .Count(x => fileNames.Contains(x.File_Name) &&
-                       x.ReportDate == reportDate &&
-                       x.Version == version &&
-                       "Y".Equals(x.TransferType)) == fileNames.Count)
+            //須符合有一筆"Y"(上一動作完成) 自己沒有"Y"(重複做) 才算符合
+            if ((checkName == Table_Type.A41.ToString() || //checkName = A41 不用檢查
+                db.Transfer_CheckTable.Any(x => x.File_Name == checkName &&
+                                               x.ReportDate == reportDate &&
+                                               x.Version == version &&
+                                               x.TransferType == "Y")) &&
+                !db.Transfer_CheckTable.Any(x => x.File_Name == fileName &&
+                                              x.ReportDate == reportDate &&
+                                              x.Version == version &&
+                                              x.TransferType == "Y"))
                 return true;
             return false;
         }
@@ -134,7 +141,8 @@ namespace Transfer.Models.Repository
             if (db.Transfer_CheckTable.Any(x =>
              x.ReportDate == reportDate &&
              x.Version == version &&
-             x.File_Name == fileName))
+             x.File_Name == fileName &&
+             x.TransferType == "Y"))
                 return false;
             if (EnumUtil.GetValues<Transfer_Table_Type>()
                 .Select(x => x.ToString()).ToList().Contains(fileName))

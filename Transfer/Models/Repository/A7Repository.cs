@@ -536,29 +536,27 @@ namespace Transfer.Models.Repository
             MSGReturnModel result = new MSGReturnModel();
             result.RETURN_FLAG = false;
             result.DESCRIPTION = Message_Type.download_Fail
-                .GetDescription(type, "找不到資料");
+                .GetDescription(type, Message_Type.not_Find_Any.GetDescription());
             if (db.Moody_Tm_YYYY.Any())
             {
                 DataTable datas = getExhibit29ModelFromDb(db.Moody_Tm_YYYY.ToList()).Item1;
-                switch (type)
+                if (Excel_DownloadName.A72.ToString().Equals(type))
                 {
-                    case "A72":
-                        result.DESCRIPTION = FileRelated.DataTableToExcel(datas, path, Table_Type.A72.ToString());
+                    result.DESCRIPTION = FileRelated.DataTableToExcel(datas, path, Excel_DownloadName.A72);
+                    result.RETURN_FLAG = string.IsNullOrWhiteSpace(result.DESCRIPTION);
+                }
+                if (Excel_DownloadName.A73.ToString().Equals(type))
+                {
+                    DataTable newData = FromA72GetA73(datas); //要組新的 Table
+                    if (newData != null) //有資料
+                    {
+                        result.DESCRIPTION = FileRelated.DataTableToExcel(newData, path, Excel_DownloadName.A73);
                         result.RETURN_FLAG = string.IsNullOrWhiteSpace(result.DESCRIPTION);
-                        break;
-
-                    case "A73":
-                        DataTable newData = FromA72GetA73(datas); //要組新的 Table
-                        if (newData != null) //有資料
-                        {
-                            result.DESCRIPTION = FileRelated.DataTableToExcel(newData, path, Table_Type.A73.ToString());
-                            result.RETURN_FLAG = string.IsNullOrWhiteSpace(result.DESCRIPTION);
-                        }
-                        else
-                        {
-                            result.DESCRIPTION = Message_Type.download_Fail.GetDescription(type, "No Data!");
-                        }
-                        break;
+                    }
+                    else
+                    {
+                        result.DESCRIPTION = Message_Type.download_Fail.GetDescription(type, Message_Type.not_Find_Any.GetDescription());
+                    }
                 }
                 if (result.RETURN_FLAG)
                     result.DESCRIPTION = Message_Type.download_Success.GetDescription(type);

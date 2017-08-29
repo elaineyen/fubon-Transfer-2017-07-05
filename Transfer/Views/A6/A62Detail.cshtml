@@ -47,7 +47,7 @@
             var id = $(this).attr('id');
             switch (id) {
                 case 'btnA62Search':
-                    $("#" + id).on('click', function () { showJqgrid('A62', $('#searchYear').val()) });
+                    $("#" + id).on('click', function () { showJqgrid('@Ref.Table_Type.A62.ToString()', $('#searchYear').val()) });
                     break;
             }
         })
@@ -58,13 +58,14 @@
             clearJqgrid();
             var title = ''; //標頭
             var colNameArray = []; //每個欄位名稱要對應傳入資料屬性
+            var colModelArray = [];
             var widthArray = []; //每個欄位大小 L,M
             var data; // json Data 由Ajax 拿到
             switch (type) {
                 case '@(Ref.Table_Type.A62.ToString())':
                     title = '@(Ref.Table_Type.A62.GetDescription())';
-                    colNameArray = ['Data_Year', 'Lien_Position',
-                                    'Recovery_Rate', 'LGD'];
+                    //colNameArray = ['Data_Year', 'Lien_Position',
+                    //                'Recovery_Rate', 'LGD'];
                     break;
             }
             $.ajax({
@@ -78,9 +79,11 @@
                 contentType: 'application/json'
             })
             .done(function (result) {
-                if (result.RETURN_FLAG) {
-                    data = result.Datas.Data;
-                    createJqgrid("list1", "pager1", data, title, colNameArray);
+                if (result.RETURN_FLAG) {                  
+                    data = result.Datas.Data.Datas;
+                    colNameArray = result.Datas.Data.colNames;
+                    colModelArray = result.Datas.Data.colModel;
+                    createJqgrid("list1", "pager1", data, title, colNameArray, colModelArray);
                 }
                 else {
                     toastr.error(result.DESCRIPTION);
@@ -101,18 +104,18 @@
         //data (要秀的資料Json型別Data)
         //colNameArray (設定上方Title *要與Data 傳入Json 屬性相對應)
         //title (標題)
-        function createJqgrid(listId, pagerId, data, title, colNameArray) {
-            var colModelArray = [];
-            var jagridMWidth = 220; //寬度
+        function createJqgrid(listId, pagerId, data, title, colNameArray, colModelArray) {
+            //var colModelArray = [];
+            //var jagridMWidth = 220; //寬度
             if (data.length > 0) {
-                for (let i = 0; i < colNameArray.length; i++) {
-                    var obj = {
-                        name: colNameArray[i],
-                        index: colNameArray[i],
-                        width: jagridMWidth
-                    }
-                    colModelArray.push(obj);
-                }
+                //for (let i = 0; i < colNameArray.length; i++) {
+                //    var obj = {
+                //        name: colNameArray[i],
+                //        index: colNameArray[i],
+                //        width: jagridMWidth
+                //    }
+                //    colModelArray.push(obj);
+                //}
                 $('#jqgridDiv').append('<table id="' + listId + '"></table>');
                 $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');
                 $("#" + listId).jqGrid({
@@ -144,8 +147,6 @@
                     }
                 });
                 $("#" + listId).jqGrid('navGrid', '#' + pagerId, { edit: false, add: false, del: false });
-                $("#" + listId).jqGrid('setFrozenColumns');
-                $('#' + listId).trigger("reloadGrid");
             }
         }
         //#endregion createJqgrid

@@ -67,32 +67,6 @@ namespace Transfer.Controllers
             return View();
         }
 
-        [HttpGet]
-        [DeleteFile]
-        public ActionResult DownloadExcecl(string type)
-        {
-            try
-            {
-                string path = string.Empty;
-                switch (type)
-                {
-                    case "A72":
-                        path = "A72".GetExelName();
-                        break;
-
-                    case "A73":
-                        path = "A73".GetExelName();
-                        break;
-                }
-                //return File(ExcelLocation(path), "application/vnd.ms-excel", path);
-                return File(ExcelLocation(path), "application/octet-stream", path);
-            }
-            catch (Exception ex)
-            {
-            }
-            return null;
-        }
-
         /// <summary>
         /// 前端抓資料時呼叫
         /// </summary>
@@ -153,17 +127,11 @@ namespace Transfer.Controllers
             string path = string.Empty;
             try
             {
-                switch (type)
+                if (Excel_DownloadName.A72.ToString().Equals(type) ||
+                    Excel_DownloadName.A73.ToString().Equals(type))
                 {
-                    case "A72":
-                        path = "A72".GetExelName();
-                        result = A7Repository.DownLoadExcel(type, ExcelLocation(path));
-                        break;
-
-                    case "A73":
-                        path = "A73".GetExelName();
-                        result = A7Repository.DownLoadExcel(type, ExcelLocation(path));
-                        break;
+                    path = type.GetExelName();
+                    result = A7Repository.DownLoadExcel(type, ExcelLocation(path));
                 }
             }
             catch (Exception ex)

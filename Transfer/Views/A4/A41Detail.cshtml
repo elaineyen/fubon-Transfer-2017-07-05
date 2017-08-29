@@ -1,4 +1,6 @@
-﻿@{
+﻿@using Transfer.Utility;
+@using Transfer.Enum;
+@{
     ViewBag.Manu = "A4Main";
     ViewBag.SubManu = "A41Sub";
     ViewBag.Title = "A41(債券明細檔)";
@@ -107,7 +109,7 @@
             verified.datepicker("myForm1", "datepicker1", false, date);
             verified.required('myForm1', 'version', message.required(message.version));
             if ($('#myForm1').valid()) {
-                showJqgrid("A41", "Report", version, date)
+                showJqgrid('@Ref.Table_Type.A41.ToString()', "Report", version, date)
             }
         }
         //#endregion
@@ -119,7 +121,7 @@
             verified.datepicker("myForm2", "datepicker2", false, date);
             verified.required('myForm2', 'number', message.required(message.bondsNumber));
             if ($('#myForm2').valid()) {
-                showJqgrid("A41", "Bonds", number, date)
+                showJqgrid("@Ref.Table_Type.A41.ToString()", "Bonds", number, date)
             }
         }
         //#endregion
@@ -127,13 +129,8 @@
         //#region 去controller 撈取資料並且用JqGrid套件顯示
         function showJqgrid(type, searchType, value, date) {
             clearJqgrid();
-            var title = ''; //標頭
-            var colNameArray = []; //每個欄位名稱要對應傳入資料屬性
-            var data; // json Data 由Ajax 拿到
-            switch (type) {
-                case "A41":
-                    title = 'Bond_Account_Info(A41)';
-                    colNameArray = ['Reference_Nbr', 'Bond_Number', 'Lots',
+            var title = '@Ref.Table_Type.A41.GetDescription()'; //標頭
+            var colNameArray = ['Reference_Nbr', 'Bond_Number', 'Lots',
                          'Segment_Name', 'Curr_Sp_Issuer', "Curr_Moodys_Issuer",
                          'Curr_Fitch_Issuer', 'Curr_Tw_Issuer', 'Curr_Sp_Issue',
                          "Curr_Moodys_Issue", 'Curr_Fitch_Issue', 'Curr_Tw_Issue',
@@ -149,9 +146,7 @@
                          'Lien_position', 'Portfolio', 'Dept',
                          'Asset_Seg', 'Ori_Ex_rate', 'Bond_Type',
                          'Assessment_Sub_Kind', 'Processing_Date', 'Version'
-                    ];
-                    break;
-            }
+            ]; //每個欄位名稱要對應傳入資料屬性
             $.ajax({
                 type: "POST",
                 data: JSON.stringify({
@@ -269,8 +264,6 @@
                     }
                 });
                 $("#" + listId).jqGrid('navGrid', '#' + pagerId, { edit: false, add: false, del: false });
-                $("#" + listId).jqGrid('setFrozenColumns');
-                $('#' + listId).trigger("reloadGrid");
             }
         }
         //#endregion createJqgrid

@@ -115,15 +115,6 @@ namespace Transfer.Models.Repository
         #region Save Db
 
         /// <summary>
-        /// save A61
-        /// </summary>
-        /// <returns></returns>
-        public MSGReturnModel saveA61()
-        {
-            return new MSGReturnModel();
-        }
-
-        /// <summary>
         /// save A62
         /// </summary>
         /// <param name="dataModel">Exhibit7Model</param>
@@ -232,20 +223,6 @@ namespace Transfer.Models.Repository
                                 ((TypeTransfer.stringToDouble(dataModel[3].LGD)
                                 +
                                 TypeTransfer.stringToDouble(dataModel[4].LGD)) / 2).ToString(),
-                                //Recovery_Rate =
-                                //string.Format("{0}%",
-                                //((TypeTransfer.doubleNToDouble( //1st Lien Bond
-                                //    TypeTransfer.stringToDoubleNByP(dataModel[3].Recovery_Rate))
-                                //    +
-                                //TypeTransfer.doubleNToDouble( //2nd Lien Bond
-                                //    TypeTransfer.stringToDoubleNByP(dataModel[4].Recovery_Rate))) / 2)),
-                                //LGD =
-                                //string.Format("{0}%",
-                                //((TypeTransfer.doubleNToDouble( //1st Lien Bond
-                                //    TypeTransfer.stringToDoubleNByP(dataModel[3].LGD))
-                                //    +
-                                //TypeTransfer.doubleNToDouble( //2nd Lien Bond
-                                //    TypeTransfer.stringToDoubleNByP(dataModel[4].LGD))) / 2)),
                             });
                     }
                 }

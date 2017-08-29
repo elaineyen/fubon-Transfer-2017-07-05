@@ -161,6 +161,7 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\A5Controller.cs" />
+    <Compile Include="Controllers\C0Controller.cs" />
     <Compile Include="Controllers\C4Controller.cs" />
     <Compile Include="Controllers\A6Controller.cs" />
     <Compile Include="Controllers\A7Controller.cs" />
@@ -172,9 +173,13 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\A8Controller.cs" />
     <Compile Include="Enum\A59SelectType.cs" />
+    <Compile Include="Enum\ExcelDownloadName.cs" />
+    <Compile Include="Enum\RatingType.cs" />
+    <Compile Include="Enum\ProductCode.cs" />
     <Compile Include="Enum\DebtType.cs" />
     <Compile Include="Enum\A7Type.cs" />
     <Compile Include="Enum\ExcelUploadName.cs" />
+    <Compile Include="Enum\GroupProductCode.cs" />
     <Compile Include="Enum\TransferTableType.cs" />
     <Compile Include="Enum\TableType.cs" />
     <Compile Include="Enum\MessageType.cs" />
@@ -187,10 +192,25 @@
     <Compile Include="Models\Bond_Account_Info.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Bond_Rating_Info.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Bond_Rating_Summary.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\EL_Data_In.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\EL_Data_Out.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Flow_Info.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Grade_Moody_Info.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Group_Product.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Group_Product_Code_Mapping.cs">
@@ -230,6 +250,7 @@
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Interface\IA4Repository.cs" />
+    <Compile Include="Models\Interface\IC0Repository.cs" />
     <Compile Include="Models\Interface\IC4Repository.cs" />
     <Compile Include="Models\Interface\IA6Repository.cs" />
     <Compile Include="Models\Interface\ID0Repository.cs" />
@@ -261,7 +282,11 @@
     <Compile Include="Models\Moody_Tm_YYYY.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Rating_History.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Repository\A4Repository.cs" />
+    <Compile Include="Models\Repository\C0Repository.cs" />
     <Compile Include="Models\Repository\C4Repository.cs" />
     <Compile Include="Models\Repository\A6Repository.cs" />
     <Compile Include="Models\Repository\D0Repository.cs" />
@@ -289,13 +314,18 @@
     <Compile Include="Utility\TypeTransfer.cs" />
     <Compile Include="Utility\FileRelated.cs" />
     <Compile Include="Utility\MSGReturnModel.cs" />
+    <Compile Include="ViewModels\A58ViewModel.cs" />
+    <Compile Include="ViewModels\A59ViewModel.cs" />
     <Compile Include="ViewModels\A42ViewModel.cs" />
     <Compile Include="ViewModels\A81ViewModel.cs" />
     <Compile Include="ViewModels\A41ViewModel.cs" />
+    <Compile Include="ViewModels\C07ViewModel.cs" />
+    <Compile Include="ViewModels\D01ViewModel.cs" />
     <Compile Include="ViewModels\D05ViewModel.cs" />
     <Compile Include="ViewModels\Exhibit7Model.cs" />
     <Compile Include="ViewModels\Exhibit29Model.cs" />
     <Compile Include="ViewModels\Exhibit10Model.cs" />
+    <Compile Include="ViewModels\GroupProductViewModel.cs" />
     <Compile Include="ViewModels\ValidateFiles.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -521,7 +551,12 @@
     <Content Include="Views\A4\A42.cshtml" />
     <Content Include="Views\A5\A57Detail.cshtml" />
     <Content Include="Views\A5\A58Detail.cshtml" />
-    <Content Include="Views\D0\D05.cshtml" />
+    <Content Include="Views\D0\D01Bond.cshtml" />
+    <Content Include="Views\D0\D01Mortgage.cshtml" />
+    <Content Include="Views\D0\D05Bond.cshtml" />
+    <Content Include="Views\D0\D05Mortgage.cshtml" />
+    <Content Include="Views\C0\C07Bond.cshtml" />
+    <Content Include="Views\C0\C07Mortgage.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
