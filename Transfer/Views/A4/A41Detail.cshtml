@@ -150,10 +150,10 @@
             $.ajax({
                 type: "POST",
                 data: JSON.stringify({
-                    type: type,
-                    searchType: searchType,
-                    value: value,
-                    date: date
+                    type: type, //A41
+                    searchType: searchType, //Report => 報導日資料查詢,Bonds => 債券資料查詢
+                    value: value, //版本 or 債券編號
+                    date: date, //報導日 or 債券購入日期
                 }),
                 dataType: "json",
                 url: url.getData,

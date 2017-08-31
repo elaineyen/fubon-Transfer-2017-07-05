@@ -20,6 +20,7 @@ namespace Transfer.Controllers
         private List<SelectOption> searchOption = null;
         private List<SelectOption> sType = null;
         private List<SelectOption> actions = null;
+        private List<FormateTitle> A59titles = new List<FormateTitle>();
 
         public A5Controller()
         {
@@ -39,6 +40,14 @@ namespace Transfer.Controllers
             actions = new List<SelectOption>() {
                 new SelectOption() {text="查詢&下載",value="downLoad" },
                 new SelectOption() {text="上傳&存檔",value="upLoad" }};
+          
+            A59titles.Add(new FormateTitle() { OldTitle = "Reference_Nbr", NewTitle = "帳戶編號" });
+            A59titles.Add(new FormateTitle() { OldTitle = "Report_Date", NewTitle = "報導日" });
+            A59titles.Add(new FormateTitle() { OldTitle = "Version", NewTitle = "資料版本" });
+            A59titles.Add(new FormateTitle() { OldTitle = "Bond_Number", NewTitle = "債券編號" });
+            A59titles.Add(new FormateTitle() { OldTitle = "Origination_Date", NewTitle = "債券購入(認列)日期" });
+            A59titles.Add(new FormateTitle() { OldTitle = "Portfolio_Name", NewTitle = "Portfolio英文" });
+            A59titles.Add(new FormateTitle() { OldTitle = "SMF", NewTitle = "債券產品別(揭露使用)" });
         }
 
         public ICacheProvider Cache { get; set; }
@@ -250,7 +259,7 @@ namespace Transfer.Controllers
                 {
                     result.RETURN_FLAG = true;
                     var A59 = new A59ViewModel();
-                    var jqgridParams = A59.TojqGridData();
+                    var jqgridParams = A59.TojqGridData(null,false, A59titles);
                     result.Datas = Json(jqgridParams);
                     Cache.Invalidate(CacheList.A59ExcelfileData); //清除 Cache
                     Cache.Set(CacheList.A59ExcelfileData, dataModel, 15); //把資料存到 Cache
@@ -269,6 +278,67 @@ namespace Transfer.Controllers
             {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = ex.Message;
+            }
+            return Json(result);
+        }
+
+
+        /// <summary>
+        /// 轉檔把Excel 資料存到 DB
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult Transfer()
+        {
+            MSGReturnModel result = new MSGReturnModel();
+            try
+            {
+                #region 抓Excel檔案 轉成 model
+
+                // Excel 檔案位置
+                DateTime startTime = DateTime.Now;
+                string projectFile = Server.MapPath("~/" + SetFile.FileUploads);
+                string fileName = string.Empty;
+                if (Cache.IsSet(CacheList.A59ExcelName))
+                    fileName = (string)Cache.Get(CacheList.A59ExcelName);  //從Cache 抓資料
+                if (fileName.IsNullOrWhiteSpace())
+                {
+                    result.RETURN_FLAG = false;
+                    result.DESCRIPTION = Message_Type.time_Out.GetDescription();
+                }
+
+                string path = Path.Combine(projectFile, fileName);
+                FileStream stream = System.IO.File.Open(path, FileMode.Open, FileAccess.Read);
+
+                string pathType = path.Split('.')[1]; //抓副檔名
+                List<A59ViewModel> dataModel = A5Repository.getA59Excel(pathType, stream);
+                #endregion 抓Excel檔案 轉成 model
+
+                #region txtlog 檔案名稱
+
+                string txtpath = SetFile.A59TransferTxtLog; //預設txt名稱
+
+                #endregion txtlog 檔案名稱
+
+                #region save 資料
+
+                #region save A59(A59=>A57=>A58)
+
+                MSGReturnModel resultA59 = A5Repository.saveA59(dataModel); //save to DB
+                bool A59Log = CommonFunction.saveLog(Table_Type.A59, fileName, SetFile.ProgramName,
+                    resultA59.RETURN_FLAG, Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
+                TxtLog.txtLog(Table_Type.A59, resultA59.RETURN_FLAG, startTime, txtLocation(txtpath)); //寫txt Log
+
+                #endregion save A59(A59=>A57=>A58)
+                result = resultA59;
+
+                #endregion save 資料
+            }
+            catch (Exception ex)
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = Message_Type.save_Fail
+                    .GetDescription(null, ex.Message);
             }
             return Json(result);
         }

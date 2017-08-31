@@ -2,8 +2,10 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.Entity.Infrastructure;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using Transfer.Models.Interface;
 using Transfer.Utility;
 using Transfer.ViewModels;
@@ -18,9 +20,16 @@ namespace Transfer.Models.Repository
         public A5Repository()
         {
             this.db = new IFRS9Entities();
+            this.common = new Common();
         }
 
         protected IFRS9Entities db
+        {
+            get;
+            private set;
+        }
+
+        protected Common common
         {
             get;
             private set;
@@ -94,6 +103,132 @@ namespace Transfer.Models.Repository
 
         #endregion Get Data
 
+        #region Save Db
+
+        /// <summary>
+        /// save A59 (save A5 & A58)
+        /// </summary>
+        /// <param name="dataModel">A59ViewModel</param>
+        /// <returns></returns>
+        public MSGReturnModel saveA59(List<A59ViewModel> dataModel)
+        {
+            MSGReturnModel result = new MSGReturnModel();
+            if (!dataModel.Any())
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = Message_Type.parameter_Error
+                    .GetDescription(Table_Type.A59.ToString());
+                return result;
+            }
+
+            DateTime startTime = DateTime.Now;
+
+            dataModel.ForEach(x =>
+            {
+                var pros = x.GetType().GetProperties()
+                            .Skip(15).TakeWhile(z => z.Name != "Processing_Date").ToList();
+                var rateInfo = pros.Where(i => !i.GetValue(x).ToString().IsNullOrWhiteSpace() &&
+                                               !i.Name.EndsWith("DT")).FirstOrDefault();
+
+                var dtInfo = pros.Where(i => !i.GetValue(x).ToString().IsNullOrWhiteSpace() &&
+                                              i.Name.EndsWith("DT")).FirstOrDefault();
+                string rate = null; //Rate
+                if (rateInfo != null)
+                    rate = forRating(rateInfo.GetValue(x).ToString());
+                DateTime? rateDate = null; //RateDate
+                if (dtInfo != null)
+                    rateDate = TypeTransfer.stringToDateTimeN(dtInfo.GetValue(x).ToString(), 8);
+
+                int? Grade_Adjust = null; //Grade_Adjust
+
+                if (!rate.IsNullOrWhiteSpace())
+                {
+                    #region Save A57
+                    var ratingType = x.Rating_Type.Equals(Rating_Type.A.GetDescription()) ? "1" : "2";
+                    var reportDate = TypeTransfer.stringToDateTime(x.Report_Date);
+                    var origDate = TypeTransfer.stringToDateTime(x.Origination_Date);
+                    var A57 = ratingType == "1" ?
+                    db.Bond_Rating_Info.Where(y => y.Rating_Type == ratingType &&
+                                           y.Bond_Number == x.Bond_Number &&
+                                           y.Report_Date == reportDate &&
+                                           y.Lots == x.Lots //&&
+                                                            //y.Portfolio_Name == x.Portfolio_Name
+                                           ).ToList() :
+                    db.Bond_Rating_Info.Where(y => y.Rating_Type == ratingType &&
+                                           y.Bond_Number == x.Bond_Number &&
+                                           y.Origination_Date == origDate &&
+                                           y.Lots == x.Lots //&&
+                                                            //y.Portfolio_Name == x.Portfolio_Name
+                                           ).ToList();
+                    A57.ForEach(w =>
+                    {
+                        var A52 = db.Grade_Mapping_Info
+                                    .Where(i => i.Rating_Org.Equals(w.Rating_Org) &&
+                                                i.Rating.Equals(rate))
+                                                 .FirstOrDefault();
+                        int? PD_Grade = null;
+                        if (A52 != null)
+                        {
+                            PD_Grade = A52.PD_Grade;
+
+                            var Grade_Moody_Info = db.Grade_Moody_Info
+                                                     .Where(j => PD_Grade == j.PD_Grade)
+                                                     .FirstOrDefault();
+                            if (Grade_Moody_Info != null)
+                                Grade_Adjust = Grade_Moody_Info.Grade_Adjust;
+                        }
+
+                        w.Rating = rate;
+                        w.Rating_Date = rateDate;
+                        w.Grade_Adjust = Grade_Adjust;
+                        w.Fill_up_Date = startTime;
+                        w.Fill_up_YN = "Y";
+                    });
+                    #endregion
+
+                    #region Save A58
+                    if (Grade_Adjust != null)
+                    {
+                        var A58 = ratingType == "1" ?
+                        db.Bond_Rating_Summary.Where(y => y.Rating_Type == ratingType &&
+                                               y.Bond_Number == x.Bond_Number &&
+                                               y.Report_Date == reportDate &&
+                                               y.Lots == x.Lots //&&
+                                                                //y.Portfolio_Name == x.Portfolio_Name
+                                               ).ToList() :
+                        db.Bond_Rating_Summary.Where(y => y.Rating_Type == ratingType &&
+                                               y.Bond_Number == x.Bond_Number &&
+                                               y.Origination_Date == origDate &&
+                                               y.Lots == x.Lots //&&
+                                                                //y.Portfolio_Name == x.Portfolio_Name
+                                               ).ToList();
+                        A58.ForEach(w =>
+                        {
+                            w.Grade_Adjust = Grade_Adjust;
+                        });
+                    }
+                    #endregion
+                }
+            });
+            try
+            {
+                db.SaveChanges();
+                result.RETURN_FLAG = true;
+                result.DESCRIPTION = Message_Type.save_Success.GetDescription();
+            }
+            catch (DbUpdateException ex)
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = Message_Type
+                                     .save_Fail.GetDescription(Table_Type.A59.ToString(),
+                                     $"message: {ex.Message}" +
+                                     $", inner message {ex.InnerException?.InnerException?.Message}");
+            }
+            return result;
+        }
+
+        #endregion Save Db
+
         #region Excel 部分
 
         #region 下載 Excel
@@ -133,6 +268,7 @@ namespace Transfer.Models.Repository
         /// <returns></returns>
         public List<A59ViewModel> getA59Excel(string pathType, Stream stream)
         {
+
             DataSet resultData = new DataSet();
             List<A59ViewModel> dataModel = new List<A59ViewModel>();
             try
@@ -158,7 +294,7 @@ namespace Transfer.Models.Repository
                         .Max(x => Convert.ToInt32(x));
                 if (resultData.Tables[0].Rows.Count > 0) //判斷有無資料
                 {
-                    dataModel = resultData.Tables[0].AsEnumerable().Skip(0) 
+                    dataModel = resultData.Tables[0].AsEnumerable().Skip(0)
                         .Select((x, y) =>
                         {
                             return getA59ViewModelInExcel(x);
@@ -231,7 +367,8 @@ namespace Transfer.Models.Repository
                 SMF = item.SMF,
                 Issuer = item.Issuer,
                 Security_Ticker = item.Security_Ticker,
-                RATING_AS_OF_DATE_OVERRIDE = item.RATING_AS_OF_DATE_OVERRIDE
+                RATING_AS_OF_DATE_OVERRIDE = item.RATING_AS_OF_DATE_OVERRIDE,
+                Rating_Type = item.Rating_Type
             };
         }
 
@@ -251,74 +388,75 @@ namespace Transfer.Models.Repository
                 Origination_Date = TypeTransfer.objToString(item[5]), //債券購入(認列)日期
                 Portfolio_Name = TypeTransfer.objToString(item[6]), //Portfolio英文
                 SMF = TypeTransfer.objToString(item[7]), //債券產品別(揭露使用)
-                Issuer = TypeTransfer.objToString(item[8]), //Issuer
-                Security_Ticker = TypeTransfer.objToString(item[9]), //Security_Ticker
-                RATING_AS_OF_DATE_OVERRIDE = TypeTransfer.objToString(item[10]), //RATING_AS_OF_DATE_OVERRIDE
-                ISSUER_TICKER = TypeTransfer.objToString(item[11]), //ISSUER_TICKER
-                GUARANTOR_NAME = TypeTransfer.objToString(item[12]), //GUARANTOR_NAME
-                GUARANTOR_EQY_TICKER = TypeTransfer.objToString(item[13]), //GUARANTOR_EQY_TICKER
-                RTG_SP = TypeTransfer.objToString(item[14]), //債項_標普評等 (債項\ sp\國外)
-                SP_EFF_DT = TypeTransfer.objToString(item[15]), //債項_標普評等日期
-                RTG_TRC = TypeTransfer.objToString(item[16]), //債項_TRC 評等 (債項\ CW\國內)
-                TRC_EFF_DT = TypeTransfer.objToString(item[17]), //債項_TRC 評等日期
-                RTG_MOODY = TypeTransfer.objToString(item[18]), //債項_穆迪評等 (債項\ moody\國外)
-                MOODY_EFF_DT = TypeTransfer.objToString(item[19]), //債項_穆迪評等日期
-                RTG_FITCH = TypeTransfer.objToString(item[20]), //債項_惠譽評等 (債項\ Fitch\國外)
-                FITCH_EFF_DT = TypeTransfer.objToString(item[21]), //債項_惠譽評等日期
-                RTG_FITCH_NATIONAL = TypeTransfer.objToString(item[22]), //債項_惠譽國內評等 (債項\ Fitch(twn)\國內)
-                RTG_FITCH_NATIONAL_DT = TypeTransfer.objToString(item[23]), //債項_惠譽國內評等日期
-                RTG_SP_LT_FC_ISSUER_CREDIT = TypeTransfer.objToString(item[24]), //標普長期外幣發行人信用評等 (發行人\ sp\國外)
-                RTG_SP_LT_FC_ISS_CRED_RTG_DT = TypeTransfer.objToString(item[25]), //標普長期外幣發行人信用評等日期
-                RTG_SP_LT_LC_ISSUER_CREDIT = TypeTransfer.objToString(item[26]),//標普本國貨幣長期發行人信用評等 (發行人\ sp\國外)
-                RTG_SP_LT_LC_ISS_CRED_RTG_DT = TypeTransfer.objToString(item[27]), //標普本國貨幣長期發行人信用評等日期
-                RTG_MDY_ISSUER = TypeTransfer.objToString(item[28]), //穆迪發行人評等 (發行人\ moody\國外)
-                RTG_MDY_ISSUER_RTG_DT = TypeTransfer.objToString(item[29]), //穆迪發行人評等日期
-                RTG_MOODY_LONG_TERM = TypeTransfer.objToString(item[30]), //發行人_穆迪長期評等 (發行人\ moody\國外)
-                RTG_MOODY_LONG_TERM_DATE = TypeTransfer.objToString(item[31]), //發行人_穆迪長期評等日期
-                RTG_MDY_SEN_UNSECURED_DEBT = TypeTransfer.objToString(item[32]), //發行人_穆迪優先無擔保債務評等 (發行人\ moody\國外)
-                RTG_MDY_SEN_UNSEC_RTG_DT = TypeTransfer.objToString(item[33]), //發行人_穆迪優先無擔保債務評等_日期
-                RTG_MDY_FC_CURR_ISSUER_RATING = TypeTransfer.objToString(item[34]), //穆迪外幣發行人評等 (發行人\ moody\國外)
-                RTG_MDY_FC_CURR_ISSUER_RTG_DT = TypeTransfer.objToString(item[35]), //穆迪外幣發行人評等日期
-                RTG_MDY_LOCAL_LT_BANK_DEPOSITS = TypeTransfer.objToString(item[36]), //發行人_穆迪長期本國銀行存款評等 (發行人\ moody\國內)
-                RTG_MDY_LT_LC_BANK_DEP_RTG_DT = TypeTransfer.objToString(item[37]), //發行人_穆迪長期本國銀行存款評等日期
-                RTG_FITCH_LT_ISSUER_DEFAULT = TypeTransfer.objToString(item[38]), //惠譽長期發行人違約評等 (發行人\ Fitch\國外)
-                RTG_FITCH_LT_ISSUER_DFLT_RTG_DT = TypeTransfer.objToString(item[39]), //惠譽長期發行人違約評等日期
-                RTG_FITCH_SEN_UNSECURED = TypeTransfer.objToString(item[40]), //發行人_惠譽優先無擔保債務評等 (發行人\ Fitch\國外)
-                RTG_FITCH_SEN_UNSEC_RTG_DT = TypeTransfer.objToString(item[41]), //發行人_惠譽優先無擔保債務評等日期
-                RTG_FITCH_LT_FC_ISSUER_DEFAULT = TypeTransfer.objToString(item[42]), //惠譽長期外幣發行人違約評等 (發行人\ Fitch\國外)
-                RTG_FITCH_LT_FC_ISS_DFLT_RTG_DT = TypeTransfer.objToString(item[43]),  //惠譽長期外幣發行人違約評等日期
-                RTG_FITCH_LT_LC_ISSUER_DEFAULT = TypeTransfer.objToString(item[44]), //惠譽長期本國貨幣發行人違約評等 (發行人\ Fitch\國外)
-                RTG_FITCH_LT_LC_ISS_DFLT_RTG_DT = TypeTransfer.objToString(item[45]), //惠譽長期本國貨幣發行人違約評等日期
-                RTG_FITCH_NATIONAL_LT = TypeTransfer.objToString(item[46]), //發行人_惠譽國內長期評等 (發行人\ Fitch(twn)\國內)
-                RTG_FITCH_NATIONAL_LT_DT = TypeTransfer.objToString(item[47]), //發行人_惠譽國內長期評等日期
-                RTG_TRC_LONG_TERM = TypeTransfer.objToString(item[48]), //發行人_TRC 長期評等 (發行人\ CW\國內)
-                RTG_TRC_LONG_TERM_RTG_DT = TypeTransfer.objToString(item[49]), //發行人_TRC 長期評等日期
-                G_RTG_SP_LT_FC_ISSUER_CREDIT = TypeTransfer.objToString(item[50]), //標普長期外幣保證人信用評等 (保證人\ sp\國外)
-                G_RTG_SP_LT_FC_ISS_CRED_RTG_DT = TypeTransfer.objToString(item[51]), //標普長期外幣保證人信用評等日期
-                G_RTG_SP_LT_LC_ISSUER_CREDIT = TypeTransfer.objToString(item[52]), //標普本國貨幣長期保證人信用評等 (保證人\ sp\國外)
-                G_RTG_SP_LT_LC_ISS_CRED_RTG_DT = TypeTransfer.objToString(item[53]), //標普本國貨幣長期保證人信用評等日期
-                G_RTG_MDY_ISSUER = TypeTransfer.objToString(item[54]), //穆迪保證人評等 (保證人\ moody\國外)
-                G_RTG_MDY_ISSUER_RTG_DT = TypeTransfer.objToString(item[55]), //穆迪保證人評等日期
-                G_RTG_MOODY_LONG_TERM = TypeTransfer.objToString(item[56]), //保證人_穆迪長期評等 (保證人\ moody\國外)
-                G_RTG_MOODY_LONG_TERM_DATE = TypeTransfer.objToString(item[57]), //保證人_穆迪長期評等日期
-                G_RTG_MDY_SEN_UNSECURED_DEBT = TypeTransfer.objToString(item[58]), //保證人_穆迪優先無擔保債務評等 (保證人\ moody\國外)
-                G_RTG_MDY_SEN_UNSEC_RTG_DT = TypeTransfer.objToString(item[59]), //保證人_穆迪優先無擔保債務評等_日期
-                G_RTG_MDY_FC_CURR_ISSUER_RATING = TypeTransfer.objToString(item[60]), //穆迪外幣保證人評等 (保證人\ moody\國外)
-                G_RTG_MDY_FC_CURR_ISSUER_RTG_DT = TypeTransfer.objToString(item[61]), //穆迪外幣保證人評等日期
-                G_RTG_MDY_LOCAL_LT_BANK_DEPOSITS = TypeTransfer.objToString(item[62]), //保證人_穆迪長期本國銀行存款評等 (保證人\ moody\國內)
-                G_RTG_MDY_LT_LC_BANK_DEP_RTG_DT = TypeTransfer.objToString(item[63]), //保證人_穆迪長期本國銀行存款評等日期
-                G_RTG_FITCH_LT_ISSUER_DEFAULT = TypeTransfer.objToString(item[64]), //惠譽長期保證人違約評等 (保證人\ Fitch\國外)
-                G_RTG_FITCH_LT_ISSUER_DFLT_RTG_DT = TypeTransfer.objToString(item[65]), //惠譽長期保證人違約評等日期
-                G_RTG_FITCH_SEN_UNSECURED = TypeTransfer.objToString(item[66]), //保證人_惠譽優先無擔保債務評等 (保證人\ Fitch\國外)
-                G_RTG_FITCH_SEN_UNSEC_RTG_DT = TypeTransfer.objToString(item[67]), //保證人_惠譽優先無擔保債務評等日期
-                G_RTG_FITCH_LT_FC_ISSUER_DEFAULT = TypeTransfer.objToString(item[68]), //惠譽長期外幣保證人違約評等 (保證人\ Fitch\國外)
-                G_RTG_FITCH_LT_FC_ISS_DFLT_RTG_DT = TypeTransfer.objToString(item[69]), //惠譽長期外幣保證人違約評等日期
-                G_RTG_FITCH_LT_LC_ISSUER_DEFAULT = TypeTransfer.objToString(item[70]), //惠譽長期本國貨幣保證人違約評等 (保證人\ Fitch\國外)
-                G_RTG_FITCH_LT_LC_ISS_DFLT_RTG_DT = TypeTransfer.objToString(item[71]), //惠譽長期本國貨幣保證人違約評等日期
-                G_RTG_FITCH_NATIONAL_LT = TypeTransfer.objToString(item[72]), //保證人_惠譽國內長期評等 (保證人\ Fitch(twn)\國內)
-                G_RTG_FITCH_NATIONAL_LT_DT = TypeTransfer.objToString(item[73]), //保證人_惠譽國內長期評等日期
-                G_RTG_TRC_LONG_TERM = TypeTransfer.objToString(item[74]), //保證人_TRC 長期評等 (保證人\ CW\國內)
-                G_RTG_TRC_LONG_TERM_RTG_DT = TypeTransfer.objToString(item[75]), //保證人_TRC 長期評等日期
+                Rating_Type = TypeTransfer.objToString(item[8]), //Rating_Type
+                Issuer = TypeTransfer.objToString(item[9]), //Issuer
+                Security_Ticker = TypeTransfer.objToString(item[10]), //Security_Ticker
+                RATING_AS_OF_DATE_OVERRIDE = TypeTransfer.objToString(item[11]), //RATING_AS_OF_DATE_OVERRIDE
+                ISSUER_TICKER = TypeTransfer.objToString(item[12]), //ISSUER_TICKER
+                GUARANTOR_NAME = TypeTransfer.objToString(item[13]), //GUARANTOR_NAME
+                GUARANTOR_EQY_TICKER = TypeTransfer.objToString(item[14]), //GUARANTOR_EQY_TICKER
+                RTG_SP = TypeTransfer.objToString(item[15]), //債項_標普評等 (債項\ sp\國外)
+                SP_EFF_DT = TypeTransfer.objToString(item[16]), //債項_標普評等日期
+                RTG_TRC = TypeTransfer.objToString(item[17]), //債項_TRC 評等 (債項\ CW\國內)
+                TRC_EFF_DT = TypeTransfer.objToString(item[18]), //債項_TRC 評等日期
+                RTG_MOODY = TypeTransfer.objToString(item[19]), //債項_穆迪評等 (債項\ moody\國外)
+                MOODY_EFF_DT = TypeTransfer.objToString(item[20]), //債項_穆迪評等日期
+                RTG_FITCH = TypeTransfer.objToString(item[21]), //債項_惠譽評等 (債項\ Fitch\國外)
+                FITCH_EFF_DT = TypeTransfer.objToString(item[22]), //債項_惠譽評等日期
+                RTG_FITCH_NATIONAL = TypeTransfer.objToString(item[23]), //債項_惠譽國內評等 (債項\ Fitch(twn)\國內)
+                RTG_FITCH_NATIONAL_DT = TypeTransfer.objToString(item[24]), //債項_惠譽國內評等日期
+                RTG_SP_LT_FC_ISSUER_CREDIT = TypeTransfer.objToString(item[25]), //標普長期外幣發行人信用評等 (發行人\ sp\國外)
+                RTG_SP_LT_FC_ISS_CRED_RTG_DT = TypeTransfer.objToString(item[26]), //標普長期外幣發行人信用評等日期
+                RTG_SP_LT_LC_ISSUER_CREDIT = TypeTransfer.objToString(item[27]),//標普本國貨幣長期發行人信用評等 (發行人\ sp\國外)
+                RTG_SP_LT_LC_ISS_CRED_RTG_DT = TypeTransfer.objToString(item[28]), //標普本國貨幣長期發行人信用評等日期
+                RTG_MDY_ISSUER = TypeTransfer.objToString(item[29]), //穆迪發行人評等 (發行人\ moody\國外)
+                RTG_MDY_ISSUER_RTG_DT = TypeTransfer.objToString(item[30]), //穆迪發行人評等日期
+                RTG_MOODY_LONG_TERM = TypeTransfer.objToString(item[31]), //發行人_穆迪長期評等 (發行人\ moody\國外)
+                RTG_MOODY_LONG_TERM_DATE = TypeTransfer.objToString(item[32]), //發行人_穆迪長期評等日期
+                RTG_MDY_SEN_UNSECURED_DEBT = TypeTransfer.objToString(item[33]), //發行人_穆迪優先無擔保債務評等 (發行人\ moody\國外)
+                RTG_MDY_SEN_UNSEC_RTG_DT = TypeTransfer.objToString(item[34]), //發行人_穆迪優先無擔保債務評等_日期
+                RTG_MDY_FC_CURR_ISSUER_RATING = TypeTransfer.objToString(item[35]), //穆迪外幣發行人評等 (發行人\ moody\國外)
+                RTG_MDY_FC_CURR_ISSUER_RTG_DT = TypeTransfer.objToString(item[36]), //穆迪外幣發行人評等日期
+                RTG_MDY_LOCAL_LT_BANK_DEPOSITS = TypeTransfer.objToString(item[37]), //發行人_穆迪長期本國銀行存款評等 (發行人\ moody\國內)
+                RTG_MDY_LT_LC_BANK_DEP_RTG_DT = TypeTransfer.objToString(item[38]), //發行人_穆迪長期本國銀行存款評等日期
+                RTG_FITCH_LT_ISSUER_DEFAULT = TypeTransfer.objToString(item[39]), //惠譽長期發行人違約評等 (發行人\ Fitch\國外)
+                RTG_FITCH_LT_ISSUER_DFLT_RTG_DT = TypeTransfer.objToString(item[40]), //惠譽長期發行人違約評等日期
+                RTG_FITCH_SEN_UNSECURED = TypeTransfer.objToString(item[41]), //發行人_惠譽優先無擔保債務評等 (發行人\ Fitch\國外)
+                RTG_FITCH_SEN_UNSEC_RTG_DT = TypeTransfer.objToString(item[42]), //發行人_惠譽優先無擔保債務評等日期
+                RTG_FITCH_LT_FC_ISSUER_DEFAULT = TypeTransfer.objToString(item[43]), //惠譽長期外幣發行人違約評等 (發行人\ Fitch\國外)
+                RTG_FITCH_LT_FC_ISS_DFLT_RTG_DT = TypeTransfer.objToString(item[44]),  //惠譽長期外幣發行人違約評等日期
+                RTG_FITCH_LT_LC_ISSUER_DEFAULT = TypeTransfer.objToString(item[45]), //惠譽長期本國貨幣發行人違約評等 (發行人\ Fitch\國外)
+                RTG_FITCH_LT_LC_ISS_DFLT_RTG_DT = TypeTransfer.objToString(item[46]), //惠譽長期本國貨幣發行人違約評等日期
+                RTG_FITCH_NATIONAL_LT = TypeTransfer.objToString(item[47]), //發行人_惠譽國內長期評等 (發行人\ Fitch(twn)\國內)
+                RTG_FITCH_NATIONAL_LT_DT = TypeTransfer.objToString(item[48]), //發行人_惠譽國內長期評等日期
+                RTG_TRC_LONG_TERM = TypeTransfer.objToString(item[49]), //發行人_TRC 長期評等 (發行人\ CW\國內)
+                RTG_TRC_LONG_TERM_RTG_DT = TypeTransfer.objToString(item[50]), //發行人_TRC 長期評等日期
+                G_RTG_SP_LT_FC_ISSUER_CREDIT = TypeTransfer.objToString(item[51]), //標普長期外幣保證人信用評等 (保證人\ sp\國外)
+                G_RTG_SP_LT_FC_ISS_CRED_RTG_DT = TypeTransfer.objToString(item[52]), //標普長期外幣保證人信用評等日期
+                G_RTG_SP_LT_LC_ISSUER_CREDIT = TypeTransfer.objToString(item[53]), //標普本國貨幣長期保證人信用評等 (保證人\ sp\國外)
+                G_RTG_SP_LT_LC_ISS_CRED_RTG_DT = TypeTransfer.objToString(item[54]), //標普本國貨幣長期保證人信用評等日期
+                G_RTG_MDY_ISSUER = TypeTransfer.objToString(item[55]), //穆迪保證人評等 (保證人\ moody\國外)
+                G_RTG_MDY_ISSUER_RTG_DT = TypeTransfer.objToString(item[56]), //穆迪保證人評等日期
+                G_RTG_MOODY_LONG_TERM = TypeTransfer.objToString(item[57]), //保證人_穆迪長期評等 (保證人\ moody\國外)
+                G_RTG_MOODY_LONG_TERM_DATE = TypeTransfer.objToString(item[58]), //保證人_穆迪長期評等日期
+                G_RTG_MDY_SEN_UNSECURED_DEBT = TypeTransfer.objToString(item[59]), //保證人_穆迪優先無擔保債務評等 (保證人\ moody\國外)
+                G_RTG_MDY_SEN_UNSEC_RTG_DT = TypeTransfer.objToString(item[60]), //保證人_穆迪優先無擔保債務評等_日期
+                G_RTG_MDY_FC_CURR_ISSUER_RATING = TypeTransfer.objToString(item[61]), //穆迪外幣保證人評等 (保證人\ moody\國外)
+                G_RTG_MDY_FC_CURR_ISSUER_RTG_DT = TypeTransfer.objToString(item[62]), //穆迪外幣保證人評等日期
+                G_RTG_MDY_LOCAL_LT_BANK_DEPOSITS = TypeTransfer.objToString(item[63]), //保證人_穆迪長期本國銀行存款評等 (保證人\ moody\國內)
+                G_RTG_MDY_LT_LC_BANK_DEP_RTG_DT = TypeTransfer.objToString(item[64]), //保證人_穆迪長期本國銀行存款評等日期
+                G_RTG_FITCH_LT_ISSUER_DEFAULT = TypeTransfer.objToString(item[65]), //惠譽長期保證人違約評等 (保證人\ Fitch\國外)
+                G_RTG_FITCH_LT_ISSUER_DFLT_RTG_DT = TypeTransfer.objToString(item[66]), //惠譽長期保證人違約評等日期
+                G_RTG_FITCH_SEN_UNSECURED = TypeTransfer.objToString(item[67]), //保證人_惠譽優先無擔保債務評等 (保證人\ Fitch\國外)
+                G_RTG_FITCH_SEN_UNSEC_RTG_DT = TypeTransfer.objToString(item[68]), //保證人_惠譽優先無擔保債務評等日期
+                G_RTG_FITCH_LT_FC_ISSUER_DEFAULT = TypeTransfer.objToString(item[69]), //惠譽長期外幣保證人違約評等 (保證人\ Fitch\國外)
+                G_RTG_FITCH_LT_FC_ISS_DFLT_RTG_DT = TypeTransfer.objToString(item[70]), //惠譽長期外幣保證人違約評等日期
+                G_RTG_FITCH_LT_LC_ISSUER_DEFAULT = TypeTransfer.objToString(item[71]), //惠譽長期本國貨幣保證人違約評等 (保證人\ Fitch\國外)
+                G_RTG_FITCH_LT_LC_ISS_DFLT_RTG_DT = TypeTransfer.objToString(item[72]), //惠譽長期本國貨幣保證人違約評等日期
+                G_RTG_FITCH_NATIONAL_LT = TypeTransfer.objToString(item[73]), //保證人_惠譽國內長期評等 (保證人\ Fitch(twn)\國內)
+                G_RTG_FITCH_NATIONAL_LT_DT = TypeTransfer.objToString(item[74]), //保證人_惠譽國內長期評等日期
+                G_RTG_TRC_LONG_TERM = TypeTransfer.objToString(item[75]), //保證人_TRC 長期評等 (保證人\ CW\國內)
+                G_RTG_TRC_LONG_TERM_RTG_DT = TypeTransfer.objToString(item[76]), //保證人_TRC 長期評等日期
                 //Processing_Date =
             };
         }
@@ -338,6 +476,36 @@ namespace Transfer.Models.Repository
                 if (Mtges.Contains(SMF.Substring(0, 3)))
                     return string.Format("{0} {1}", bondNumber, "Mtge");
             return string.Format("{0} {1}", bondNumber, "Corp");
+        }
+
+        private string forRating(string rating)
+        {
+            if (rating.IsNullOrWhiteSpace())
+                return string.Empty;
+            string value = rating.Trim();
+            if (value.IndexOf("u") > -1)
+                return value.Split('u')[0].Trim();
+            //====================================== 待確認
+            if (value.IndexOf("NR") > -1)
+                return string.Empty;
+            if (value.IndexOf("twNR") > -1)
+                return string.Empty;
+            if (value.IndexOf("WD") > -1)
+                return string.Empty;
+            if (value.IndexOf("WR") > -1)
+                return string.Empty;
+            if (value.IndexOf("twWR") > -1)
+                return string.Empty;
+            //======================================
+            if (value.IndexOf("/*-") > -1)
+                return value.Split(new string[] { "/*-" }, StringSplitOptions.RemoveEmptyEntries)[0].Trim();
+            if (value.IndexOf("/*+") > -1)
+                return value.Split(new string[] { "/*+" }, StringSplitOptions.RemoveEmptyEntries)[0].Trim();
+            if (value.IndexOf("*-") > -1)
+                return value.Split(new string[] { "*-" }, StringSplitOptions.RemoveEmptyEntries)[0].Trim();
+            if (value.IndexOf("*+") > -1)
+                return value.Split(new string[] { "*+" }, StringSplitOptions.RemoveEmptyEntries)[0].Trim();
+            return value;
         }
 
         #endregion Private Function

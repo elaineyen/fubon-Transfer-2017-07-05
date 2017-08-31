@@ -98,6 +98,18 @@
           <Property Name="Version" Type="int" />
           <Property Name="Security_Ticker" Type="varchar" MaxLength="50" />
         </EntityType>
+        <EntityType Name="Bond_Rating_Parm">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Parm_ID" Type="varchar" MaxLength="30" />
+          <Property Name="Rating_Priority" Type="int" />
+          <Property Name="Rating_Object" Type="varchar" MaxLength="10" />
+          <Property Name="Rating_Org_Area" Type="varchar" MaxLength="10" />
+          <Property Name="Rating_Selection" Type="varchar" MaxLength="2" />
+          <Property Name="Processing_Date" Type="date" />
+        </EntityType>
         <EntityType Name="Bond_Rating_Summary">
           <Key>
             <PropertyRef Name="Id" />
@@ -184,6 +196,16 @@
           <Property Name="Apply_Off_Date" Type="date" Nullable="false" />
           <Property Name="Issuer" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Memo" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="Grade_Mapping_Info">
+          <Key>
+            <PropertyRef Name="Rating_Org" />
+            <PropertyRef Name="PD_Grade" />
+            <PropertyRef Name="Rating" />
+          </Key>
+          <Property Name="Rating_Org" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="PD_Grade" Type="int" Nullable="false" />
+          <Property Name="Rating" Type="varchar" MaxLength="10" Nullable="false" />
         </EntityType>
         <EntityType Name="Grade_Moody_Info">
           <Key>
@@ -475,7 +497,7 @@
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="File_Name" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="ReportDate" Type="date" Nullable="false" />
-          <Property Name="Version" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Version" Type="int" Nullable="false" />
           <Property Name="TransferType" Type="char" MaxLength="1" />
           <Property Name="Create_date" Type="varchar" MaxLength="8" />
           <Property Name="Create_time" Type="varchar" MaxLength="8" />
@@ -574,10 +596,12 @@
         <EntityContainer Name="IFRS9ModelStoreContainer">
           <EntitySet Name="Bond_Account_Info" EntityType="Self.Bond_Account_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Bond_Rating_Info" EntityType="Self.Bond_Rating_Info" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Bond_Rating_Parm" EntityType="Self.Bond_Rating_Parm" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Bond_Rating_Summary" EntityType="Self.Bond_Rating_Summary" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EL_Data_In" EntityType="Self.EL_Data_In" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EL_Data_Out" EntityType="Self.EL_Data_Out" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Flow_Info" EntityType="Self.Flow_Info" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Grade_Mapping_Info" EntityType="Self.Grade_Mapping_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Grade_Moody_Info" EntityType="Self.Grade_Moody_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Group_Product" EntityType="Self.Group_Product" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Group_Product_Code_Mapping" EntityType="Self.Group_Product_Code_Mapping" Schema="dbo" store:Type="Tables" />
@@ -698,7 +722,6 @@
           <EntitySet Name="Loan_IAS39_Info" EntityType="IFRS9Model.Loan_IAS39_Info" />
           <EntitySet Name="Moody_LGD_Info" EntityType="IFRS9Model.Moody_LGD_Info" />
           <EntitySet Name="Treasury_Securities_Info" EntityType="IFRS9Model.Treasury_Securities_Info" />
-          <EntitySet Name="Transfer_CheckTable" EntityType="IFRS9Model.Transfer_CheckTable" />
           <EntitySet Name="Group_Product" EntityType="IFRS9Model.Group_Product" />
           <EntitySet Name="Group_Product_Code_Mapping" EntityType="IFRS9Model.Group_Product_Code_Mapping" />
           <AssociationSet Name="FK_Group_Product_Code_Mapping_Group_Product" Association="IFRS9Model.FK_Group_Product_Code_Mapping_Group_Product">
@@ -725,6 +748,9 @@
           </AssociationSet>
           <EntitySet Name="EL_Data_In" EntityType="IFRS9Model.EL_Data_In" />
           <EntitySet Name="IFRS9_Main" EntityType="IFRS9Model.IFRS9_Main" />
+          <EntitySet Name="Transfer_CheckTable" EntityType="IFRS9Model.Transfer_CheckTable" />
+          <EntitySet Name="Bond_Rating_Parm" EntityType="IFRS9Model.Bond_Rating_Parm" />
+          <EntitySet Name="Grade_Mapping_Info" EntityType="IFRS9Model.Grade_Mapping_Info" />
         </EntityContainer>
         <EntityType Name="Moody_Tm_YYYY">
           <Key>
@@ -908,20 +934,6 @@
           <Property Name="Amort_value" Type="Double" Nullable="false" />
           <Property Name="Processing_Date" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="Report_Date" Type="DateTime" Nullable="false" Precision="0" />
-        </EntityType>
-        <EntityType Name="Transfer_CheckTable">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="File_Name" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="ReportDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="Version" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="TransferType" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
-          <Property Name="Create_date" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
-          <Property Name="Create_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
-          <Property Name="End_date" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
-          <Property Name="End_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
         </EntityType>
         <EntityType Name="Group_Product">
           <Key>
@@ -1255,6 +1267,42 @@
           <Property Name="Ori_Amount" Type="Double" />
           <Property Name="Payment_Frequency" Type="Int32" />
         </EntityType>
+        <EntityType Name="Transfer_CheckTable">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="File_Name" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="ReportDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Version" Type="Int32" Nullable="false" />
+          <Property Name="TransferType" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Create_date" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="Create_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="End_date" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="End_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Bond_Rating_Parm">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Parm_ID" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Rating_Priority" Type="Int32" />
+          <Property Name="Rating_Object" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Rating_Org_Area" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Rating_Selection" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Name="Processing_Date" Type="DateTime" Precision="0" />
+        </EntityType>
+        <EntityType Name="Grade_Mapping_Info">
+          <Key>
+            <PropertyRef Name="Rating_Org" />
+            <PropertyRef Name="PD_Grade" />
+            <PropertyRef Name="Rating" />
+          </Key>
+          <Property Name="Rating_Org" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="PD_Grade" Type="Int32" Nullable="false" />
+          <Property Name="Rating" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1473,21 +1521,6 @@
                 <ScalarProperty Name="Segment_Name" ColumnName="Segment_Name" />
                 <ScalarProperty Name="Lots" ColumnName="Lots" />
                 <ScalarProperty Name="Bond_Number" ColumnName="Bond_Number" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Transfer_CheckTable">
-            <EntityTypeMapping TypeName="IFRS9Model.Transfer_CheckTable">
-              <MappingFragment StoreEntitySet="Transfer_CheckTable">
-                <ScalarProperty Name="End_time" ColumnName="End_time" />
-                <ScalarProperty Name="End_date" ColumnName="End_date" />
-                <ScalarProperty Name="Create_time" ColumnName="Create_time" />
-                <ScalarProperty Name="Create_date" ColumnName="Create_date" />
-                <ScalarProperty Name="TransferType" ColumnName="TransferType" />
-                <ScalarProperty Name="Version" ColumnName="Version" />
-                <ScalarProperty Name="ReportDate" ColumnName="ReportDate" />
-                <ScalarProperty Name="File_Name" ColumnName="File_Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1766,6 +1799,43 @@
                 <ScalarProperty Name="Ead" ColumnName="Ead" />
                 <ScalarProperty Name="Customer_Nbr" ColumnName="Customer_Nbr" />
                 <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Transfer_CheckTable">
+            <EntityTypeMapping TypeName="IFRS9Model.Transfer_CheckTable">
+              <MappingFragment StoreEntitySet="Transfer_CheckTable">
+                <ScalarProperty Name="End_time" ColumnName="End_time" />
+                <ScalarProperty Name="End_date" ColumnName="End_date" />
+                <ScalarProperty Name="Create_time" ColumnName="Create_time" />
+                <ScalarProperty Name="Create_date" ColumnName="Create_date" />
+                <ScalarProperty Name="TransferType" ColumnName="TransferType" />
+                <ScalarProperty Name="Version" ColumnName="Version" />
+                <ScalarProperty Name="ReportDate" ColumnName="ReportDate" />
+                <ScalarProperty Name="File_Name" ColumnName="File_Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Bond_Rating_Parm">
+            <EntityTypeMapping TypeName="IFRS9Model.Bond_Rating_Parm">
+              <MappingFragment StoreEntitySet="Bond_Rating_Parm">
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
+                <ScalarProperty Name="Rating_Selection" ColumnName="Rating_Selection" />
+                <ScalarProperty Name="Rating_Org_Area" ColumnName="Rating_Org_Area" />
+                <ScalarProperty Name="Rating_Object" ColumnName="Rating_Object" />
+                <ScalarProperty Name="Rating_Priority" ColumnName="Rating_Priority" />
+                <ScalarProperty Name="Parm_ID" ColumnName="Parm_ID" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Grade_Mapping_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Grade_Mapping_Info">
+              <MappingFragment StoreEntitySet="Grade_Mapping_Info">
+                <ScalarProperty Name="Rating" ColumnName="Rating" />
+                <ScalarProperty Name="PD_Grade" ColumnName="PD_Grade" />
+                <ScalarProperty Name="Rating_Org" ColumnName="Rating_Org" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

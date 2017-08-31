@@ -16,12 +16,30 @@ namespace Transfer.Utility
         public static int? stringToIntN(string value)
         {
             int i = 0;
+            if (value.IsNullOrWhiteSpace())
+                return null;
             if (Int32.TryParse(value, out i))
                 return i;
             return null;
         }
 
         #endregion String To Int?
+
+        #region String To Int
+        /// <summary>
+        /// string 轉 Int
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static int stringToInt(string value)
+        {
+            int i = 0;
+            if (value.IsNullOrWhiteSpace())
+                return i;
+            Int32.TryParse(value, out i);
+            return i;
+        }
+        #endregion
 
         #region String To Double
 
@@ -82,9 +100,18 @@ namespace Transfer.Utility
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public static DateTime? stringToDateTimeN(string value)
+        public static DateTime? stringToDateTimeN(string value, int i = 10)
         {
             DateTime t = new DateTime();
+            if (i == 8 && !value.IsNullOrWhiteSpace() && value.Length == i)
+            {
+                if (DateTime.TryParse(string.Format(
+                    "{0}/{1}/{2}",
+                    value.Substring(0, 4),
+                    value.Substring(4, 2),
+                    value.Substring(6, 2)), out t))
+                    return t;
+            }
             if (DateTime.TryParse(value, out t))
                 return t;
             return null;

@@ -21,7 +21,6 @@
         <EntityTypeShape EntityType="IFRS9Model.Loan_IAS39_Info" Width="1.5" PointX="13.5" PointY="0.75" />
         <EntityTypeShape EntityType="IFRS9Model.Moody_LGD_Info" Width="1.5" PointX="2.75" PointY="9.5" />
         <EntityTypeShape EntityType="IFRS9Model.Treasury_Securities_Info" Width="1.5" PointX="0.75" PointY="10.875" />
-        <EntityTypeShape EntityType="IFRS9Model.Transfer_CheckTable" Width="1.5" PointX="2.875" PointY="11.625" />
         <EntityTypeShape EntityType="IFRS9Model.Group_Product" Width="1.5" PointX="11.125" PointY="13.25" />
         <EntityTypeShape EntityType="IFRS9Model.Group_Product_Code_Mapping" Width="1.5" PointX="13.375" PointY="15.25" />
         <AssociationConnector Association="IFRS9Model.FK_Group_Product_Code_Mapping_Group_Product" />
@@ -36,6 +35,9 @@
         <AssociationConnector Association="IFRS9Model.FK_Rating_History_Group_Product_Code_Mapping" />
         <EntityTypeShape EntityType="IFRS9Model.EL_Data_In" Width="1.5" PointX="9.125" PointY="0.75" />
         <EntityTypeShape EntityType="IFRS9Model.IFRS9_Main" Width="1.5" PointX="7" PointY="0.75" />
+        <EntityTypeShape EntityType="IFRS9Model.Transfer_CheckTable" Width="1.5" PointX="3.375" PointY="12.75" />
+        <EntityTypeShape EntityType="IFRS9Model.Bond_Rating_Parm" Width="1.5" PointX="13.375" PointY="6.75" />
+        <EntityTypeShape EntityType="IFRS9Model.Grade_Mapping_Info" Width="1.5" PointX="13.375" PointY="10.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

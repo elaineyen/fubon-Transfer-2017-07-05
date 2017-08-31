@@ -101,9 +101,12 @@ namespace Transfer.Controllers
         }
 
         /// <summary>
-        /// 前端抓資料時呼叫
+        /// /// 前端抓資料時呼叫
         /// </summary>
-        /// <param name="type"></param>
+        /// <param name="type">A41</param>
+        /// <param name="searchType">Report = 報導日資料查詢,Bonds = 債券資料查詢</param>
+        /// <param name="value">版本 or 債券編號</param>
+        /// <param name="date">報導日 or 債券購入日期</param>
         /// <returns></returns>
         [HttpPost]
         public JsonResult GetData(string type, string searchType, string value, string date)
@@ -113,7 +116,6 @@ namespace Transfer.Controllers
             result.DESCRIPTION = Message_Type.not_Find_Any.GetDescription(type);
 
             DateTime d = new DateTime();
-
             if (!DateTime.TryParse(date, out d))
             {
                 result.DESCRIPTION = Message_Type.parameter_Error.GetDescription();
@@ -361,7 +363,8 @@ namespace Transfer.Controllers
                     result = A4Repository.saveC01(version, dat, debt);
                     bool C01Log = CommonFunction.saveLog(Table_Type.C01, fileName, SetFile.ProgramName,
                         result.RETURN_FLAG, debt, startTime, DateTime.Now); //寫sql Log
-                    result.Datas = Json(transferMessage(next, Transfer_Table_Type.C02.ToString()));
+                    //債券最多到C01
+                    result.Datas = Json(transferMessage((debt.Equals("B") ? false :  next), Transfer_Table_Type.C02.ToString()));
                     break;
 
                 case "C02":

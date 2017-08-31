@@ -113,6 +113,7 @@
         url.search = '@Url.Action("SearchA58", "A5")';
         url.getDbData = '@Url.Action("GetCacheData", "A5")';
         url.getA59Excel = '@Url.Action("GetA59Excel","A5")';
+        url.transfer = '@Url.Action("Transfer", "A5")';
         //#endregion 註冊URL
 
         //#region 註冊datepicker
@@ -259,7 +260,7 @@
         }
 
         //#region 資料上傳(Excel 資料寫入 local sql)
-        function transfer() {
+        function transfer() {           
             $.ajax({
                 type: "POST",
                 url: url.transfer,
@@ -285,7 +286,7 @@
             else {
                 // regular form, do your own thing if you need it
             }
-            clearJqgrid();            
+            clearJqgrid();
             $.ajax({
                 type: "POST",
                 url: action,

@@ -64,21 +64,27 @@ namespace Transfer.Models.Repository
         /// <summary>
         /// get A41 data
         /// </summary>
+        /// <param name="type">Report = 報導日資料查詢,Bonds = 債券資料查詢</param>
+        /// <param name="value">版本 or 債券編號</param>
+        /// <param name="date">報導日 or 債券購入日期</param>
         /// <returns></returns>
         public Tuple<bool, List<A41ViewModel>> GetA41(string type, string value, DateTime date)
         {
             if (db.Bond_Account_Info.Any())
             {
-                if ("Report".Equals(type))
+                if ("Report".Equals(type)) //報導日資料查詢
                 {
+                    int version = 0;
+                    Int32.TryParse(value, out version);
                     var data = (from q in db.Bond_Account_Info
                                             .Where(x => date == x.Report_Date &&
-                                             value.Trim().Equals(x.Version)).AsEnumerable()
+                                             x.Version != null &&
+                                             x.Version == version).AsEnumerable()
                                             .OrderBy(x => Convert.ToInt32(x.Reference_Nbr))
                                 select DbToA41Model(q)).ToList();
                     return new Tuple<bool, List<A41ViewModel>>(data.Any(), data);
                 }
-                if ("Bonds".Equals(type))
+                if ("Bonds".Equals(type)) //債券資料查詢
                 {
                     var data =
                      (from q in db.Bond_Account_Info
@@ -180,7 +186,7 @@ namespace Transfer.Models.Repository
             }
                 
             if (db.Bond_Account_Info.Any() &&
-                (!common.checkTransferCheck(type, type, dt, ver) ||
+                (!common.checkTransferCheck(type, type, dt, verInt) ||
                  db.Bond_Account_Info
                 .FirstOrDefault(x => x.Report_Date != null &&
                                       x.Report_Date == dt &&
@@ -191,7 +197,7 @@ namespace Transfer.Models.Repository
                     type,
                     false,
                     dt,
-                    ver,
+                    verInt,
                     start,
                     DateTime.Now
                 );
@@ -259,6 +265,8 @@ namespace Transfer.Models.Repository
                         TypeTransfer.stringToDoubleN(item.Ori_Ex_rate)),
                     //Market_Value_Ori = //需為已乘上單位數的市價
                     //Market_Value_TW = //(57)Market_Value_Ori*(41)Ex_rate
+                    //Value_date = 
+                    //Portfolio_Name = 
                 });
             }
             try
@@ -268,7 +276,7 @@ namespace Transfer.Models.Repository
                        type,
                        true,
                        dt,
-                       ver,
+                       verInt,
                        start,
                        DateTime.Now
                    );
@@ -285,7 +293,7 @@ namespace Transfer.Models.Repository
                         type,
                         false,
                         dt,
-                        ver,
+                        verInt,
                         start,
                         DateTime.Now
                     );

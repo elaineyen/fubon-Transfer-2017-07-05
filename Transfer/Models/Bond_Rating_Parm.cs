@@ -12,16 +12,14 @@ namespace Transfer.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Transfer_CheckTable
+    public partial class Bond_Rating_Parm
     {
         public int Id { get; set; }
-        public string File_Name { get; set; }
-        public System.DateTime ReportDate { get; set; }
-        public int Version { get; set; }
-        public string TransferType { get; set; }
-        public string Create_date { get; set; }
-        public string Create_time { get; set; }
-        public string End_date { get; set; }
-        public string End_time { get; set; }
+        public string Parm_ID { get; set; }
+        public Nullable<int> Rating_Priority { get; set; }
+        public string Rating_Object { get; set; }
+        public string Rating_Org_Area { get; set; }
+        public string Rating_Selection { get; set; }
+        public Nullable<System.DateTime> Processing_Date { get; set; }
     }
 }

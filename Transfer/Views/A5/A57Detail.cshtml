@@ -3,7 +3,7 @@
 @{
     ViewBag.Manu = "A5Main";
     ViewBag.SubManu = "A57Sub";
-    ViewBag.Title = "債券信評補登(歷史檔)";
+    ViewBag.Title = "執行信評轉檔";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <style>
@@ -18,13 +18,24 @@
 </style>
 <div class="container" id="main">
     <div class="row main_hand">
-        <div class="col-md-12 main_hand_div" style="height:220px">
+        <div class="col-md-12 main_hand_div">
             <form id="myForm">
                 <table>
-                    <tr></tr>
-                    <tr></tr>
-                    <tr></tr>
-                    <tr></tr>
+                    <tr>
+                        <td style="width:550px; padding-top:5px;" class="form-group TS T0 T1 T3">
+                            <label>報導日 : </label>
+                            <input type="text" id="datepicker" name="datepicker">
+                        </td>
+                        <td style="width:450px;padding-top:10px;" class="TS T0 T1 T3">
+                            <label>資料版本 : </label>
+                            <input type="text" id="version" name="version" style="width:300px">
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="padding-top:10px">
+                            <input type="button" class="btn btn-primary" value="執行信評轉檔" id="btnTransfer" disabled />
+                        </td>
+                    </tr>
                 </table>
             </form>
         </div>
@@ -53,15 +64,12 @@
         //#endregion 註冊URL
 
         //#region 註冊datepicker
-        //created.createDatepicker('datepicker', true, '');
-        //created.createDatepickerRange('from', 'to', false);
+        created.createDatepicker('datepicker', true, '');
         //#endregion 註冊datepicker
 
         //#region 註冊verified
-        //verified.datepicker("myForm", "datepicker", true, $('#datepicker').val());
-        //verified.datepicker("myForm", "from", false, $('#from').val());
-        //verified.datepicker("myForm", "to", false, $('#to').val());
-        //verified.required("myForm", "bondNumber", message.required(message.bondsNumber))
+        verified.datepicker("myForm", "datepicker", true, $('#datepicker').val());
+        verified.required("myForm", "version", message.required(message.version));
         //#endregion 註冊verified
 
         //$('#searchType').on('change', function () {

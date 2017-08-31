@@ -39,7 +39,6 @@ namespace Transfer.Models
         public virtual DbSet<Loan_IAS39_Info> Loan_IAS39_Info { get; set; }
         public virtual DbSet<Moody_LGD_Info> Moody_LGD_Info { get; set; }
         public virtual DbSet<Treasury_Securities_Info> Treasury_Securities_Info { get; set; }
-        public virtual DbSet<Transfer_CheckTable> Transfer_CheckTable { get; set; }
         public virtual DbSet<Group_Product> Group_Product { get; set; }
         public virtual DbSet<Group_Product_Code_Mapping> Group_Product_Code_Mapping { get; set; }
         public virtual DbSet<Flow_Info> Flow_Info { get; set; }
@@ -50,5 +49,8 @@ namespace Transfer.Models
         public virtual DbSet<Rating_History> Rating_History { get; set; }
         public virtual DbSet<EL_Data_In> EL_Data_In { get; set; }
         public virtual DbSet<IFRS9_Main> IFRS9_Main { get; set; }
+        public virtual DbSet<Transfer_CheckTable> Transfer_CheckTable { get; set; }
+        public virtual DbSet<Bond_Rating_Parm> Bond_Rating_Parm { get; set; }
+        public virtual DbSet<Grade_Mapping_Info> Grade_Mapping_Info { get; set; }
     }
 }

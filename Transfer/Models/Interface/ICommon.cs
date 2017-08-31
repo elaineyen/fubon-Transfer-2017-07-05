@@ -17,7 +17,7 @@ namespace Transfer.Models.Interface
             string fileName,
             string checkName,
             DateTime reportDate,
-            string version);
+            int version);
 
         /// <summary>
         /// Log資料存到Sql(IFRS9_Log)
@@ -53,7 +53,7 @@ namespace Transfer.Models.Interface
              string fileName,
              bool falg,
              DateTime reportDate,
-             string version,
+             int version,
              DateTime start,
              DateTime end);
     }

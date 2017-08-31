@@ -15,6 +15,13 @@ namespace Transfer.Models.Interface
 
         MSGReturnModel DownLoadExcel<T>(string type, string path, List<T> data);
 
+        /// <summary>
+        /// save A59 To Db 
+        /// </summary>
+        /// <param name="dataModel">A59ViewModel</param>
+        /// <returns></returns>
+        MSGReturnModel saveA59(List<A59ViewModel> dataModel);
+
         void SaveChange();
     }
 }

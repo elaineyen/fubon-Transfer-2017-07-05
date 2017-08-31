@@ -74,15 +74,17 @@ namespace Transfer.Models.Repository
             string fileName,
             string checkName,
             DateTime reportDate,
-            string version)
+            int version)
         {
             if (fileName.IsNullOrWhiteSpace() || checkName.IsNullOrWhiteSpace())
                 return false;
             //須符合有一筆"Y"(上一動作完成) 自己沒有"Y"(重複做) 才算符合
             if ((checkName == Table_Type.A41.ToString() || //checkName = A41 不用檢查
-                db.Transfer_CheckTable.Any(x => x.File_Name == checkName &&
-                                               x.ReportDate == reportDate &&
-                                               x.Version == version &&
+                db.Transfer_CheckTable.Any(x => x.ReportDate == reportDate &&
+                                                ((checkName == "A53" &&
+                                                 x.Version == 1) ||
+                                                (x.File_Name == checkName &&
+                                               x.Version == version)) &&
                                                x.TransferType == "Y")) &&
                 !db.Transfer_CheckTable.Any(x => x.File_Name == fileName &&
                                               x.ReportDate == reportDate &&
@@ -134,7 +136,7 @@ namespace Transfer.Models.Repository
             string fileName,
             bool falg,
             DateTime reportDate,
-            string version,
+            int version,
             DateTime start,
             DateTime end)
         {

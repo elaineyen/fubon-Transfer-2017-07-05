@@ -268,7 +268,7 @@ namespace Transfer.Utility
 
         #endregion List to DataTable
 
-        public static jqGridData<T> TojqGridData<T>(this T cls, int[] widths = null, bool act = false)
+        public static jqGridData<T> TojqGridData<T>(this T cls, int[] widths = null, bool act = false,List<FormateTitle> titles = null)
             where T : class
         {
             var obj =  cls.GetType();
@@ -286,7 +286,7 @@ namespace Transfer.Utility
             int? widthParam = null;
             if (act)
             {
-                jqgridParams.colNames.Add("act");
+                jqgridParams.colNames.Add("act".formateTitle(titles));
                 jqgridParams.colModel.Add(new jqGridColModel()
                 {
                     name = "act",
@@ -298,7 +298,7 @@ namespace Transfer.Utility
                 .ToList().ForEach(x =>
                 {
                     var str = x.Name;
-                    jqgridParams.colNames.Add(str);
+                    jqgridParams.colNames.Add(str.formateTitle(titles));
                     jqgridParams.colModel.Add(new jqGridColModel()
                     {
                         name = str,
@@ -309,6 +309,23 @@ namespace Transfer.Utility
                 });
             return jqgridParams;
         }
+
+        public static string formateTitle(this string value, List<FormateTitle> titles )
+        {
+            if (titles != null && titles.Any() && !value.IsNullOrWhiteSpace())
+            {
+                var data = titles.FirstOrDefault(x => x.OldTitle == value);
+                if (data != null)
+                    return data.NewTitle;
+            }
+            return value;
+        }
+    }
+
+    public class FormateTitle
+    {
+        public string OldTitle { get; set; }
+        public string NewTitle { get; set; }
     }
 
     public class CheckBoxListInfo

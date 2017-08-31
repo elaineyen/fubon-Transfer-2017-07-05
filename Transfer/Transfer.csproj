@@ -195,6 +195,9 @@
     <Compile Include="Models\Bond_Rating_Info.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Bond_Rating_Parm.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Bond_Rating_Summary.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
@@ -205,6 +208,9 @@
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Flow_Info.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Grade_Mapping_Info.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Grade_Moody_Info.cs">

@@ -2,6 +2,7 @@
 using NPOI.SS.UserModel;
 using NPOI.XSSF.UserModel;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.IO;
@@ -74,7 +75,7 @@ namespace Transfer.Utility
         /// <param name="path">檔案放置位置</param>
         /// <param name="sheetName">寫入之sheet名稱</param>
         /// <returns>失敗時回傳錯誤訊息</returns>
-        public static string DataTableToExcel(DataTable dt, string path, Excel_DownloadName type)
+        public static string DataTableToExcel(DataTable dt, string path, Excel_DownloadName type,List<FormateTitle> titles = null)
         {
             string result = string.Empty;
 
@@ -96,7 +97,7 @@ namespace Transfer.Utility
 
                 ws = wb.CreateSheet(type.GetDescription());
 
-                ExcelSetValue(ws, dt, type);
+                ExcelSetValue(ws, dt, type,titles);
 
                 //for (int i = 0; i < dt.Rows.Count; i++)
                 //{
@@ -141,12 +142,12 @@ namespace Transfer.Utility
 
         #region
 
-        private static void ExcelSetValue(ISheet ws, DataTable dt, Excel_DownloadName type)
+        private static void ExcelSetValue(ISheet ws, DataTable dt, Excel_DownloadName type, List<FormateTitle> titles = null)
         {
             ws.CreateRow(0);//第一行為欄位名稱
             for (int i = 0; i < dt.Columns.Count; i++)
             {
-                ws.GetRow(0).CreateCell(i).SetCellValue(dt.Columns[i].ColumnName);
+                ws.GetRow(0).CreateCell(i).SetCellValue((dt.Columns[i].ColumnName).formateTitle(titles));
             }
 
             if (type == Excel_DownloadName.A59)

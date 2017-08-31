@@ -12,16 +12,10 @@ namespace Transfer.Models
     using System;
     using System.Collections.Generic;
     
-    public partial class Transfer_CheckTable
+    public partial class Grade_Mapping_Info
     {
-        public int Id { get; set; }
-        public string File_Name { get; set; }
-        public System.DateTime ReportDate { get; set; }
-        public int Version { get; set; }
-        public string TransferType { get; set; }
-        public string Create_date { get; set; }
-        public string Create_time { get; set; }
-        public string End_date { get; set; }
-        public string End_time { get; set; }
+        public string Rating_Org { get; set; }
+        public int PD_Grade { get; set; }
+        public string Rating { get; set; }
     }
 }

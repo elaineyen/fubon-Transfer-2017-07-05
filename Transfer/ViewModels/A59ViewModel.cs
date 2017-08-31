@@ -43,6 +43,11 @@
         public string SMF { get; set; }
 
         /// <summary>
+        /// Rating_Type
+        /// </summary>
+        public string Rating_Type { get; set; }
+
+        /// <summary>
         /// Issuer
         /// </summary>
         public string Issuer { get; set; }

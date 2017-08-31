@@ -2,6 +2,9 @@
 {
     public static class SetFile
     {
+        /// <summary>
+        /// 設定位置 & txtLog檔名 
+        /// </summary>
         static SetFile()
         {
             ProgramName = "Transfer"; //專案名稱

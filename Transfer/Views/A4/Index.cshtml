@@ -1,4 +1,6 @@
-﻿@{
+﻿@using Transfer.Utility;
+@using Transfer.Enum;
+@{
     ViewBag.Manu = "A4Main";
     ViewBag.SubManu = "A40Sub";
     ViewBag.Title = "A4";
@@ -179,7 +181,8 @@
                              'M', 'M', 'M',
                              'M', 'M', 'M'
                             ];
-                        createJqgrid("list1", "pager1", colNameArray, widthArray, "");
+                        createJqgrid("list1", "pager1", colNameArray, widthArray,
+                            '@Ref.Excel_UploadName.A41.GetDescription()');
                         $('#btnTransfer').prop('disabled', false);
                     }
                     else {

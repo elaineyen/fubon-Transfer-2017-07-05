@@ -215,8 +215,8 @@
         return false;
     }
 
-    function verifiedReportDate(value) {
-        if (dateFormat.test(value)) {
+    function verifiedReportDate(value) {       
+        if (dateFormat.test(value)) {           
             var datepicker = verified.datepickerStrToDate(value);
             if (!datepicker) {
                 return false;
@@ -224,9 +224,11 @@
             if (datepicker.getDate() === 25)
                 return true;
             var d = getOnlyDate();
-            d.setMonth(datepicker.getMonth() + 1);
-            d.setDate(1);
-            d.setDate(d.getDate() - 1);
+            d.setFullYear(datepicker.getFullYear())
+            d.setMonth(datepicker.getMonth());
+            d.setDate(1); //第一天
+            d.setMonth((d.getMonth() + 1)); //下一個月
+            d.setDate(d.getDate() - 1); //這個月最後一天
             if (datepicker.getTime() === d.getTime())
                 return true;
             return false;
