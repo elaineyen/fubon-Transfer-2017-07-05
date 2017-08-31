@@ -52,5 +52,7 @@ namespace Transfer.Models
         public virtual DbSet<Transfer_CheckTable> Transfer_CheckTable { get; set; }
         public virtual DbSet<Bond_Rating_Parm> Bond_Rating_Parm { get; set; }
         public virtual DbSet<Grade_Mapping_Info> Grade_Mapping_Info { get; set; }
+        public virtual DbSet<Rating_Info> Rating_Info { get; set; }
+        public virtual DbSet<Rating_Info_SampleInfo> Rating_Info_SampleInfo { get; set; }
     }
 }

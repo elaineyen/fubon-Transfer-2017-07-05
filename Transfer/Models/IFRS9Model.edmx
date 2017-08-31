@@ -490,6 +490,30 @@
           <Property Name="Current_Rating_Code" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Rating_Date" Type="varchar" MaxLength="10" Nullable="false" />
         </EntityType>
+        <EntityType Name="Rating_Info">
+          <Key>
+            <PropertyRef Name="Record_ID" />
+          </Key>
+          <Property Name="Record_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Bond_Number" Type="varchar" MaxLength="40" Nullable="false" />
+          <Property Name="Rating_Date" Type="date" />
+          <Property Name="Rating_Object" Type="varchar" MaxLength="10" />
+          <Property Name="Rating" Type="varchar" MaxLength="10" />
+          <Property Name="RTG_Bloomberg_Field" Type="varchar" MaxLength="50" />
+          <Property Name="Report_Date" Type="date" Nullable="false" />
+          <Property Name="Rating_Org" Type="varchar" MaxLength="20" />
+        </EntityType>
+        <EntityType Name="Rating_Info_SampleInfo">
+          <Key>
+            <PropertyRef Name="Bond_Number" />
+            <PropertyRef Name="Report_Date" />
+          </Key>
+          <Property Name="Bond_Number" Type="varchar" MaxLength="40" Nullable="false" />
+          <Property Name="Report_Date" Type="date" Nullable="false" />
+          <Property Name="ISSUER_TICKER" Type="varchar" MaxLength="50" />
+          <Property Name="GUARANTOR_EQY_TICKER" Type="varchar" MaxLength="50" />
+          <Property Name="GUARANTOR_NAME" Type="varchar" MaxLength="50" />
+        </EntityType>
         <EntityType Name="Transfer_CheckTable">
           <Key>
             <PropertyRef Name="Id" />
@@ -619,6 +643,8 @@
           <EntitySet Name="Moody_Quartly_PD_Info" EntityType="Self.Moody_Quartly_PD_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Tm_YYYY" EntityType="Self.Moody_Tm_YYYY" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Rating_History" EntityType="Self.Rating_History" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Rating_Info" EntityType="Self.Rating_Info" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Rating_Info_SampleInfo" EntityType="Self.Rating_Info_SampleInfo" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Transfer_CheckTable" EntityType="Self.Transfer_CheckTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Treasury_Securities_Info" EntityType="Self.Treasury_Securities_Info" Schema="dbo" store:Type="Tables" />
           <AssociationSet Name="FK_EL_Data_Out_Group_Product_Code_Mapping" Association="Self.FK_EL_Data_Out_Group_Product_Code_Mapping">
@@ -751,6 +777,8 @@
           <EntitySet Name="Transfer_CheckTable" EntityType="IFRS9Model.Transfer_CheckTable" />
           <EntitySet Name="Bond_Rating_Parm" EntityType="IFRS9Model.Bond_Rating_Parm" />
           <EntitySet Name="Grade_Mapping_Info" EntityType="IFRS9Model.Grade_Mapping_Info" />
+          <EntitySet Name="Rating_Info" EntityType="IFRS9Model.Rating_Info" />
+          <EntitySet Name="Rating_Info_SampleInfo" EntityType="IFRS9Model.Rating_Info_SampleInfo" />
         </EntityContainer>
         <EntityType Name="Moody_Tm_YYYY">
           <Key>
@@ -1303,6 +1331,30 @@
           <Property Name="PD_Grade" Type="Int32" Nullable="false" />
           <Property Name="Rating" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="Rating_Info">
+          <Key>
+            <PropertyRef Name="Record_ID" />
+          </Key>
+          <Property Name="Record_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Bond_Number" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="Rating_Date" Type="DateTime" Precision="0" />
+          <Property Name="Rating_Object" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Rating" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="RTG_Bloomberg_Field" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Report_Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Rating_Org" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Rating_Info_SampleInfo">
+          <Key>
+            <PropertyRef Name="Bond_Number" />
+            <PropertyRef Name="Report_Date" />
+          </Key>
+          <Property Name="Bond_Number" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="ISSUER_TICKER" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="GUARANTOR_EQY_TICKER" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="GUARANTOR_NAME" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Report_Date" Type="DateTime" Nullable="false" Precision="0" />
+        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1836,6 +1888,31 @@
                 <ScalarProperty Name="Rating" ColumnName="Rating" />
                 <ScalarProperty Name="PD_Grade" ColumnName="PD_Grade" />
                 <ScalarProperty Name="Rating_Org" ColumnName="Rating_Org" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Rating_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Rating_Info">
+              <MappingFragment StoreEntitySet="Rating_Info">
+                <ScalarProperty Name="Rating_Org" ColumnName="Rating_Org" />
+                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
+                <ScalarProperty Name="RTG_Bloomberg_Field" ColumnName="RTG_Bloomberg_Field" />
+                <ScalarProperty Name="Rating" ColumnName="Rating" />
+                <ScalarProperty Name="Rating_Object" ColumnName="Rating_Object" />
+                <ScalarProperty Name="Rating_Date" ColumnName="Rating_Date" />
+                <ScalarProperty Name="Bond_Number" ColumnName="Bond_Number" />
+                <ScalarProperty Name="Record_ID" ColumnName="Record_ID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Rating_Info_SampleInfo">
+            <EntityTypeMapping TypeName="IFRS9Model.Rating_Info_SampleInfo">
+              <MappingFragment StoreEntitySet="Rating_Info_SampleInfo">
+                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
+                <ScalarProperty Name="GUARANTOR_NAME" ColumnName="GUARANTOR_NAME" />
+                <ScalarProperty Name="GUARANTOR_EQY_TICKER" ColumnName="GUARANTOR_EQY_TICKER" />
+                <ScalarProperty Name="ISSUER_TICKER" ColumnName="ISSUER_TICKER" />
+                <ScalarProperty Name="Bond_Number" ColumnName="Bond_Number" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

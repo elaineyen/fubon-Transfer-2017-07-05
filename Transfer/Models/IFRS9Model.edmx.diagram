@@ -38,6 +38,8 @@
         <EntityTypeShape EntityType="IFRS9Model.Transfer_CheckTable" Width="1.5" PointX="3.375" PointY="12.75" />
         <EntityTypeShape EntityType="IFRS9Model.Bond_Rating_Parm" Width="1.5" PointX="13.375" PointY="6.75" />
         <EntityTypeShape EntityType="IFRS9Model.Grade_Mapping_Info" Width="1.5" PointX="13.375" PointY="10.75" />
+        <EntityTypeShape EntityType="IFRS9Model.Rating_Info" Width="1.5" PointX="0.75" PointY="14.75" />
+        <EntityTypeShape EntityType="IFRS9Model.Rating_Info_SampleInfo" Width="1.5" PointX="5.75" PointY="14.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

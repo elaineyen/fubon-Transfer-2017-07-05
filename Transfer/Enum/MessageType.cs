@@ -103,7 +103,13 @@ namespace Transfer.Enum
             /// 時間停滯太久請重新上一動作!
             /// </summary>
             [Description("時間停滯太久請重新上一動作!")]
-            time_Out
+            time_Out,
+
+            /// <summary>
+            /// 轉檔驗證失敗
+            /// </summary>
+            [Description("轉檔驗證失敗!")]
+            transferError,
         }
     }
 }

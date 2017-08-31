@@ -116,6 +116,12 @@ namespace Transfer.Enum
             /// </summary>
             [Description("Rating_History")]
             C02,
+
+            /// <summary>
+            /// 檢查轉檔完成資料表
+            /// </summary>
+            [Description("Transfer_CheckTable")]
+            CheckTable,
         }
     }
 }

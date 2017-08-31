@@ -53,14 +53,17 @@ namespace Transfer.Controllers
         public ICacheProvider Cache { get; set; }
 
         /// <summary>
-        /// 債券信評補登(歷史檔)
+        /// 執行信評轉檔
         /// </summary>
         /// <returns></returns>
         [UserAuth("A57Detail,A5")]
         public ActionResult A57Detail()
         {
-            ViewBag.searchOption = new SelectList(searchOption, "Value", "Text");
-            ViewBag.sType = new SelectList(sType, "Value", "Text");
+            GetCheckDataToCache();
+            var jqgridInfo = new CheckTableViewModel().TojqGridData(
+                new int[] { 120, 120, 120, 120, 120, 120, 120 });
+            ViewBag.jqgridColNames = jqgridInfo.colNames;
+            ViewBag.jqgridColModel = jqgridInfo.colModel;
             return View();
         }
 
@@ -139,7 +142,7 @@ namespace Transfer.Controllers
         /// </summary>
         /// <param name="jdata"></param>
         /// <param name="action">downLoad or upLoad</param>
-        /// <param name="type">downLoad(All:全查 or Miss:查缺Grade_Adjust)</param>
+        /// <param name="type">downLoad(All:A58(全查) or Miss:A58(查缺Grade_Adjust) or A59 or CheckTable)</param>
         /// <returns></returns>
         [HttpPost]
         public JsonResult GetCacheData(jqGridParam jdata, string action, string type)
@@ -162,6 +165,12 @@ namespace Transfer.Controllers
                     if (Cache.IsSet(CacheList.A59ExcelfileData))
                         A59Data = (List<A59ViewModel>)Cache.Get(CacheList.A59ExcelfileData);
                     break;
+
+                case "CheckTable":
+                    if (Cache.IsSet(CacheList.CheckTableDbfileData))
+                        return Json(jdata.modelToJqgridResult(
+                            (List<CheckTableViewModel>)Cache.Get(CacheList.CheckTableDbfileData)));
+                    break;  
             }
             if (action.Equals("downLoad"))
                 return Json(jdata.modelToJqgridResult(A58Data)); //下載查詢資料
@@ -341,6 +350,39 @@ namespace Transfer.Controllers
                     .GetDescription(null, ex.Message);
             }
             return Json(result);
+        }
+
+        /// <summary>
+        /// 手動轉換 A57 & A58
+        /// </summary>
+        /// <param name="date">reportDate</param>
+        /// <param name="version">version</param>
+        /// <returns></returns>
+        [HttpPost]
+        public JsonResult TransferA57A58(string date, string version)
+        {
+            MSGReturnModel result = new MSGReturnModel();
+
+            DateTime dt = DateTime.MinValue;
+            int ver = 0;
+            if (date.IsNullOrWhiteSpace() || version.IsNullOrWhiteSpace() ||
+                !DateTime.TryParse(date, out dt) || !Int32.TryParse(version, out ver))
+            {
+                result.RETURN_FLAG = false;
+                result.DESCRIPTION = Message_Type.parameter_Error.GetDescription();
+            }
+            else
+            {
+                result = A5Repository.saveA57A58(dt, ver);
+            }
+            return Json(result);
+        }
+
+        private void GetCheckDataToCache()
+        {
+            var dataModel = A5Repository.getCheckTable();
+            Cache.Invalidate(CacheList.CheckTableDbfileData); //清除 Cache
+            Cache.Set(CacheList.CheckTableDbfileData, dataModel, 15); //把資料存到 Cache
         }
     }
 }

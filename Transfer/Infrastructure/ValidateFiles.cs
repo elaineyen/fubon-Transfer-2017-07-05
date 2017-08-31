@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Web;
 
-namespace Transfer.ViewModels
+namespace Transfer.Infrastructure
 {
     public class FileSizeAttribute : ValidationAttribute
     {

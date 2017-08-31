@@ -12,7 +12,7 @@
         public static string A58DbfileData { get; private set; }
         public static string A58DbMissfileData { get; private set; }
         public static string A59ExcelfileData { get; private set; }
-
+        public static string CheckTableDbfileData { get; private set; }
         #endregion 資料庫資料
 
         #region 上傳檔名
@@ -40,6 +40,7 @@
             A58DbfileData = "A58DbfileData";
             A58DbMissfileData = "A58DbMissfileData";
             A59ExcelfileData = "A59ExcelfileData";
+            CheckTableDbfileData = "CheckTableDbfileData";
 
             #endregion 資料庫資料
 

@@ -65,8 +65,8 @@ namespace Transfer.Models.Repository
         /// <summary>
         /// 判斷轉檔紀錄是否有存在
         /// </summary>
-        /// <param name="fileNames">檔案名稱</param>
-        /// <param name="checkName">要判斷的檔案名稱</param>
+        /// <param name="fileNames">目前檔案名稱</param>
+        /// <param name="checkName">要檢查的檔案名稱</param>
         /// <param name="reportDate">基準日</param>
         /// <param name="version">版本</param>
         /// <returns></returns>
@@ -79,13 +79,17 @@ namespace Transfer.Models.Repository
             if (fileName.IsNullOrWhiteSpace() || checkName.IsNullOrWhiteSpace())
                 return false;
             //須符合有一筆"Y"(上一動作完成) 自己沒有"Y"(重複做) 才算符合
-            if ((checkName == Table_Type.A41.ToString() || //checkName = A41 不用檢查
+            if (//當 fileName,checkName 都為 A41 不用檢查(為最先動作)
+                ( (fileName == Table_Type.A41.ToString() &&
+                  checkName == Table_Type.A41.ToString()) || 
+                //檢查上一動作有無成功(A53 只有一版)
                 db.Transfer_CheckTable.Any(x => x.ReportDate == reportDate &&
                                                 ((checkName == "A53" &&
                                                  x.Version == 1) ||
                                                 (x.File_Name == checkName &&
                                                x.Version == version)) &&
                                                x.TransferType == "Y")) &&
+                //檢查本身有無重複執行(有成功就要下一版)
                 !db.Transfer_CheckTable.Any(x => x.File_Name == fileName &&
                                               x.ReportDate == reportDate &&
                                               x.Version == version &&
@@ -126,7 +130,7 @@ namespace Transfer.Models.Repository
         /// 轉檔紀錄存到Sql(Transfer_CheckTable)
         /// </summary>
         /// <param name="fileName">檔案名稱 A41,A42...</param>
-        /// <param name="falg">成功失敗</param>
+        /// <param name="flag">成功失敗</param>
         /// <param name="reportDate">基準日</param>
         /// <param name="version">版本</param>
         /// <param name="start">轉檔開始時間</param>
@@ -134,13 +138,13 @@ namespace Transfer.Models.Repository
         /// <returns></returns>
         public bool saveTransferCheck(
             string fileName,
-            bool falg,
+            bool flag,
             DateTime reportDate,
             int version,
             DateTime start,
             DateTime end)
         {
-            if (db.Transfer_CheckTable.Any(x =>
+            if (flag && db.Transfer_CheckTable.Any(x =>
              x.ReportDate == reportDate &&
              x.Version == version &&
              x.File_Name == fileName &&
@@ -154,7 +158,7 @@ namespace Transfer.Models.Repository
                     File_Name = fileName,
                     ReportDate = reportDate,
                     Version = version,
-                    TransferType = falg ? "Y" : "N",
+                    TransferType = flag ? "Y" : "N",
                     Create_date = start.ToString("yyyyMMdd"),
                     Create_time = start.ToString("HH:mm:ss"),
                     End_date = end.ToString("yyyyMMdd"),
