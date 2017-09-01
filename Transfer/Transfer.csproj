@@ -463,6 +463,7 @@
     <Content Include="fonts\fontawesome-webfont.woff" />
     <Content Include="fonts\fontawesome-webfont.woff2" />
     <Content Include="fonts\FontAwesome.otf" />
+    <Content Include="FileDownloads\IFRS9Second.bak" />
     <None Include="Properties\PublishProfiles\mark-test-10607.pubxml" />
     <None Include="Properties\PublishProfiles\mark-test-1060714.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
