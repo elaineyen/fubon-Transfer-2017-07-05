@@ -61,7 +61,7 @@ namespace Transfer.Controllers
         {
             GetCheckDataToCache();
             var jqgridInfo = new CheckTableViewModel().TojqGridData(
-                new int[] { 120, 120, 120, 120, 120, 120, 120 });
+                new int[] { 120, 120, 120, 120, 120, 120, 120 },false, A59titles);
             ViewBag.jqgridColNames = jqgridInfo.colNames;
             ViewBag.jqgridColModel = jqgridInfo.colModel;
             return View();

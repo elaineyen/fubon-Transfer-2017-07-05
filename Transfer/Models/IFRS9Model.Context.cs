@@ -43,7 +43,6 @@ namespace Transfer.Models
         public virtual DbSet<Group_Product_Code_Mapping> Group_Product_Code_Mapping { get; set; }
         public virtual DbSet<Flow_Info> Flow_Info { get; set; }
         public virtual DbSet<EL_Data_Out> EL_Data_Out { get; set; }
-        public virtual DbSet<Bond_Account_Info> Bond_Account_Info { get; set; }
         public virtual DbSet<Bond_Rating_Info> Bond_Rating_Info { get; set; }
         public virtual DbSet<Bond_Rating_Summary> Bond_Rating_Summary { get; set; }
         public virtual DbSet<Rating_History> Rating_History { get; set; }
@@ -54,5 +53,6 @@ namespace Transfer.Models
         public virtual DbSet<Grade_Mapping_Info> Grade_Mapping_Info { get; set; }
         public virtual DbSet<Rating_Info> Rating_Info { get; set; }
         public virtual DbSet<Rating_Info_SampleInfo> Rating_Info_SampleInfo { get; set; }
+        public virtual DbSet<Bond_Account_Info> Bond_Account_Info { get; set; }
     }
 }

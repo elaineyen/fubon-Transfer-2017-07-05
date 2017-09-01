@@ -166,6 +166,26 @@ namespace Transfer.Controllers
         [UserAuth("Index,A4")]
         public ActionResult Index()
         {
+            List<FormateTitle> A41titles = new List<FormateTitle>();
+            A41titles.Add(new FormateTitle() { OldTitle = "Reference_Nbr", NewTitle = "帳戶編號/群組編號" });
+            A41titles.Add(new FormateTitle() { OldTitle = "Bond_Number", NewTitle = "債券編號" });
+            A41titles.Add(new FormateTitle() { OldTitle = "Segment_Name", NewTitle = "債券(資產)名稱" });
+            A41titles.Add(new FormateTitle() { OldTitle = "Ori_Amount", NewTitle = "原始金額" });
+            A41titles.Add(new FormateTitle() { OldTitle = "Current_Int_Rate", NewTitle = "原始利率(票面利率)" });
+            A41titles.Add(new FormateTitle() { OldTitle = "Origination_Date", NewTitle = "債券購入(認列)日期" });
+            A41titles.Add(new FormateTitle() { OldTitle = "Maturity_Date", NewTitle = "債券到期日" });
+            A41titles.Add(new FormateTitle() { OldTitle = "Principal_Payment_Method_Code", NewTitle = "現金流類型" });
+            A41titles.Add(new FormateTitle() { OldTitle = "	Payment_Frequency", NewTitle = "票面利率週期" });
+            A41titles.Add(new FormateTitle() { OldTitle = "Baloon_Freq", NewTitle = "可贖回次數" });
+            A41titles.Add(new FormateTitle() { OldTitle = "ISSUER_AREA", NewTitle = "Issuer所屬區域" });
+            A41titles.Add(new FormateTitle() { OldTitle = "Industry_Sector", NewTitle = "對手產業別" });
+            A41titles.Add(new FormateTitle() { OldTitle = "PRODUCT", NewTitle = "SMF" });
+            A41titles.Add(new FormateTitle() { OldTitle = "IAS39_CATEGORY", NewTitle = "原公報分類" });
+            A41titles.Add(new FormateTitle() { OldTitle = "Principal", NewTitle = "攤銷後之成本數(原幣)" });
+            A41titles.Add(new FormateTitle() { OldTitle = "Amort_Amt_Tw", NewTitle = "攤銷後之成本數(報表日匯率台幣)" });
+            var jqgridInfo = new A41ViewModel().TojqGridData(null,false, A41titles);
+            ViewBag.jqgridColNames = jqgridInfo.colNames;
+            ViewBag.jqgridColModel = jqgridInfo.colModel;
             return View();
         }
 

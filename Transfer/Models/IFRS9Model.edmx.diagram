@@ -28,7 +28,6 @@
         <AssociationConnector Association="IFRS9Model.FK_Flow_Info_Flow_Info" />
         <EntityTypeShape EntityType="IFRS9Model.EL_Data_Out" Width="1.5" PointX="15.625" PointY="14.25" />
         <AssociationConnector Association="IFRS9Model.FK_EL_Data_Out_Group_Product_Code_Mapping" />
-        <EntityTypeShape EntityType="IFRS9Model.Bond_Account_Info" Width="1.5" PointX="4.875" PointY="0.75" />
         <EntityTypeShape EntityType="IFRS9Model.Bond_Rating_Info" Width="1.5" PointX="17.5" PointY="0.875" />
         <EntityTypeShape EntityType="IFRS9Model.Bond_Rating_Summary" Width="1.5" PointX="15.5" PointY="0.875" />
         <EntityTypeShape EntityType="IFRS9Model.Rating_History" Width="1.5" PointX="15.625" PointY="19.125" />
@@ -40,6 +39,7 @@
         <EntityTypeShape EntityType="IFRS9Model.Grade_Mapping_Info" Width="1.5" PointX="13.375" PointY="10.75" />
         <EntityTypeShape EntityType="IFRS9Model.Rating_Info" Width="1.5" PointX="0.75" PointY="14.75" />
         <EntityTypeShape EntityType="IFRS9Model.Rating_Info_SampleInfo" Width="1.5" PointX="5.75" PointY="14.75" />
+        <EntityTypeShape EntityType="IFRS9Model.Bond_Account_Info" Width="1.5" PointX="4.875" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

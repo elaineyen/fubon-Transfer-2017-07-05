@@ -232,7 +232,6 @@ namespace Transfer.Models.Repository
                     ISSUER_AREA = item.Issuer_Area,
                     Industry_Sector = item.Industry_Sector,
                     PRODUCT = item.Product,
-                    FINANCE_INSTRUMENTS = item.Finance_Instruments,
                     IAS39_CATEGORY = item.Ias39_Category,
                     Principal = TypeTransfer.stringToDoubleN(item.Principal),
                     Amort_Amt_Tw = TypeTransfer.stringToDoubleN(item.Amort_Amt_Tw),
@@ -876,12 +875,20 @@ namespace Transfer.Models.Repository
                     idNum = db.Bond_Account_Info
                         .Select(x => x.Reference_Nbr).Distinct().AsEnumerable()
                         .Max(x => Convert.ToInt32(x));
-                if (resultData.Tables[1].Rows.Count > 2) //判斷有無資料
+                if (resultData.Tables[0].Rows.Count > 2) //判斷有無資料
                 {
-                    dataModel = resultData.Tables[1].AsEnumerable().Skip(1) //第二頁籤第二行開始
+                    var data = resultData.Tables[0].AsEnumerable();
+
+                    List<string> titles = resultData.Tables[0].Columns
+                                                     .Cast<DataColumn>()
+                                                     .Select(x => x.ColumnName)
+                                                     .ToList();
+                    //List<string> titles = data.Take(1).Select(x => TypeTransfer.objToString(x)).ToList();
+
+                    dataModel = data.Skip(1) //第二行開始
                         .Select((x, y) =>
                         {
-                            return getA41Model(x, (y + 1 + idNum).ToString().PadLeft(10, '0'));
+                            return getA41Model(x, (y + 1 + idNum).ToString().PadLeft(10, '0'), titles);
                         }
                         ).ToList();
 
@@ -951,13 +958,38 @@ namespace Transfer.Models.Repository
         /// <summary>
         /// datarow 組成 A41ViewModel
         /// </summary>
-        /// <param name="item">DataRow</param>
-        /// <returns>A41ViewModel</returns>
-        private A41ViewModel getA41Model(DataRow item, string num)
+        /// <param name="item"></param>
+        /// <param name="num"></param>
+        /// <param name="titles"></param>
+        /// <returns></returns>
+        private A41ViewModel getA41Model(DataRow item, string num,List<string> titles)
         {
-            var Maturity_Date = TypeTransfer.objToString(item[14]);
+            if (!titles.Any())
+                return new A41ViewModel();
+            var A41 = new A41ViewModel()
+            {
+                Reference_Nbr = num, //帳戶編號/群組編號
+            };
+
+            for (int i = 0; i < titles.Count ; i++) //每一行所有資料
+            {
+                string data = null;
+                if(item[i].GetType().Name.Equals("DateTime"))
+                    data = TypeTransfer.objDateToString(item[i]);
+                else
+                    data = TypeTransfer.objToString(item[i]);
+                if (!data.IsNullOrWhiteSpace()) //資料有值
+                {
+                    var A41PInfo = A41.GetType().GetProperties()
+                                      .Where(x => x.Name.Trim().ToLower() == titles[i].Trim().ToLower())
+                                      .FirstOrDefault();
+                    if (A41PInfo != null)
+                        A41PInfo.SetValue(A41, data);
+                }
+            }
+            var Maturity_Date = A41.Maturity_Date;
             DateTime MDate = DateTime.MinValue;
-            var Balloon_Date = TypeTransfer.objToString(item[16]);
+            var Balloon_Date = A41.Baloon_Freq;
             string Principal_Payment_Method_Code = "01";
             // Balloon_Date IN ('0') OR  Balloon_Date IS NULL THEN '02'
             if (Balloon_Date.IsNullOrWhiteSpace() || "0".Equals(Balloon_Date))
@@ -965,54 +997,8 @@ namespace Transfer.Models.Repository
             //Year( Maturity_Date) > = 2100  Then  '04'
             if (DateTime.TryParse(Maturity_Date, out MDate) && MDate.Year > 2100)
                 Principal_Payment_Method_Code = "04";
-            return new A41ViewModel()
-            {
-                Reference_Nbr = num, //帳戶編號/群組編號
-                Bond_Number = TypeTransfer.objToString(item[0]), //A 債券編號
-                Lots = TypeTransfer.objToString(item[1]), //B Lots
-                Segment_Name = TypeTransfer.objToString(item[2]), //C 債券(資產)名稱
-                Curr_Sp_Issuer = TypeTransfer.objToString(item[3]), //D 最近發行人評等_SP
-                Curr_Moodys_Issuer = TypeTransfer.objToString(item[4]), //E 最近發行人評等_Moody
-                Curr_Fitch_Issuer = TypeTransfer.objToString(item[5]), //F 最近發行人評等_Fitch
-                Curr_Tw_Issuer = TypeTransfer.objToString(item[6]), //G 最近發行人評等_中華
-                Curr_Sp_Issue = TypeTransfer.objToString(item[7]), //H 最近債項評等_SP
-                Curr_Moodys_Issue = TypeTransfer.objToString(item[8]), //I 最近債項評等_Moody
-                Curr_Fitch_Issue = TypeTransfer.objToString(item[9]), //J 最近債項評等_Fitch
-                Curr_Tw_Issue = TypeTransfer.objToString(item[10]), //K 最近債項評等_中華
-                Ori_Amount = TypeTransfer.objToString(item[11]), //L 原始金額
-                Current_Int_Rate = TypeTransfer.objToString(item[12]), //M 合約利率
-                Origination_Date = TypeTransfer.objDateToString(item[13]), //N 債券購入(認列)日期
-                Maturity_Date = TypeTransfer.objDateToString(item[14]), //O (缺 P=>15) 到期日
-                Principal_Payment_Method_Code = Principal_Payment_Method_Code,
-                Payment_Frequency = TypeTransfer.objDateToString(item[16]), //Q 票面利率週期
-                Baloon_Freq = TypeTransfer.objToString(item[17]), //R (缺 S=>18) 贖回日期(本金一次贖回)
-                Issuer_Area = TypeTransfer.objToString(item[19]), //T Issuer所屬區域
-                Industry_Sector = TypeTransfer.objToString(item[20]), //U 對手產業別
-                Product = TypeTransfer.objToString(item[21]), //V 債券產品別(揭露使用)
-                Finance_Instruments = TypeTransfer.objToString(item[22]), //W (缺 X=>23) 金融工具類型(金融資產/放款/金融保證)
-                Ias39_Category = TypeTransfer.objToString(item[24]), //Y 原公報分類
-                Principal = TypeTransfer.objToString(item[25]), //Z 金融資產餘額 攤銷後之成本數(原幣)
-                Amort_Amt_Tw = TypeTransfer.objToString(item[26]), //AA 金融資產餘額(台幣) 攤銷後之成本數(台幣)
-                Interest_Receivable = TypeTransfer.objToString(item[27]), //AB 應收利息(原幣)
-                Interest_Receivable_tw = TypeTransfer.objToString(item[28]), //AC (缺 AD=>29) 應收利息(台幣)
-                Interest_Rate_Type = string.Empty,
-                Impair_Yn = TypeTransfer.objToString(item[30]), //AE 是否有客觀減損證據
-                Eir = TypeTransfer.objToString(item[31]), //AF 有效利率(折現率)
-                Currency_Code = TypeTransfer.objToString(item[32]), //AG 債券幣別
-                Report_Date = TypeTransfer.objDateToString(item[33]), //AH 評估基準日/報導日
-                Issuer = TypeTransfer.objToString(item[34]), //AI 發行人
-                Country_Risk = TypeTransfer.objToString(item[35]), //AJ 保證國別
-                Ex_rate = TypeTransfer.objToString(item[36]), //AK 月底匯率
-                Lien_position = TypeTransfer.objToString(item[37]), //AL 債券擔保順位
-                Portfolio = TypeTransfer.objToString(item[38]), //AM 資產組合名稱
-                Dept = TypeTransfer.objToString(item[39]), //AN 部門
-                Asset_Seg = TypeTransfer.objToString(item[40]), //AO 資產區隔
-                Ori_Ex_rate = TypeTransfer.objToString(item[41]), //AP 成本匯率
-                Bond_Type = TypeTransfer.objToString(item[42]), //AQ 用來判斷該債券為公債/國營事業債，或屬其餘債券
-                Assessment_Sub_Kind = TypeTransfer.objToString(item[43]), //AR 產業公司/金融債主順位債券/金融債次順位債券
-                Processing_Date = TypeTransfer.objToString(item[44]), //AS 資料處理日期
-                Version = TypeTransfer.objToString(item[45]) //AT 資料版本
-            };
+            A41.Principal_Payment_Method_Code = Principal_Payment_Method_Code;
+            return A41;
         }
 
         #endregion datarow 組成 A41ViewModel
@@ -1050,7 +1036,6 @@ namespace Transfer.Models.Repository
                 Issuer_Area = data.ISSUER_AREA,
                 Industry_Sector = data.Industry_Sector,
                 Product = data.PRODUCT,
-                Finance_Instruments = data.FINANCE_INSTRUMENTS,
                 Ias39_Category = data.IAS39_CATEGORY,
                 Principal = TypeTransfer.doubleNToString(data.Principal),
                 Amort_Amt_Tw = TypeTransfer.doubleNToString(data.Amort_Amt_Tw),
@@ -1066,7 +1051,6 @@ namespace Transfer.Models.Repository
                 Ex_rate = TypeTransfer.doubleNToString(data.Ex_rate),
                 Lien_position = data.Lien_position,
                 Portfolio = data.Portfolio,
-                //Dept = data.Dept,
                 Asset_Seg = data.ASSET_SEG,
                 Ori_Ex_rate = TypeTransfer.doubleNToString(data.Ori_Ex_rate),
                 Bond_Type = data.Bond_Type,
@@ -1080,7 +1064,8 @@ namespace Transfer.Models.Repository
                 Amort_Amt_Ori_Tw = TypeTransfer.doubleNToString(data.Amort_Amt_Ori_Tw),
                 Market_Value_Ori = TypeTransfer.doubleNToString(data.Market_Value_Ori),
                 Market_Value_TW = TypeTransfer.doubleNToString(data.Market_Value_TW),
-                Value_date = TypeTransfer.dateTimeNToString(data.Value_date)
+                Value_date = TypeTransfer.dateTimeNToString(data.Value_date),
+                Portfolio_Name = data.Portfolio_Name
             };
         }
 

@@ -216,7 +216,7 @@
     }
 
     function verifiedReportDate(value) {       
-        if (dateFormat.test(value)) {           
+        if (dateFormat.test(value)) {            
             var datepicker = verified.datepickerStrToDate(value);
             if (!datepicker) {
                 return false;
@@ -228,8 +228,8 @@
             d.setMonth(datepicker.getMonth());
             d.setDate(1); //第一天
             d.setMonth((d.getMonth() + 1)); //下一個月
-            d.setDate(d.getDate() - 1); //這個月最後一天
-            if (datepicker.getTime() === d.getTime())
+            d.setDate(d.getDate() - 1); //這個月最後一天        
+            if (datepicker.getDate() === d.getDate())
                 return true;
             return false;
         }

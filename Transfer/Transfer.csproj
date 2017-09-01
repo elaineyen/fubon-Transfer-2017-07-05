@@ -162,6 +162,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Controllers\A5Controller.cs" />
     <Compile Include="Controllers\C0Controller.cs" />
+    <Compile Include="Controllers\KRiskController .cs" />
     <Compile Include="Controllers\C4Controller.cs" />
     <Compile Include="Controllers\A6Controller.cs" />
     <Compile Include="Controllers\A7Controller.cs" />
@@ -572,6 +573,7 @@
     <Content Include="Views\D0\D05Mortgage.cshtml" />
     <Content Include="Views\C0\C07Bond.cshtml" />
     <Content Include="Views\C0\C07Mortgage.cshtml" />
+    <Content Include="Views\KRisk\KRisk01Detail.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
