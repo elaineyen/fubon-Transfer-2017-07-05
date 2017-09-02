@@ -296,15 +296,17 @@ namespace Transfer.Utility
             }
             obj.GetProperties()
                 .ToList().ForEach(x =>
-                {
+                {                   
                     var str = x.Name;
-                    jqgridParams.colNames.Add(str.formateTitle(titles));
                     jqgridParams.colModel.Add(new jqGridColModel()
                     {
                         name = str,
                         index = str,
                         width = flag ? (len > widthIndex ? widths[widthIndex] : widthParam) : widthParam
                     });
+                    var des = x.GetCustomAttributes(typeof(DescriptionAttribute), false);
+                    str = des.Length > 0 ? ((DescriptionAttribute)des[0]).Description : x.Name;
+                    jqgridParams.colNames.Add(str.formateTitle(titles));
                     widthIndex += 1;
                 });
             return jqgridParams;

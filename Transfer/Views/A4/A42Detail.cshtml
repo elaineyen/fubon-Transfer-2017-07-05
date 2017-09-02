@@ -89,9 +89,9 @@
             var date = $('#datepicker').val();
             var type = $('#transferType').val();
 
+            verified.number('myFrom', 'version');
             verified.required('myFrom', 'version', message.required(message.version));
             verified.datepicker('myFrom', 'datepicker', true, date);
-
             if ($('#myFrom').valid()) {
                 callTransfer(type, version, date, type === "All")
             }

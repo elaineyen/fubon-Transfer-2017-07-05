@@ -42,7 +42,7 @@ namespace Transfer.Models.Interface
         /// </summary>
         /// <param name="dataModel">A41ViewModel</param>
         /// <returns></returns>
-        MSGReturnModel saveA41(List<A41ViewModel> dataModel, string reportDate);
+        MSGReturnModel saveA41(List<A41ViewModel> dataModel, string reportDate,string version);
 
         /// <summary>
         /// save A42 To Db
@@ -57,7 +57,7 @@ namespace Transfer.Models.Interface
         /// <param name="version">version</param>
         /// <param name="date">Report_Date</param>
         /// <returns></returns>
-        MSGReturnModel saveB01(string version, DateTime date, string type);
+        MSGReturnModel saveB01(int version, DateTime date, string type);
 
         /// <summary>
         /// save C01 to DB
@@ -65,7 +65,7 @@ namespace Transfer.Models.Interface
         /// <param name="version">version</param>
         /// <param name="date">Report_Date</param>
         /// <returns></returns>
-        MSGReturnModel saveC01(string version, DateTime date, string type);
+        MSGReturnModel saveC01(int version, DateTime date, string type);
 
         /// <summary>
         /// save C02 to DB
@@ -74,7 +74,7 @@ namespace Transfer.Models.Interface
         /// <param name="date">Report_Date</param>
         /// <param name="type">M = 房貸</param>
         /// <returns></returns>
-        MSGReturnModel saveC02(string version, DateTime date, string type);
+        MSGReturnModel saveC02(int version, DateTime date, string type);
 
         /// <summary>
         ///

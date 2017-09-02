@@ -7,6 +7,20 @@
     window.verified = verified;
     window.created = created;
 
+    verified.number = function (formid, elementid) {
+        $("#" + formid).validate({
+            errorPlacement: function (error, element) {
+                error.appendTo(element.parent());
+            }
+        });
+        $('#' + elementid).rules('add', {
+            number: true,
+            messages: {
+                number: '請輸入數字',
+            }
+        })
+    }
+
     verified.minlength = function (formid, elementid, value, msg) {
         value = value || 10;
         msg = msg || message.minlength(value);

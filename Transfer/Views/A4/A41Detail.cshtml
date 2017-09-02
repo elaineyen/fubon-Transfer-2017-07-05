@@ -108,6 +108,7 @@
             var date = $('#datepicker1').val();
             verified.datepicker("myForm1", "datepicker1", false, date);
             verified.required('myForm1', 'version', message.required(message.version));
+            verified.number('myForm1', 'version');
             if ($('#myForm1').valid()) {
                 showJqgrid('@Ref.Table_Type.A41.ToString()', "Report", version, date)
             }
@@ -130,23 +131,6 @@
         function showJqgrid(type, searchType, value, date) {
             clearJqgrid();
             var title = '@Ref.Table_Type.A41.GetDescription()'; //標頭
-            var colNameArray = ['Reference_Nbr', 'Bond_Number', 'Lots',
-                         'Segment_Name', 'Curr_Sp_Issuer', "Curr_Moodys_Issuer",
-                         'Curr_Fitch_Issuer', 'Curr_Tw_Issuer', 'Curr_Sp_Issue',
-                         "Curr_Moodys_Issue", 'Curr_Fitch_Issue', 'Curr_Tw_Issue',
-                         'Ori_Amount', 'Current_Int_Rate', 'Origination_Date',
-                         'Maturity_Date', 'Principal_Payment_Method_Code', 'Payment_Frequency',
-                         'Balloon_Date', 'Issuer_Area', 'Industry_Sector',
-                         'Product', 'Finance_Instruments',
-                         'Ias39_Category', 'Principal',
-                         'Amort_Amt_Tw', 'Interest_Receivable',
-                         'Interest_Receivable_tw', 'Interest_Rate_Type', 'Impair_Yn',
-                         'Eir', 'Currency_Code', 'Report_Date',
-                         'Issuer', 'Country_Risk', 'Ex_rate',
-                         'Lien_position', 'Portfolio', 'Dept',
-                         'Asset_Seg', 'Ori_Ex_rate', 'Bond_Type',
-                         'Assessment_Sub_Kind', 'Processing_Date', 'Version'
-            ]; //每個欄位名稱要對應傳入資料屬性
             $.ajax({
                 type: "POST",
                 data: JSON.stringify({
@@ -164,25 +148,7 @@
             })
             .done(function (result) {
                 if (result.RETURN_FLAG) {
-                    var widthArray =
-                        ['L', 'M', 'M',
-                         'M', 'M', "M",
-                         'M', 'M', 'M',
-                         "M", 'M', 'M',
-                         'M', 'M', 'M',
-                         'M', 'M', 'M',
-                         'L', 'M', 'M',
-                         'L', 'L',
-                         'M', 'L',
-                         'L', 'M',
-                         'M', 'M', 'M',
-                         'L', 'M', 'M',
-                         'M', 'M', 'M',
-                         'M', 'M', 'M',
-                         'M', 'M', 'M',
-                         'M', 'M', 'M'
-                        ];
-                    createJqgrid("list1", "pager1", colNameArray, widthArray, title);
+                    createJqgrid("list1", "pager1", title);
                 }
                 else {
                     toastr.error(result.DESCRIPTION);
@@ -200,71 +166,38 @@
         //#region createJqgrid (建立JqGrid套件)
         //listId (Jqgrid產生table的ID)
         //pagerId (下方產生筆數的ID)
-        //colNameArray (設定上方Title *要與Data 傳入Json 屬性相對應)
-        //widthArray (寬度設定 L=> 250 M=>120)
         //title (標題)
-        function createJqgrid(listId, pagerId, colNameArray, widthArray, title) {
-            var colModelArray = [];
-            var jagridLWidth = 250;
-            var jagridMWidth = 120;
-            if (colNameArray.length > 0) {
-                for (let i = 0; i < colNameArray.length; i++) {
-                    var obj = {
-                        name: colNameArray[i],
-                        index: colNameArray[i],
-                        width: widthArray[i] === 'L' ? jagridLWidth : jagridMWidth
-                    }
-                    colModelArray.push(obj);
+        function createJqgrid(listId, pagerId, title) {
+            $('#jqgridDiv').append('<table id="' + listId + '"></table>');
+            $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');
+            $("#" + listId).jqGrid({
+                url: url.getDbData,
+                datatype: "json",
+                mtype: "POST",
+                postData:
+                {
+                    type: "Db",
+                },
+                jsonReader:
+                {
+                    repeatitems: false,
+                },
+                colNames: @Html.Raw(Json.Encode(ViewBag.jqgridColNames)),
+                colModel: @Html.Raw(Json.Encode(ViewBag.jqgridColModel)),
+                rowNum: 10, //一頁筆數
+                rowList: [10, 20, 30], //設定一頁幾筆
+                pager: '#' + pagerId,
+                height: jqgridCustom.setHeight,
+                autowidth: true,
+                caption: title, //標題
+                shrinkToFit: false,
+                contentType: "application/json",
+                loadComplete: function () {
+                    var table = $(this);
+                    jqgridCustom.updatePagerIcons(table);
                 }
-                colNameArray =
-                            ['帳戶編號/群組編號', '債券編號', 'Lots',
-                             '債券(資產)名稱', 'S&P Issuer', "Moody's Issuer",
-                             'Fitch Issuer', 'TW Rating Issuer', 'S&P Issue',
-                             "Moody's Issue", 'Fitch Issue', 'TW Rating Issue',
-                             '原始金額', '原始利率(票面利率)', '債券購入(認列)日期',
-                             '債券到期日', '現金流類型', '票面利率週期',
-                             '贖回日期(本金一次贖回)', 'Issuer所屬區域', '對手產業別',
-                             '債券產品別(揭露使用)', '金融工具類型(金融資產/放款/金融保證)',
-                             '原公報分類', '金融資產餘額攤銷後之成本數(原幣)',
-                             '金融資產餘額(台幣)攤銷後之成本數(台幣)', '應收利息',
-                             '應收利息(台幣)', '利率類型(Fix, Float)', '是否有客觀減損證據',
-                             '原始有效利率(買入殖利率)', '債券幣別', '資料日期(MDR)',
-                             'Issuer', 'Country_Risk', '月底匯率',
-                             '債券擔保順位', 'Portfolio', '部門',
-                             '資產區隔', '成本匯率', '債券種類',
-                             'Stage評估次分類', '資料處理日期', '資料版本'
-                            ];
-                $('#jqgridDiv').append('<table id="' + listId + '"></table>');
-                $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');
-                $("#" + listId).jqGrid({
-                    url: url.getDbData,
-                    datatype: "json",
-                    mtype: "POST",
-                    postData:
-                    {
-                        type: "Db",
-                    },
-                    jsonReader:
-                    {
-                        repeatitems: false,
-                    },
-                    colNames: colNameArray,
-                    colModel: colModelArray,
-                    rowNum: 10, //一頁筆數
-                    rowList: [10, 20, 30], //設定一頁幾筆
-                    pager: '#' + pagerId,
-                    height: jqgridCustom.setHeight,
-                    autowidth: true,
-                    caption: title, //標題
-                    shrinkToFit: false,
-                    contentType: "application/json",
-                    loadComplete: function () {
-                        var table = $(this);
-                        jqgridCustom.updatePagerIcons(table);
-                    }
-                });
-                $("#" + listId).jqGrid('navGrid', '#' + pagerId, { edit: false, add: false, del: false });
-            }
+            });
+            $("#" + listId).jqGrid('navGrid', '#' + pagerId, { edit: false, add: false, del: false });           
         }
         //#endregion createJqgrid
 

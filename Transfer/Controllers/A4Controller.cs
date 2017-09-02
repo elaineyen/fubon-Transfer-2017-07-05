@@ -31,12 +31,28 @@ namespace Transfer.Controllers
         public ICacheProvider Cache { get; set; }
 
         /// <summary>
+        /// A4(上傳檔案)
+        /// </summary>
+        /// <returns></returns>
+        [UserAuth("Index,A4")]
+        public ActionResult Index()
+        {
+            var jqgridInfo = new A41ViewModel().TojqGridData();
+            ViewBag.jqgridColNames = jqgridInfo.colNames;
+            ViewBag.jqgridColModel = jqgridInfo.colModel;
+            return View();
+        }
+
+        /// <summary>
         /// A41(債券明細檔)
         /// </summary>
         /// <returns></returns>
         [UserAuth("A41Detail,A4")]
         public ActionResult A41Detail()
         {
+            var jqgridInfo = new A41ViewModel().TojqGridData();
+            ViewBag.jqgridColNames = jqgridInfo.colNames;
+            ViewBag.jqgridColModel = jqgridInfo.colModel;
             return View();
         }
 
@@ -159,42 +175,14 @@ namespace Transfer.Controllers
             return Json(string.Join(",", logDatas));
         }
 
-        /// <summary>
-        /// A4(上傳檔案)
-        /// </summary>
-        /// <returns></returns>
-        [UserAuth("Index,A4")]
-        public ActionResult Index()
-        {
-            List<FormateTitle> A41titles = new List<FormateTitle>();
-            A41titles.Add(new FormateTitle() { OldTitle = "Reference_Nbr", NewTitle = "帳戶編號/群組編號" });
-            A41titles.Add(new FormateTitle() { OldTitle = "Bond_Number", NewTitle = "債券編號" });
-            A41titles.Add(new FormateTitle() { OldTitle = "Segment_Name", NewTitle = "債券(資產)名稱" });
-            A41titles.Add(new FormateTitle() { OldTitle = "Ori_Amount", NewTitle = "原始金額" });
-            A41titles.Add(new FormateTitle() { OldTitle = "Current_Int_Rate", NewTitle = "原始利率(票面利率)" });
-            A41titles.Add(new FormateTitle() { OldTitle = "Origination_Date", NewTitle = "債券購入(認列)日期" });
-            A41titles.Add(new FormateTitle() { OldTitle = "Maturity_Date", NewTitle = "債券到期日" });
-            A41titles.Add(new FormateTitle() { OldTitle = "Principal_Payment_Method_Code", NewTitle = "現金流類型" });
-            A41titles.Add(new FormateTitle() { OldTitle = "	Payment_Frequency", NewTitle = "票面利率週期" });
-            A41titles.Add(new FormateTitle() { OldTitle = "Baloon_Freq", NewTitle = "可贖回次數" });
-            A41titles.Add(new FormateTitle() { OldTitle = "ISSUER_AREA", NewTitle = "Issuer所屬區域" });
-            A41titles.Add(new FormateTitle() { OldTitle = "Industry_Sector", NewTitle = "對手產業別" });
-            A41titles.Add(new FormateTitle() { OldTitle = "PRODUCT", NewTitle = "SMF" });
-            A41titles.Add(new FormateTitle() { OldTitle = "IAS39_CATEGORY", NewTitle = "原公報分類" });
-            A41titles.Add(new FormateTitle() { OldTitle = "Principal", NewTitle = "攤銷後之成本數(原幣)" });
-            A41titles.Add(new FormateTitle() { OldTitle = "Amort_Amt_Tw", NewTitle = "攤銷後之成本數(報表日匯率台幣)" });
-            var jqgridInfo = new A41ViewModel().TojqGridData(null,false, A41titles);
-            ViewBag.jqgridColNames = jqgridInfo.colNames;
-            ViewBag.jqgridColModel = jqgridInfo.colModel;
-            return View();
-        }
+
 
         /// <summary>
         /// 轉檔把Excel 資料存到 DB
         /// </summary>
         /// <returns></returns>
         [HttpPost]
-        public JsonResult Transfer(string reportDate)
+        public JsonResult Transfer(string reportDate, string version)
         {
             MSGReturnModel result = new MSGReturnModel();
             try
@@ -234,7 +222,7 @@ namespace Transfer.Controllers
 
                 #region save Bond_Account_Info(A41)
 
-                MSGReturnModel resultA41 = A4Repository.saveA41(dataModel, reportDate); //save to DB
+                MSGReturnModel resultA41 = A4Repository.saveA41(dataModel, reportDate, version); //save to DB
                 bool A41Log = CommonFunction.saveLog(Table_Type.A41,
                     fileName, SetFile.ProgramName, resultA41.RETURN_FLAG,
                     Debt_Type.B.ToString(), startTime, DateTime.Now); //寫sql Log
@@ -349,11 +337,13 @@ namespace Transfer.Controllers
             MSGReturnModel result = new MSGReturnModel();
 
             result.RETURN_FLAG = false;
-            result.DESCRIPTION = "傳入參數錯誤!";
+            result.DESCRIPTION = Message_Type.parameter_Error.GetDescription();
 
             DateTime dat = DateTime.MinValue;
+            int ver = 0;
 
-            if ((Debt_Type.M.ToString().Equals(debt) ? false : version.IsNullOrWhiteSpace()) //房貸沒有版本
+            if ((Debt_Type.M.ToString().Equals(debt) ? false : version.IsNullOrWhiteSpace() || 
+                !Int32.TryParse(version,out ver) || ver == 0) //房貸沒有版本 , 債券version不等於0
                 || !DateTime.TryParse(date, out dat))
                 return Json(result);
 
@@ -373,22 +363,22 @@ namespace Transfer.Controllers
             {
                 case "All": //All 也是重B01開始 B01 => C01
                 case "B01":
-                    result = A4Repository.saveB01(version, dat, debt);
+                    result = A4Repository.saveB01(ver, dat, debt);
                     bool B01Log = CommonFunction.saveLog(Table_Type.B01, fileName, SetFile.ProgramName,
                         result.RETURN_FLAG, debt, startTime, DateTime.Now); //寫sql Log
                     result.Datas = Json(transferMessage(next, Transfer_Table_Type.C01.ToString())); //回傳要不要做下一個transfer
                     break;
 
                 case "C01":
-                    result = A4Repository.saveC01(version, dat, debt);
+                    result = A4Repository.saveC01(ver, dat, debt);
                     bool C01Log = CommonFunction.saveLog(Table_Type.C01, fileName, SetFile.ProgramName,
                         result.RETURN_FLAG, debt, startTime, DateTime.Now); //寫sql Log
                     //債券最多到C01
-                    result.Datas = Json(transferMessage((debt.Equals("B") ? false :  next), Transfer_Table_Type.C02.ToString()));
+                    result.Datas = Json(transferMessage((debt.Equals("B") ? false : next), Transfer_Table_Type.C02.ToString()));
                     break;
 
                 case "C02":
-                    result = A4Repository.saveC02(version, dat, debt);
+                    result = A4Repository.saveC02(ver, dat, debt);
                     bool C02Log = CommonFunction.saveLog(Table_Type.C02, fileName, SetFile.ProgramName,
                         result.RETURN_FLAG, debt, startTime, DateTime.Now); //寫sql Log
                     result.Datas = Json(transferMessage(false, string.Empty)); //目前到C02 而已

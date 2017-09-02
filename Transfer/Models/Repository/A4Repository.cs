@@ -156,11 +156,10 @@ namespace Transfer.Models.Repository
         /// </summary>
         /// <param name="dataModel"></param>
         /// <returns></returns>
-        public MSGReturnModel saveA41(List<A41ViewModel> dataModel, string reportDate)
+        public MSGReturnModel saveA41(List<A41ViewModel> dataModel, string reportDate, string version)
         {
             MSGReturnModel result = new MSGReturnModel();
             DateTime start = DateTime.Now;
-            //DateTime dt = TypeTransfer.stringToDateTime(reportDate);
             string type = Table_Type.A41.ToString();
 
             if (!dataModel.Any())
@@ -175,16 +174,16 @@ namespace Transfer.Models.Repository
             {
                 //report Date 大於一種判斷要不要防呆
             }
-            DateTime dt = TypeTransfer.stringToDateTime(dts.First());
+            DateTime dt = TypeTransfer.stringToDateTime(reportDate);
             int verInt = 0;
             string ver = vers.First();
-            if (!Int32.TryParse(ver, out verInt))
+            if (!Int32.TryParse(version, out verInt))
             {
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Message_Type.parameter_Error.GetDescription();
                 return result;
             }
-                
+
             if (db.Bond_Account_Info.Any() &&
                 (!common.checkTransferCheck(type, type, dt, verInt) ||
                  db.Bond_Account_Info
@@ -241,31 +240,33 @@ namespace Transfer.Models.Repository
                     IMPAIR_YN = item.Impair_Yn,
                     EIR = TypeTransfer.stringToDoubleN(item.Eir),
                     Currency_Code = item.Currency_Code,
-                    Report_Date = TypeTransfer.stringToDateTimeN(item.Report_Date),
+                    Report_Date = dt,
                     ISSUER = item.Issuer,
                     Country_Risk = item.Country_Risk,
                     Ex_rate = TypeTransfer.stringToDoubleN(item.Ex_rate),
                     Lien_position = item.Lien_position,
                     Portfolio = item.Portfolio,
-                    //Dept = item.Dept,
                     ASSET_SEG = item.Asset_Seg,
                     Ori_Ex_rate = TypeTransfer.stringToDoubleN(item.Ori_Ex_rate),
                     Bond_Type = item.Bond_Type,
                     Assessment_Sub_Kind = item.Assessment_Sub_Kind,
                     Processing_Date = TypeTransfer.stringToDateTimeN(item.Processing_Date),
-                    Version = TypeTransfer.stringToIntN(item.Version),
+                    Version = verInt,
                     Bond_Aera = "NTD".Equals(item.Currency_Code) ? "國內" : "國外",
-                    //IH_OS  //IH->自操，OS->委外
-                    Amount_TW_Ori_Ex_rate = TypeTransfer.DoubleNMultip(
-                        TypeTransfer.stringToDoubleN(item.Ori_Amount),
-                        TypeTransfer.stringToDoubleN(item.Ori_Ex_rate)),
-                    Amort_Amt_Ori_Tw = TypeTransfer.DoubleNMultip(
-                        TypeTransfer.stringToDoubleN(item.Principal),
-                        TypeTransfer.stringToDoubleN(item.Ori_Ex_rate)),
-                    //Market_Value_Ori = //需為已乘上單位數的市價
-                    //Market_Value_TW = //(57)Market_Value_Ori*(41)Ex_rate
-                    //Value_date = 
-                    //Portfolio_Name = 
+                    IH_OS = item.IH_OS, //IH->自操，OS->委外
+                    //Amount_TW_Ori_Ex_rate = TypeTransfer.DoubleNMultip(
+                    //    TypeTransfer.stringToDoubleN(item.Ori_Amount),
+                    //    TypeTransfer.stringToDoubleN(item.Ori_Ex_rate)),
+                    //Amort_Amt_Ori_Tw = TypeTransfer.DoubleNMultip(
+                    //    TypeTransfer.stringToDoubleN(item.Principal),
+                    //    TypeTransfer.stringToDoubleN(item.Ori_Ex_rate)),
+                    Amount_TW_Ori_Ex_rate = TypeTransfer.stringToDoubleN(item.Amount_TW_Ori_Ex_rate),
+                    Amort_Amt_Ori_Tw = TypeTransfer.stringToDoubleN(item.Amort_Amt_Ori_Tw),
+                    Market_Value_Ori = TypeTransfer.stringToDoubleN(item.Market_Value_Ori), //需為已乘上單位數的市價
+                    Market_Value_TW = TypeTransfer.stringToDoubleN(item.Market_Value_TW), //(57)Market_Value_Ori*(41)Ex_rate
+                    Value_date = TypeTransfer.stringToDateTimeN(item.Value_date),
+                    Asset_Type = item.Asset_Type,
+                    Portfolio_Name = item.Portfolio_Name
                 });
             }
             try
@@ -303,6 +304,7 @@ namespace Transfer.Models.Repository
         #endregion Save A41
 
         #region Save A42
+
         /// <summary>
         /// A42 save db
         /// </summary>
@@ -362,6 +364,7 @@ namespace Transfer.Models.Repository
 
             return result;
         }
+
         #endregion Save A42
 
         #region Save B01
@@ -373,9 +376,10 @@ namespace Transfer.Models.Repository
         /// <param name="date">Report_Date</param>
         /// <param name="type">M = 房貸 ,B = 債券</param>
         /// <returns></returns>
-        public MSGReturnModel saveB01(string version, DateTime date, string type)
+        public MSGReturnModel saveB01(int version, DateTime date, string type)
         {
             MSGReturnModel result = new MSGReturnModel();
+            DateTime startDt = DateTime.Now;
             try
             {
                 result.RETURN_FLAG = false;
@@ -385,33 +389,55 @@ namespace Transfer.Models.Repository
                 {
                     if (db.Bond_Account_Info.Any())
                     {
+                        string fileName = Table_Type.B01.ToString();
                         List<Bond_Account_Info> addData = //這次要新增的資料
                             db.Bond_Account_Info
                             .Where(x => x.Report_Date != null &&
                             date == x.Report_Date.Value //抓取相同的Report_date
-                            && version.Equals(x.Version)).ToList();  //抓取相同的 Verison
+                            && version == x.Version).ToList();  //抓取相同的 Verison
                         if (!addData.Any())
                         {
                             result.DESCRIPTION = Message_Type
-                                .query_Not_Find.GetDescription(Table_Type.B01.ToString());
+                                .query_Not_Find.GetDescription(fileName);
+                            common.saveTransferCheck(
+                                fileName,
+                                false,
+                                date,
+                                version,
+                                startDt,
+                                DateTime.Now
+                                );
                             return result;
                         }
 
-                        if (db.IFRS9_Main.Any())
+                        if (!common.checkTransferCheck(fileName, Table_Type.A58.ToString(), date, version))
                         {
-                            List<string> B01Ids = new List<string>();
-                            B01Ids.AddRange(db.IFRS9_Main.AsEnumerable()
-                            .Select(x => x.Reference_Nbr).ToList()); //抓取 B01 Reference_Nbr
-                            addData = addData.Where(x =>
-                            !B01Ids.Contains(x.Reference_Nbr)).ToList(); //排除 save 重複資料
-                        }
-
-                        if (!addData.Any())
-                        {
-                            result.DESCRIPTION = Message_Type
-                                .already_Save.GetDescription(Table_Type.B01.ToString());
+                            common.saveTransferCheck(
+                                fileName,
+                                false,
+                                date,
+                                version,
+                                startDt,
+                                DateTime.Now
+                                );
+                            result.DESCRIPTION = Message_Type.transferError.GetDescription(Table_Type.B01.ToString());
                             return result;
                         }
+                        //if (db.IFRS9_Main.Any())
+                        //{
+                        //    List<string> B01Ids = new List<string>();
+                        //    B01Ids.AddRange(db.IFRS9_Main.AsEnumerable()
+                        //    .Select(x => x.Reference_Nbr).ToList()); //抓取 B01 Reference_Nbr
+                        //    addData = addData.Where(x =>
+                        //    !B01Ids.Contains(x.Reference_Nbr)).ToList(); //排除 save 重複資料
+                        //}
+
+                        //if (!addData.Any())
+                        //{
+                        //    result.DESCRIPTION = Message_Type
+                        //        .already_Save.GetDescription(Table_Type.B01.ToString());
+                        //    return result;
+                        //}
                         db.IFRS9_Main.AddRange(
                            addData.Select(x =>
                            {
@@ -482,9 +508,17 @@ namespace Transfer.Models.Repository
                                };
                            }));
                         db.SaveChanges();
+                        common.saveTransferCheck(
+                               fileName,
+                               true,
+                               date,
+                               version,
+                               startDt,
+                               DateTime.Now
+                               );
                         result.RETURN_FLAG = true;
                         result.DESCRIPTION = Message_Type
-                            .save_Success.GetDescription(Table_Type.B01.ToString());
+                            .save_Success.GetDescription(fileName);
                     }
                 }
                 if (Debt_Type.M.ToString().Equals(type)) //房貸
@@ -584,6 +618,14 @@ namespace Transfer.Models.Repository
             }
             catch (DbUpdateException ex)
             {
+                if (Debt_Type.B.ToString().Equals(type)) //債券
+                    common.saveTransferCheck(
+                           Table_Type.B01.ToString(),
+                           false,
+                           date,
+                           version,
+                           startDt,
+                           DateTime.Now);
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Message_Type
                         .save_Fail.GetDescription(Table_Type.B01.ToString(),
@@ -604,12 +646,14 @@ namespace Transfer.Models.Repository
         /// <param name="date">Report_Date</param>
         /// <param name="type">M = 房貸 ,B = 債券</param>
         /// <returns></returns>
-        public MSGReturnModel saveC01(string version, DateTime date, string type)
+        public MSGReturnModel saveC01(int version, DateTime date, string type)
         {
+            string fileName = Table_Type.C01.ToString();
+            DateTime startDt = DateTime.Now;
             MSGReturnModel result = new MSGReturnModel();
             result.RETURN_FLAG = false;
             result.DESCRIPTION = Message_Type
-                    .not_Find_Any.GetDescription(Table_Type.C01.ToString());
+                    .not_Find_Any.GetDescription(fileName);
             try
             {
                 if (db.IFRS9_Main.Any())
@@ -618,15 +662,34 @@ namespace Transfer.Models.Repository
                     if (Debt_Type.M.ToString().Equals(type)) //房貸
                         reportCodes.Add(Product_Code.M.GetDescription());
                     if (Debt_Type.B.ToString().Equals(type)) //債券
+                    {
                         reportCodes = new List<string> { "Bond_A", "Bond_B", "Bond_P" };
+                        if (!common.checkTransferCheck(
+                            Table_Type.C01.ToString(),
+                            Table_Type.B01.ToString(),
+                            date,
+                            version))
+                        {
+                            common.saveTransferCheck(
+                                fileName,
+                                false,
+                                date,
+                                version,
+                                startDt,
+                                DateTime.Now
+                                );
+                            result.DESCRIPTION = Message_Type.transferError.GetDescription(fileName);
+                            return result;
+                        }
+                    }
                     List<IFRS9_Main> addData = //這次要新增的資料
                     db.IFRS9_Main
                     //.AsEnumerable()
                     .Where(x => x.Report_Date != null &&
                     date == x.Report_Date  //抓取相同的Report_date
-                    //&& version.Equals(x.Version) //抓取相同的 Verison
                     && reportCodes.Contains(x.Product_Code)).ToList();  //抓取符合的 Product_Code
-
+                    if (Debt_Type.B.ToString().Equals(type))
+                        addData = addData.Where(x => x.Version == version).ToList();
                     if (!addData.Any())
                     {
                         result.DESCRIPTION = Message_Type
@@ -638,7 +701,6 @@ namespace Transfer.Models.Repository
                     {
                         List<string> C01Ids = new List<string>();
                         C01Ids.AddRange(db.EL_Data_In
-                        //.AsEnumerable()
                         .Select(x => x.Reference_Nbr).ToList()); //抓取 C01 Reference_Nbr
                         addData = addData.Where(x =>
                         !C01Ids.Contains(x.Reference_Nbr)).ToList(); //排除 save 重複資料
@@ -731,6 +793,16 @@ namespace Transfer.Models.Repository
                            }));
                     }
                     db.SaveChanges();
+                    if (Debt_Type.B.ToString().Equals(type)) //債券
+                    {
+                        common.saveTransferCheck(
+                               fileName,
+                               true,
+                               date,
+                               version,
+                               startDt,
+                               DateTime.Now);
+                    }
                     result.RETURN_FLAG = true;
                     result.DESCRIPTION = Message_Type
                         .save_Success.GetDescription(Table_Type.C01.ToString());
@@ -738,6 +810,16 @@ namespace Transfer.Models.Repository
             }
             catch (DbUpdateException ex)
             {
+                if (Debt_Type.B.ToString().Equals(type)) //債券
+                {
+                    common.saveTransferCheck(
+                           fileName,
+                           false,
+                           date,
+                           version,
+                           startDt,
+                           DateTime.Now);
+                }
                 result.RETURN_FLAG = false;
                 result.DESCRIPTION = Message_Type
                         .save_Fail.GetDescription(Table_Type.C01.ToString(),
@@ -750,6 +832,7 @@ namespace Transfer.Models.Repository
         #endregion Save C01
 
         #region Save C02
+
         /// <summary>
         /// Save C02
         /// </summary>
@@ -757,7 +840,7 @@ namespace Transfer.Models.Repository
         /// <param name="date">Report_Date</param>
         /// <param name="type">M = 房貸</param>
         /// <returns></returns>
-        public MSGReturnModel saveC02(string version, DateTime date, string type)
+        public MSGReturnModel saveC02(int version, DateTime date, string type)
         {
             MSGReturnModel result = new MSGReturnModel();
             result.RETURN_FLAG = false;
@@ -836,6 +919,7 @@ namespace Transfer.Models.Repository
 
             return result;
         }
+
         #endregion Save C02
 
         #endregion Save DB 部分
@@ -962,7 +1046,7 @@ namespace Transfer.Models.Repository
         /// <param name="num"></param>
         /// <param name="titles"></param>
         /// <returns></returns>
-        private A41ViewModel getA41Model(DataRow item, string num,List<string> titles)
+        private A41ViewModel getA41Model(DataRow item, string num, List<string> titles)
         {
             if (!titles.Any())
                 return new A41ViewModel();
@@ -971,10 +1055,10 @@ namespace Transfer.Models.Repository
                 Reference_Nbr = num, //帳戶編號/群組編號
             };
 
-            for (int i = 0; i < titles.Count ; i++) //每一行所有資料
+            for (int i = 0; i < titles.Count; i++) //每一行所有資料
             {
                 string data = null;
-                if(item[i].GetType().Name.Equals("DateTime"))
+                if (item[i].GetType().Name.Equals("DateTime"))
                     data = TypeTransfer.objDateToString(item[i]);
                 else
                     data = TypeTransfer.objToString(item[i]);
