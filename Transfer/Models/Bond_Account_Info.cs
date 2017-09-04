@@ -36,6 +36,7 @@ namespace Transfer.Models
         public string ISSUER_AREA { get; set; }
         public string Industry_Sector { get; set; }
         public string PRODUCT { get; set; }
+        public string FINANCE_INSTRUMENTS { get; set; }
         public string IAS39_CATEGORY { get; set; }
         public Nullable<double> Principal { get; set; }
         public Nullable<double> Amort_Amt_Tw { get; set; }

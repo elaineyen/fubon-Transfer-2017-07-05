@@ -31,6 +31,7 @@
           <Property Name="ISSUER_AREA" Type="varchar" MaxLength="50" />
           <Property Name="Industry_Sector" Type="varchar" MaxLength="50" />
           <Property Name="PRODUCT" Type="varchar" MaxLength="50" />
+          <Property Name="FINANCE_INSTRUMENTS" Type="varchar" MaxLength="10" />
           <Property Name="IAS39_CATEGORY" Type="varchar" MaxLength="50" />
           <Property Name="Principal" Type="float" />
           <Property Name="Amort_Amt_Tw" Type="float" />
@@ -134,6 +135,77 @@
           <Property Name="SMF" Type="varchar" MaxLength="50" />
           <Property Name="ISSUER" Type="varchar" MaxLength="50" />
         </EntityType>
+        <EntityType Name="Econ_D_YYYYMMDD">
+          <Key>
+            <PropertyRef Name="Year_Quartly" />
+          </Key>
+          <Property Name="Processing_Date" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Product_Code" Type="varchar" MaxLength="64" Nullable="false" />
+          <Property Name="Data_ID" Type="varchar" MaxLength="100" />
+          <Property Name="Year_Quartly" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="PD_Quartly" Type="float" Nullable="false" />
+          <Property Name="var1" Type="float" />
+          <Property Name="var2" Type="float" />
+          <Property Name="var3" Type="float" />
+          <Property Name="var4" Type="float" />
+          <Property Name="var5" Type="float" />
+          <Property Name="var6" Type="float" />
+          <Property Name="var7" Type="float" />
+          <Property Name="var8" Type="float" />
+          <Property Name="var9" Type="float" />
+          <Property Name="var10" Type="float" />
+          <Property Name="var11" Type="float" />
+          <Property Name="var12" Type="float" />
+          <Property Name="var13" Type="float" />
+          <Property Name="var14" Type="float" />
+          <Property Name="var15" Type="float" />
+          <Property Name="var16" Type="float" />
+          <Property Name="var17" Type="float" />
+          <Property Name="var18" Type="float" />
+          <Property Name="var19" Type="float" />
+          <Property Name="var20" Type="float" />
+          <Property Name="var21" Type="float" />
+          <Property Name="var22" Type="float" />
+          <Property Name="var23" Type="float" />
+          <Property Name="var24" Type="float" />
+          <Property Name="var25" Type="float" />
+          <Property Name="var26" Type="float" />
+          <Property Name="var27" Type="float" />
+        </EntityType>
+        <EntityType Name="Econ_Domestic">
+          <Key>
+            <PropertyRef Name="Year_Quartly" />
+          </Key>
+          <Property Name="Year_Quartly" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Date" Type="varchar" MaxLength="10" />
+          <Property Name="TWSE_Index" Type="float" />
+          <Property Name="TWRGSARP_Index" Type="float" />
+          <Property Name="TWGDPCON_Index" Type="float" />
+          <Property Name="TWLFADJ_Index" Type="float" />
+          <Property Name="TWCPI_Index" Type="float" />
+          <Property Name="TWMSA1A_Index" Type="float" />
+          <Property Name="TWMSA1B_Index" Type="float" />
+          <Property Name="TWMSAM2_Index" Type="float" />
+          <Property Name="GVTW10YR_Index" Type="float" />
+          <Property Name="TWTRBAL_Index" Type="float" />
+          <Property Name="TWTREXP_Index" Type="float" />
+          <Property Name="TWTRIMP_Index" Type="float" />
+          <Property Name="TAREDSCD_Index" Type="float" />
+          <Property Name="TWCILI_Index" Type="float" />
+          <Property Name="TWBOPCUR_Index" Type="float" />
+          <Property Name="EHCATW_Index" Type="float" />
+          <Property Name="TWINDPI_Index" Type="float" />
+          <Property Name="TWWPI_Index" Type="float" />
+          <Property Name="TARSYOY_Index" Type="float" />
+          <Property Name="TWEOTTL_Index" Type="float" />
+          <Property Name="SLDETIGT_Index" Type="float" />
+          <Property Name="TWIRFE_Index" Type="float" />
+          <Property Name="SINYI_HOUSE_PRICE_index" Type="float" />
+          <Property Name="CATHAY_ESTATE_index" Type="float" />
+          <Property Name="Real_GDP2011" Type="float" />
+          <Property Name="MCCCTW_Index" Type="float" />
+          <Property Name="TRDR1T_Index" Type="float" />
+        </EntityType>
         <EntityType Name="EL_Data_In">
           <Key>
             <PropertyRef Name="Report_Date" />
@@ -166,10 +238,6 @@
             <PropertyRef Name="Product_Code" />
             <PropertyRef Name="Reference_Nbr" />
           </Key>
-          <Property Name="PID" Type="varchar" MaxLength="50" />
-          <Property Name="Data_ID" Type="varchar" MaxLength="100" />
-          <Property Name="PRJID" Type="varchar" MaxLength="255" Nullable="false" />
-          <Property Name="FLOWID" Type="varchar" MaxLength="255" Nullable="false" />
           <Property Name="Report_Date" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="Processing_Date" Type="varchar" MaxLength="10" Nullable="false" />
           <Property Name="Product_Code" Type="varchar" MaxLength="64" Nullable="false" />
@@ -179,8 +247,9 @@
           <Property Name="Y1_EL" Type="float" Nullable="false" />
           <Property Name="EL" Type="float" Nullable="false" />
           <Property Name="Impairment_Stage" Type="varchar" MaxLength="1" Nullable="false" />
-          <Property Name="Exec_Date" Type="datetime" />
           <Property Name="Version" Type="int" Nullable="false" />
+          <Property Name="PRJID" Type="varchar" MaxLength="255" Nullable="false" />
+          <Property Name="FLOWID" Type="varchar" MaxLength="255" Nullable="false" />
         </EntityType>
         <EntityType Name="Flow_Info">
           <Key>
@@ -195,6 +264,14 @@
           <Property Name="Apply_Off_Date" Type="date" Nullable="false" />
           <Property Name="Issuer" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="Memo" Type="varchar" MaxLength="255" />
+        </EntityType>
+        <EntityType Name="GM_YYYY">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="TM" Type="varchar" MaxLength="10" />
+          <Property Name="Default_Value" Type="float" />
         </EntityType>
         <EntityType Name="Grade_Mapping_Info">
           <Key>
@@ -232,6 +309,33 @@
           <Property Name="Product_Code" Type="varchar" MaxLength="64" Nullable="false" />
           <Property Name="Processing_Date" Type="date" Nullable="false" />
         </EntityType>
+        <!--產生期間發現錯誤:
+警告 6013: 資料表/檢視 'IFRS9Second.dbo.IFRS9_CPD' 未定義主索引鍵，也無法推斷有效的主索引鍵。此資料表/檢視已被排除。如果要使用此實體，您必須檢閱您的結構描述，加入正確的索引鍵，並將它取消註解。
+        <EntityType Name="IFRS9_CPD">
+          <Property Name="CPD_Segment_Code" Type="varchar" MaxLength="10" />
+          <Property Name="CPD_Segment_Desc" Type="varchar" MaxLength="64" />
+          <Property Name="Period" Type="int" />
+          <Property Name="CPD" Type="float" />
+          <Property Name="MPD" Type="float" />
+          <Property Name="Processing_Date" Type="date" />
+          <Property Name="Product_Code" Type="varchar" MaxLength="64" />
+          <Property Name="Matrix_Key" Type="varchar" MaxLength="50" />
+          <Property Name="Matrix" Type="varbinary(max)" />
+          <Property Name="PRJID" Type="varchar" MaxLength="255" />
+          <Property Name="FLOWID" Type="varchar" MaxLength="255" />
+          <Property Name="CompID" Type="varchar" MaxLength="255" />
+        </EntityType>-->
+        <!--產生期間發現錯誤:
+警告 6013: 資料表/檢視 'IFRS9Second.dbo.IFRS9_Impaire_Override' 未定義主索引鍵，也無法推斷有效的主索引鍵。此資料表/檢視已被排除。如果要使用此實體，您必須檢閱您的結構描述，加入正確的索引鍵，並將它取消註解。
+        <EntityType Name="IFRS9_Impaire_Override">
+          <Property Name="Reference_Nbr" Type="varchar" MaxLength="50" />
+          <Property Name="Processing_Date" Type="date" />
+          <Property Name="Override_EL" Type="float" />
+          <Property Name="Override_note" Type="varchar" MaxLength="100" />
+          <Property Name="Product_Code" Type="varchar" MaxLength="64" />
+          <Property Name="Override_User" Type="varchar" MaxLength="50" />
+          <Property Name="Audit_User" Type="varchar" MaxLength="50" />
+        </EntityType>-->
         <EntityType Name="IFRS9_Log">
           <Key>
             <PropertyRef Name="Id" />
@@ -344,12 +448,22 @@
           <Property Name="Href" Type="varchar" MaxLength="50" Nullable="false" />
           <Property Name="SortNum" Type="int" Nullable="false" />
         </EntityType>
+        <!--產生期間發現錯誤:
+警告 6013: 資料表/檢視 'IFRS9Second.dbo.IFRS9_Payment_Schedule' 未定義主索引鍵，也無法推斷有效的主索引鍵。此資料表/檢視已被排除。如果要使用此實體，您必須檢閱您的結構描述，加入正確的索引鍵，並將它取消註解。
+        <EntityType Name="IFRS9_Payment_Schedule">
+          <Property Name="Reference_Nbr" Type="varchar" MaxLength="50" />
+          <Property Name="Payment_Period" Type="int" />
+          <Property Name="Payment_Amt" Type="float" />
+          <Property Name="Payment_Interest" Type="float" />
+          <Property Name="Payment_Principal" Type="float" />
+          <Property Name="Planned_Payment_Date" Type="date" />
+        </EntityType>-->
         <EntityType Name="IFRS9_User">
           <Key>
             <PropertyRef Name="User_Name" />
           </Key>
-          <Property Name="User_Name" Type="varchar" MaxLength="50" Nullable="false" />
-          <Property Name="User_Password" Type="varchar" MaxLength="3000" Nullable="false" />
+          <Property Name="User_Name" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="User_Password" Type="varchar" MaxLength="30" Nullable="false" />
         </EntityType>
         <EntityType Name="Loan_Account_Info">
           <Key>
@@ -385,6 +499,39 @@
           <Property Name="Report_Date" Type="date" Nullable="false" />
           <Property Name="Rating_Date" Type="varchar" MaxLength="10" Nullable="false" />
         </EntityType>
+        <!--產生期間發現錯誤:
+警告 6002: 資料表/檢視 'IFRS9Second.dbo.Loan_Cathay_Estate_Info' 未定義主索引鍵。已推斷此索引鍵，並將定義建立成唯讀的資料表/檢視。-->
+        <EntityType Name="Loan_Cathay_Estate_Info">
+          <Key>
+            <PropertyRef Name="Date" />
+            <PropertyRef Name="Value" />
+            <PropertyRef Name="Year_Quartly" />
+          </Key>
+          <Property Name="Date" Type="date" Nullable="false" />
+          <Property Name="Value" Type="float" Nullable="false" />
+          <Property Name="Year_Quartly" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Processing_Date" Type="date" />
+        </EntityType>
+        <!--產生期間發現錯誤:
+警告 6002: 資料表/檢視 'IFRS9Second.dbo.Loan_Collateral_Legal_Action_Info' 未定義主索引鍵。已推斷此索引鍵，並將定義建立成唯讀的資料表/檢視。-->
+        <EntityType Name="Loan_Collateral_Legal_Action_Info">
+          <Key>
+            <PropertyRef Name="SEQ" />
+            <PropertyRef Name="Reference_Nbr" />
+          </Key>
+          <Property Name="SEQ" Type="int" Nullable="false" />
+          <Property Name="Reference_Nbr" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Processing_Date" Type="date" />
+        </EntityType>
+        <EntityType Name="Loan_default_Info">
+          <Key>
+            <PropertyRef Name="Year_Quartly" />
+          </Key>
+          <Property Name="Year_Month" Type="varchar" MaxLength="6" Nullable="false" />
+          <Property Name="PD_Quartly" Type="float" Nullable="false" />
+          <Property Name="Year_Quartly" Type="varchar" MaxLength="10" Nullable="false" />
+          <Property Name="Processing_Date" Type="date" />
+        </EntityType>
         <EntityType Name="Loan_IAS39_Info">
           <Key>
             <PropertyRef Name="Reference_Nbr" />
@@ -403,6 +550,79 @@
           <Property Name="Collateral_Legal_Action_Ind" Type="varchar" MaxLength="1" />
           <Property Name="Bad_Debt_Ind" Type="varchar" MaxLength="1" />
           <Property Name="Collection_Ind" Type="varchar" MaxLength="1" />
+        </EntityType>
+        <!--產生期間發現錯誤:
+警告 6002: 資料表/檢視 'IFRS9Second.dbo.Loan_other_info' 未定義主索引鍵。已推斷此索引鍵，並將定義建立成唯讀的資料表/檢視。-->
+        <EntityType Name="Loan_other_info">
+          <Key>
+            <PropertyRef Name="Reference_Nbr" />
+          </Key>
+          <Property Name="Reference_Nbr" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Processing_Date" Type="date" />
+          <Property Name="Report_Date" Type="date" />
+          <Property Name="Account_Code" Type="varchar" MaxLength="50" />
+          <Property Name="Loan_Risk_Type" Type="varchar" MaxLength="10" />
+        </EntityType>
+        <!--產生期間發現錯誤:
+警告 6002: 資料表/檢視 'IFRS9Second.dbo.Loan_Recovery_Info' 未定義主索引鍵。已推斷此索引鍵，並將定義建立成唯讀的資料表/檢視。-->
+        <EntityType Name="Loan_Recovery_Info">
+          <Key>
+            <PropertyRef Name="Data_Year" />
+            <PropertyRef Name="NO34RCV" />
+            <PropertyRef Name="Recovery_Rate_1" />
+            <PropertyRef Name="Recovery_Rate_2" />
+            <PropertyRef Name="Recovery_Rate_3" />
+            <PropertyRef Name="Recovery_Rate_4" />
+            <PropertyRef Name="Recovery_Rate_5" />
+            <PropertyRef Name="Recovery_Rate_6" />
+            <PropertyRef Name="Recovery_Rate_7" />
+            <PropertyRef Name="Recovery_Rate_8" />
+            <PropertyRef Name="Recovery_Rate_9" />
+            <PropertyRef Name="Recovery_Rate_10" />
+            <PropertyRef Name="Recovery_Rate_11" />
+            <PropertyRef Name="Recovery_Rate_12" />
+            <PropertyRef Name="Recovery_Rate_13" />
+            <PropertyRef Name="Recovery_Rate_14" />
+            <PropertyRef Name="Recovery_Rate_15" />
+            <PropertyRef Name="Recovery_Rate_16" />
+            <PropertyRef Name="Recovery_Rate_17" />
+            <PropertyRef Name="Recovery_Rate_18" />
+            <PropertyRef Name="Recovery_Rate_19" />
+            <PropertyRef Name="Recovery_Rate_20" />
+          </Key>
+          <Property Name="Data_Year" Type="varchar" MaxLength="4" Nullable="false" />
+          <Property Name="NO34RCV" Type="varchar" MaxLength="30" Nullable="false" />
+          <Property Name="Recovery_Rate_1" Type="float" Nullable="false" />
+          <Property Name="Recovery_Rate_2" Type="float" Nullable="false" />
+          <Property Name="Recovery_Rate_3" Type="float" Nullable="false" />
+          <Property Name="Recovery_Rate_4" Type="float" Nullable="false" />
+          <Property Name="Recovery_Rate_5" Type="float" Nullable="false" />
+          <Property Name="Recovery_Rate_6" Type="float" Nullable="false" />
+          <Property Name="Recovery_Rate_7" Type="float" Nullable="false" />
+          <Property Name="Recovery_Rate_8" Type="float" Nullable="false" />
+          <Property Name="Recovery_Rate_9" Type="float" Nullable="false" />
+          <Property Name="Recovery_Rate_10" Type="float" Nullable="false" />
+          <Property Name="Recovery_Rate_11" Type="float" Nullable="false" />
+          <Property Name="Recovery_Rate_12" Type="float" Nullable="false" />
+          <Property Name="Recovery_Rate_13" Type="float" Nullable="false" />
+          <Property Name="Recovery_Rate_14" Type="float" Nullable="false" />
+          <Property Name="Recovery_Rate_15" Type="float" Nullable="false" />
+          <Property Name="Recovery_Rate_16" Type="float" Nullable="false" />
+          <Property Name="Recovery_Rate_17" Type="float" Nullable="false" />
+          <Property Name="Recovery_Rate_18" Type="float" Nullable="false" />
+          <Property Name="Recovery_Rate_19" Type="float" Nullable="false" />
+          <Property Name="Recovery_Rate_20" Type="float" Nullable="false" />
+        </EntityType>
+        <!--產生期間發現錯誤:
+警告 6002: 資料表/檢視 'IFRS9Second.dbo.Loan_Restructure_Info' 未定義主索引鍵。已推斷此索引鍵，並將定義建立成唯讀的資料表/檢視。-->
+        <EntityType Name="Loan_Restructure_Info">
+          <Key>
+            <PropertyRef Name="SEQ" />
+            <PropertyRef Name="Reference_Nbr" />
+          </Key>
+          <Property Name="SEQ" Type="int" Nullable="false" />
+          <Property Name="Reference_Nbr" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Processing_Date" Type="date" />
         </EntityType>
         <EntityType Name="Moody_LGD_Info">
           <Key>
@@ -513,6 +733,32 @@
           <Property Name="GUARANTOR_EQY_TICKER" Type="varchar" MaxLength="50" />
           <Property Name="GUARANTOR_NAME" Type="varchar" MaxLength="50" />
         </EntityType>
+        <EntityType Name="Tm_Adjust_YYYY">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="TM" Type="varchar" MaxLength="10" />
+          <Property Name="Aaa" Type="float" />
+          <Property Name="Aa1" Type="float" />
+          <Property Name="Aa2" Type="float" />
+          <Property Name="Aa3" Type="float" />
+          <Property Name="A1_A3" Type="float" />
+          <Property Name="Baa1" Type="float" />
+          <Property Name="Baa2" Type="float" />
+          <Property Name="Baa3" Type="float" />
+          <Property Name="Ba1" Type="float" />
+          <Property Name="Ba2" Type="float" />
+          <Property Name="Ba3" Type="float" />
+          <Property Name="B1" Type="float" />
+          <Property Name="B2" Type="float" />
+          <Property Name="B3_Caa1" Type="float" />
+          <Property Name="Caa2" Type="float" />
+          <Property Name="Caa3" Type="float" />
+          <Property Name="Ca_C" Type="float" />
+          <Property Name="WR" Type="float" />
+          <Property Name="Default_Value" Type="float" />
+        </EntityType>
         <EntityType Name="Transfer_CheckTable">
           <Key>
             <PropertyRef Name="Id" />
@@ -544,6 +790,30 @@
           <Property Name="Processing_Date" Type="date" Nullable="false" />
           <Property Name="Report_Date" Type="date" Nullable="false" />
         </EntityType>
+        <Association Name="FK_Econ_D_YYYYMMDD_Econ_D_YYYYMMDD">
+          <End Role="Econ_Domestic" Type="Self.Econ_Domestic" Multiplicity="1" />
+          <End Role="Econ_D_YYYYMMDD" Type="Self.Econ_D_YYYYMMDD" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Econ_Domestic">
+              <PropertyRef Name="Year_Quartly" />
+            </Principal>
+            <Dependent Role="Econ_D_YYYYMMDD">
+              <PropertyRef Name="Year_Quartly" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Econ_D_YYYYMMDD_Group_Product_Code_Mapping">
+          <End Role="Group_Product_Code_Mapping" Type="Self.Group_Product_Code_Mapping" Multiplicity="1" />
+          <End Role="Econ_D_YYYYMMDD" Type="Self.Econ_D_YYYYMMDD" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group_Product_Code_Mapping">
+              <PropertyRef Name="Product_Code" />
+            </Principal>
+            <Dependent Role="Econ_D_YYYYMMDD">
+              <PropertyRef Name="Product_Code" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_EL_Data_Out_Group_Product_Code_Mapping">
           <End Role="Group_Product_Code_Mapping" Type="Self.Group_Product_Code_Mapping" Multiplicity="1" />
           <End Role="EL_Data_Out" Type="Self.EL_Data_Out" Multiplicity="*" />
@@ -621,9 +891,12 @@
           <EntitySet Name="Bond_Rating_Info" EntityType="Self.Bond_Rating_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Bond_Rating_Parm" EntityType="Self.Bond_Rating_Parm" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Bond_Rating_Summary" EntityType="Self.Bond_Rating_Summary" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Econ_D_YYYYMMDD" EntityType="Self.Econ_D_YYYYMMDD" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Econ_Domestic" EntityType="Self.Econ_Domestic" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EL_Data_In" EntityType="Self.EL_Data_In" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="EL_Data_Out" EntityType="Self.EL_Data_Out" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Flow_Info" EntityType="Self.Flow_Info" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="GM_YYYY" EntityType="Self.GM_YYYY" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Grade_Mapping_Info" EntityType="Self.Grade_Mapping_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Grade_Moody_Info" EntityType="Self.Grade_Moody_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Group_Product" EntityType="Self.Group_Product" Schema="dbo" store:Type="Tables" />
@@ -635,6 +908,7 @@
           <EntitySet Name="IFRS9_Menu_Sub" EntityType="Self.IFRS9_Menu_Sub" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="IFRS9_User" EntityType="Self.IFRS9_User" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Loan_Account_Info" EntityType="Self.Loan_Account_Info" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Loan_default_Info" EntityType="Self.Loan_default_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Loan_IAS39_Info" EntityType="Self.Loan_IAS39_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_LGD_Info" EntityType="Self.Moody_LGD_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Moody_Monthly_PD_Info" EntityType="Self.Moody_Monthly_PD_Info" Schema="dbo" store:Type="Tables" />
@@ -644,8 +918,74 @@
           <EntitySet Name="Rating_History" EntityType="Self.Rating_History" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Rating_Info" EntityType="Self.Rating_Info" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Rating_Info_SampleInfo" EntityType="Self.Rating_Info_SampleInfo" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Tm_Adjust_YYYY" EntityType="Self.Tm_Adjust_YYYY" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Transfer_CheckTable" EntityType="Self.Transfer_CheckTable" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Treasury_Securities_Info" EntityType="Self.Treasury_Securities_Info" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Loan_Cathay_Estate_Info" EntityType="Self.Loan_Cathay_Estate_Info" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [Loan_Cathay_Estate_Info].[Date] AS [Date], 
+    [Loan_Cathay_Estate_Info].[Value] AS [Value], 
+    [Loan_Cathay_Estate_Info].[Year_Quartly] AS [Year_Quartly], 
+    [Loan_Cathay_Estate_Info].[Processing_Date] AS [Processing_Date]
+    FROM [dbo].[Loan_Cathay_Estate_Info] AS [Loan_Cathay_Estate_Info]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="Loan_Collateral_Legal_Action_Info" EntityType="Self.Loan_Collateral_Legal_Action_Info" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [Loan_Collateral_Legal_Action_Info].[SEQ] AS [SEQ], 
+    [Loan_Collateral_Legal_Action_Info].[Reference_Nbr] AS [Reference_Nbr], 
+    [Loan_Collateral_Legal_Action_Info].[Processing_Date] AS [Processing_Date]
+    FROM [dbo].[Loan_Collateral_Legal_Action_Info] AS [Loan_Collateral_Legal_Action_Info]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="Loan_other_info" EntityType="Self.Loan_other_info" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [Loan_other_info].[Reference_Nbr] AS [Reference_Nbr], 
+    [Loan_other_info].[Processing_Date] AS [Processing_Date], 
+    [Loan_other_info].[Report_Date] AS [Report_Date], 
+    [Loan_other_info].[Account_Code] AS [Account_Code], 
+    [Loan_other_info].[Loan_Risk_Type] AS [Loan_Risk_Type]
+    FROM [dbo].[Loan_other_info] AS [Loan_other_info]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="Loan_Recovery_Info" EntityType="Self.Loan_Recovery_Info" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [Loan_Recovery_Info].[Data_Year] AS [Data_Year], 
+    [Loan_Recovery_Info].[NO34RCV] AS [NO34RCV], 
+    [Loan_Recovery_Info].[Recovery_Rate_1] AS [Recovery_Rate_1], 
+    [Loan_Recovery_Info].[Recovery_Rate_2] AS [Recovery_Rate_2], 
+    [Loan_Recovery_Info].[Recovery_Rate_3] AS [Recovery_Rate_3], 
+    [Loan_Recovery_Info].[Recovery_Rate_4] AS [Recovery_Rate_4], 
+    [Loan_Recovery_Info].[Recovery_Rate_5] AS [Recovery_Rate_5], 
+    [Loan_Recovery_Info].[Recovery_Rate_6] AS [Recovery_Rate_6], 
+    [Loan_Recovery_Info].[Recovery_Rate_7] AS [Recovery_Rate_7], 
+    [Loan_Recovery_Info].[Recovery_Rate_8] AS [Recovery_Rate_8], 
+    [Loan_Recovery_Info].[Recovery_Rate_9] AS [Recovery_Rate_9], 
+    [Loan_Recovery_Info].[Recovery_Rate_10] AS [Recovery_Rate_10], 
+    [Loan_Recovery_Info].[Recovery_Rate_11] AS [Recovery_Rate_11], 
+    [Loan_Recovery_Info].[Recovery_Rate_12] AS [Recovery_Rate_12], 
+    [Loan_Recovery_Info].[Recovery_Rate_13] AS [Recovery_Rate_13], 
+    [Loan_Recovery_Info].[Recovery_Rate_14] AS [Recovery_Rate_14], 
+    [Loan_Recovery_Info].[Recovery_Rate_15] AS [Recovery_Rate_15], 
+    [Loan_Recovery_Info].[Recovery_Rate_16] AS [Recovery_Rate_16], 
+    [Loan_Recovery_Info].[Recovery_Rate_17] AS [Recovery_Rate_17], 
+    [Loan_Recovery_Info].[Recovery_Rate_18] AS [Recovery_Rate_18], 
+    [Loan_Recovery_Info].[Recovery_Rate_19] AS [Recovery_Rate_19], 
+    [Loan_Recovery_Info].[Recovery_Rate_20] AS [Recovery_Rate_20]
+    FROM [dbo].[Loan_Recovery_Info] AS [Loan_Recovery_Info]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="Loan_Restructure_Info" EntityType="Self.Loan_Restructure_Info" store:Type="Tables" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [Loan_Restructure_Info].[SEQ] AS [SEQ], 
+    [Loan_Restructure_Info].[Reference_Nbr] AS [Reference_Nbr], 
+    [Loan_Restructure_Info].[Processing_Date] AS [Processing_Date]
+    FROM [dbo].[Loan_Restructure_Info] AS [Loan_Restructure_Info]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK_Econ_D_YYYYMMDD_Econ_D_YYYYMMDD" Association="Self.FK_Econ_D_YYYYMMDD_Econ_D_YYYYMMDD">
+            <End Role="Econ_Domestic" EntitySet="Econ_Domestic" />
+            <End Role="Econ_D_YYYYMMDD" EntitySet="Econ_D_YYYYMMDD" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Econ_D_YYYYMMDD_Group_Product_Code_Mapping" Association="Self.FK_Econ_D_YYYYMMDD_Group_Product_Code_Mapping">
+            <End Role="Group_Product_Code_Mapping" EntitySet="Group_Product_Code_Mapping" />
+            <End Role="Econ_D_YYYYMMDD" EntitySet="Econ_D_YYYYMMDD" />
+          </AssociationSet>
           <AssociationSet Name="FK_EL_Data_Out_Group_Product_Code_Mapping" Association="Self.FK_EL_Data_Out_Group_Product_Code_Mapping">
             <End Role="Group_Product_Code_Mapping" EntitySet="Group_Product_Code_Mapping" />
             <End Role="EL_Data_Out" EntitySet="EL_Data_Out" />
@@ -675,66 +1015,70 @@
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="IFRS9Model" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityType Name="IFRS9_Log">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" />
-          <Property Name="Table_name" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
-          <Property Name="File_name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
-          <Property Name="Program_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="Create_date" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
-          <Property Name="Create_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
-          <Property Name="End_date" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
-          <Property Name="End_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
-          <Property Name="TYPE" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
-          <Property Name="Table_type" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Debt_Type" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
-        </EntityType>
-        <EntityType Name="Moody_Monthly_PD_Info">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" />
-          <Property Name="Trailing_12m_Ending" Type="DateTime" Precision="0" />
-          <Property Name="Actual_Allcorp" Type="Double" />
-          <Property Name="Baseline_forecast_Allcorp" Type="Double" />
-          <Property Name="Pessimistic_Forecast_Allcorp" Type="Double" />
-          <Property Name="Actual_SG" Type="Double" />
-          <Property Name="Baseline_forecast_SG" Type="Double" />
-          <Property Name="Pessimistic_Forecast_SG" Type="Double" />
-          <Property Name="Data_Year" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
-        </EntityType>
-        <EntityType Name="Moody_Predit_PD_Info">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" />
-          <Property Name="Data_Year" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
-          <Property Name="Period" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="PD_TYPE" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="PD" Type="Double" />
-        </EntityType>
-        <EntityType Name="Moody_Quartly_PD_Info">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" />
-          <Property Name="Data_Year" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
-          <Property Name="Year_Quartly" Type="String" MaxLength="6" FixedLength="false" Unicode="false" />
-          <Property Name="PD" Type="Double" />
-        </EntityType>
         <EntityContainer Name="IFRS9Entities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="IFRS9_Log" EntityType="Self.IFRS9_Log" />
-          <EntitySet Name="Moody_Monthly_PD_Info" EntityType="Self.Moody_Monthly_PD_Info" />
-          <EntitySet Name="Moody_Predit_PD_Info" EntityType="Self.Moody_Predit_PD_Info" />
-          <EntitySet Name="Moody_Quartly_PD_Info" EntityType="Self.Moody_Quartly_PD_Info" />
-          <EntitySet Name="Moody_Tm_YYYY" EntityType="IFRS9Model.Moody_Tm_YYYY" />
+          <EntitySet Name="Bond_Account_Info" EntityType="IFRS9Model.Bond_Account_Info" />
+          <EntitySet Name="Bond_Rating_Info" EntityType="IFRS9Model.Bond_Rating_Info" />
+          <EntitySet Name="Bond_Rating_Parm" EntityType="IFRS9Model.Bond_Rating_Parm" />
+          <EntitySet Name="Bond_Rating_Summary" EntityType="IFRS9Model.Bond_Rating_Summary" />
+          <EntitySet Name="Econ_D_YYYYMMDD" EntityType="IFRS9Model.Econ_D_YYYYMMDD" />
+          <EntitySet Name="Econ_Domestic" EntityType="IFRS9Model.Econ_Domestic" />
+          <EntitySet Name="EL_Data_In" EntityType="IFRS9Model.EL_Data_In" />
+          <EntitySet Name="EL_Data_Out" EntityType="IFRS9Model.EL_Data_Out" />
+          <EntitySet Name="Flow_Info" EntityType="IFRS9Model.Flow_Info" />
+          <EntitySet Name="GM_YYYY" EntityType="IFRS9Model.GM_YYYY" />
+          <EntitySet Name="Grade_Mapping_Info" EntityType="IFRS9Model.Grade_Mapping_Info" />
           <EntitySet Name="Grade_Moody_Info" EntityType="IFRS9Model.Grade_Moody_Info" />
+          <EntitySet Name="Group_Product" EntityType="IFRS9Model.Group_Product" />
+          <EntitySet Name="Group_Product_Code_Mapping" EntityType="IFRS9Model.Group_Product_Code_Mapping" />
+          <EntitySet Name="IFRS9_Log" EntityType="IFRS9Model.IFRS9_Log" />
+          <EntitySet Name="IFRS9_Main" EntityType="IFRS9Model.IFRS9_Main" />
           <EntitySet Name="IFRS9_Menu_Main" EntityType="IFRS9Model.IFRS9_Menu_Main" />
           <EntitySet Name="IFRS9_Menu_Set" EntityType="IFRS9Model.IFRS9_Menu_Set" />
           <EntitySet Name="IFRS9_Menu_Sub" EntityType="IFRS9Model.IFRS9_Menu_Sub" />
           <EntitySet Name="IFRS9_User" EntityType="IFRS9Model.IFRS9_User" />
+          <EntitySet Name="Loan_Account_Info" EntityType="IFRS9Model.Loan_Account_Info" />
+          <EntitySet Name="Loan_default_Info" EntityType="IFRS9Model.Loan_default_Info" />
+          <EntitySet Name="Loan_IAS39_Info" EntityType="IFRS9Model.Loan_IAS39_Info" />
+          <EntitySet Name="Moody_LGD_Info" EntityType="IFRS9Model.Moody_LGD_Info" />
+          <EntitySet Name="Moody_Monthly_PD_Info" EntityType="IFRS9Model.Moody_Monthly_PD_Info" />
+          <EntitySet Name="Moody_Predit_PD_Info" EntityType="IFRS9Model.Moody_Predit_PD_Info" />
+          <EntitySet Name="Moody_Quartly_PD_Info" EntityType="IFRS9Model.Moody_Quartly_PD_Info" />
+          <EntitySet Name="Moody_Tm_YYYY" EntityType="IFRS9Model.Moody_Tm_YYYY" />
+          <EntitySet Name="Rating_History" EntityType="IFRS9Model.Rating_History" />
+          <EntitySet Name="Rating_Info" EntityType="IFRS9Model.Rating_Info" />
+          <EntitySet Name="Rating_Info_SampleInfo" EntityType="IFRS9Model.Rating_Info_SampleInfo" />
+          <EntitySet Name="Tm_Adjust_YYYY" EntityType="IFRS9Model.Tm_Adjust_YYYY" />
+          <EntitySet Name="Transfer_CheckTable" EntityType="IFRS9Model.Transfer_CheckTable" />
+          <EntitySet Name="Treasury_Securities_Info" EntityType="IFRS9Model.Treasury_Securities_Info" />
+          <EntitySet Name="Loan_Cathay_Estate_Info" EntityType="IFRS9Model.Loan_Cathay_Estate_Info" />
+          <EntitySet Name="Loan_Collateral_Legal_Action_Info" EntityType="IFRS9Model.Loan_Collateral_Legal_Action_Info" />
+          <EntitySet Name="Loan_other_info" EntityType="IFRS9Model.Loan_other_info" />
+          <EntitySet Name="Loan_Recovery_Info" EntityType="IFRS9Model.Loan_Recovery_Info" />
+          <EntitySet Name="Loan_Restructure_Info" EntityType="IFRS9Model.Loan_Restructure_Info" />
+          <AssociationSet Name="FK_Econ_D_YYYYMMDD_Econ_D_YYYYMMDD" Association="IFRS9Model.FK_Econ_D_YYYYMMDD_Econ_D_YYYYMMDD">
+            <End Role="Econ_Domestic" EntitySet="Econ_Domestic" />
+            <End Role="Econ_D_YYYYMMDD" EntitySet="Econ_D_YYYYMMDD" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Econ_D_YYYYMMDD_Group_Product_Code_Mapping" Association="IFRS9Model.FK_Econ_D_YYYYMMDD_Group_Product_Code_Mapping">
+            <End Role="Group_Product_Code_Mapping" EntitySet="Group_Product_Code_Mapping" />
+            <End Role="Econ_D_YYYYMMDD" EntitySet="Econ_D_YYYYMMDD" />
+          </AssociationSet>
+          <AssociationSet Name="FK_EL_Data_Out_Group_Product_Code_Mapping" Association="IFRS9Model.FK_EL_Data_Out_Group_Product_Code_Mapping">
+            <End Role="Group_Product_Code_Mapping" EntitySet="Group_Product_Code_Mapping" />
+            <End Role="EL_Data_Out" EntitySet="EL_Data_Out" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Flow_Info_Flow_Info" Association="IFRS9Model.FK_Flow_Info_Flow_Info">
+            <End Role="Group_Product" EntitySet="Group_Product" />
+            <End Role="Flow_Info" EntitySet="Flow_Info" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Group_Product_Code_Mapping_Group_Product" Association="IFRS9Model.FK_Group_Product_Code_Mapping_Group_Product">
+            <End Role="Group_Product" EntitySet="Group_Product" />
+            <End Role="Group_Product_Code_Mapping" EntitySet="Group_Product_Code_Mapping" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Rating_History_Group_Product_Code_Mapping" Association="IFRS9Model.FK_Rating_History_Group_Product_Code_Mapping">
+            <End Role="Group_Product_Code_Mapping" EntitySet="Group_Product_Code_Mapping" />
+            <End Role="Rating_History" EntitySet="Rating_History" />
+          </AssociationSet>
           <AssociationSet Name="fk_Menu" Association="IFRS9Model.fk_Menu">
             <End Role="IFRS9_Menu_Main" EntitySet="IFRS9_Menu_Main" />
             <End Role="IFRS9_Menu_Sub" EntitySet="IFRS9_Menu_Sub" />
@@ -743,319 +1087,65 @@
             <End Role="IFRS9_Menu_Sub" EntitySet="IFRS9_Menu_Sub" />
             <End Role="IFRS9_Menu_Set" EntitySet="IFRS9_Menu_Set" />
           </AssociationSet>
-          <EntitySet Name="Loan_Account_Info" EntityType="IFRS9Model.Loan_Account_Info" />
-          <EntitySet Name="Loan_IAS39_Info" EntityType="IFRS9Model.Loan_IAS39_Info" />
-          <EntitySet Name="Moody_LGD_Info" EntityType="IFRS9Model.Moody_LGD_Info" />
-          <EntitySet Name="Treasury_Securities_Info" EntityType="IFRS9Model.Treasury_Securities_Info" />
-          <EntitySet Name="Group_Product" EntityType="IFRS9Model.Group_Product" />
-          <EntitySet Name="Group_Product_Code_Mapping" EntityType="IFRS9Model.Group_Product_Code_Mapping" />
-          <AssociationSet Name="FK_Group_Product_Code_Mapping_Group_Product" Association="IFRS9Model.FK_Group_Product_Code_Mapping_Group_Product">
-            <End Role="Group_Product" EntitySet="Group_Product" />
-            <End Role="Group_Product_Code_Mapping" EntitySet="Group_Product_Code_Mapping" />
-          </AssociationSet>
-          <EntitySet Name="Flow_Info" EntityType="IFRS9Model.Flow_Info" />
-          <AssociationSet Name="FK_Flow_Info_Flow_Info" Association="IFRS9Model.FK_Flow_Info_Flow_Info">
-            <End Role="Group_Product" EntitySet="Group_Product" />
-            <End Role="Flow_Info" EntitySet="Flow_Info" />
-          </AssociationSet>
-          <EntitySet Name="EL_Data_Out" EntityType="IFRS9Model.EL_Data_Out" />
-          <AssociationSet Name="FK_EL_Data_Out_Group_Product_Code_Mapping" Association="IFRS9Model.FK_EL_Data_Out_Group_Product_Code_Mapping">
-            <End Role="Group_Product_Code_Mapping" EntitySet="Group_Product_Code_Mapping" />
-            <End Role="EL_Data_Out" EntitySet="EL_Data_Out" />
-          </AssociationSet>
-          <EntitySet Name="Bond_Rating_Info" EntityType="IFRS9Model.Bond_Rating_Info" />
-          <EntitySet Name="Bond_Rating_Summary" EntityType="IFRS9Model.Bond_Rating_Summary" />
-          <EntitySet Name="Rating_History" EntityType="IFRS9Model.Rating_History" />
-          <AssociationSet Name="FK_Rating_History_Group_Product_Code_Mapping" Association="IFRS9Model.FK_Rating_History_Group_Product_Code_Mapping">
-            <End Role="Group_Product_Code_Mapping" EntitySet="Group_Product_Code_Mapping" />
-            <End Role="Rating_History" EntitySet="Rating_History" />
-          </AssociationSet>
-          <EntitySet Name="EL_Data_In" EntityType="IFRS9Model.EL_Data_In" />
-          <EntitySet Name="IFRS9_Main" EntityType="IFRS9Model.IFRS9_Main" />
-          <EntitySet Name="Transfer_CheckTable" EntityType="IFRS9Model.Transfer_CheckTable" />
-          <EntitySet Name="Bond_Rating_Parm" EntityType="IFRS9Model.Bond_Rating_Parm" />
-          <EntitySet Name="Grade_Mapping_Info" EntityType="IFRS9Model.Grade_Mapping_Info" />
-          <EntitySet Name="Rating_Info" EntityType="IFRS9Model.Rating_Info" />
-          <EntitySet Name="Rating_Info_SampleInfo" EntityType="IFRS9Model.Rating_Info_SampleInfo" />
-          <EntitySet Name="Bond_Account_Info" EntityType="IFRS9Model.Bond_Account_Info" />
         </EntityContainer>
-        <EntityType Name="Moody_Tm_YYYY">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" />
-          <Property Name="From_To" Type="String" MaxLength="9" FixedLength="false" Unicode="false" />
-          <Property Name="Aaa" Type="Double" />
-          <Property Name="Aa1" Type="Double" />
-          <Property Name="Aa2" Type="Double" />
-          <Property Name="Aa3" Type="Double" />
-          <Property Name="A1" Type="Double" />
-          <Property Name="A2" Type="Double" />
-          <Property Name="A3" Type="Double" />
-          <Property Name="Baa1" Type="Double" />
-          <Property Name="Baa2" Type="Double" />
-          <Property Name="Baa3" Type="Double" />
-          <Property Name="Ba1" Type="Double" />
-          <Property Name="Ba2" Type="Double" />
-          <Property Name="Ba3" Type="Double" />
-          <Property Name="B1" Type="Double" />
-          <Property Name="B2" Type="Double" />
-          <Property Name="B3" Type="Double" />
-          <Property Name="Caa1" Type="Double" />
-          <Property Name="Caa2" Type="Double" />
-          <Property Name="Caa3" Type="Double" />
-          <Property Name="Ca_C" Type="Double" />
-          <Property Name="WR" Type="Double" />
-          <Property Name="Default_Value" Type="Double" />
-        </EntityType>
-        <EntityType Name="Grade_Moody_Info">
-          <Key>
-            <PropertyRef Name="Rating" />
-          </Key>
-          <Property Name="Data_Year" Type="String" Nullable="false" MaxLength="4" FixedLength="false" Unicode="false" />
-          <Property Name="Rating" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="PD_Grade" Type="Int32" />
-          <Property Name="Rating_Adjust" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="Grade_Adjust" Type="Int32" />
-          <Property Name="Moodys_PD" Type="Double" />
-        </EntityType>
-        <EntityType Name="IFRS9_Menu_Main">
-          <Key>
-            <PropertyRef Name="Menu" />
-          </Key>
-          <Property Name="Menu" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
-          <Property Name="Menu_Id" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
-          <Property Name="Menu_Detail" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
-          <Property Name="Class" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="IFRS9_Menu_Sub" Relationship="IFRS9Model.fk_Menu" FromRole="IFRS9_Menu_Main" ToRole="IFRS9_Menu_Sub" />
-        </EntityType>
-        <EntityType Name="IFRS9_Menu_Set">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="User_Name" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
-          <Property Name="Menu_Id" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="IFRS9_Menu_Sub" Relationship="IFRS9Model.fk_Menu_Id" FromRole="IFRS9_Menu_Set" ToRole="IFRS9_Menu_Sub" />
-        </EntityType>
-        <EntityType Name="IFRS9_Menu_Sub">
-          <Key>
-            <PropertyRef Name="Menu_Id" />
-          </Key>
-          <Property Name="Menu" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
-          <Property Name="Menu_Id" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
-          <Property Name="Menu_Detail" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
-          <Property Name="Class" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
-          <Property Name="Href" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="IFRS9_Menu_Main" Relationship="IFRS9Model.fk_Menu" FromRole="IFRS9_Menu_Sub" ToRole="IFRS9_Menu_Main" />
-          <NavigationProperty Name="IFRS9_Menu_Set" Relationship="IFRS9Model.fk_Menu_Id" FromRole="IFRS9_Menu_Sub" ToRole="IFRS9_Menu_Set" />
-          <Property Name="SortNum" Type="Int32" Nullable="false" />
-        </EntityType>
-        <EntityType Name="IFRS9_User">
-          <Key>
-            <PropertyRef Name="User_Name" />
-          </Key>
-          <Property Name="User_Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="User_Password" Type="String" Nullable="false" MaxLength="3000" FixedLength="false" Unicode="false" />
-        </EntityType>
-        <Association Name="fk_Menu">
-          <End Type="IFRS9Model.IFRS9_Menu_Main" Role="IFRS9_Menu_Main" Multiplicity="1" />
-          <End Type="IFRS9Model.IFRS9_Menu_Sub" Role="IFRS9_Menu_Sub" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IFRS9_Menu_Main">
-              <PropertyRef Name="Menu" />
-            </Principal>
-            <Dependent Role="IFRS9_Menu_Sub">
-              <PropertyRef Name="Menu" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <Association Name="fk_Menu_Id">
-          <End Type="IFRS9Model.IFRS9_Menu_Sub" Role="IFRS9_Menu_Sub" Multiplicity="1" />
-          <End Type="IFRS9Model.IFRS9_Menu_Set" Role="IFRS9_Menu_Set" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="IFRS9_Menu_Sub">
-              <PropertyRef Name="Menu_Id" />
-            </Principal>
-            <Dependent Role="IFRS9_Menu_Set">
-              <PropertyRef Name="Menu_Id" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="Loan_Account_Info">
+        <EntityType Name="Bond_Account_Info">
           <Key>
             <PropertyRef Name="Reference_Nbr" />
           </Key>
           <Property Name="Reference_Nbr" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Seg_Name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
-          <Property Name="Delinquent_Days" Type="Int32" Nullable="false" />
-          <Property Name="Current_Rating_Code" Type="String" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
-          <Property Name="Org_Amt" Type="Double" />
+          <Property Name="Bond_Number" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="Lots" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
+          <Property Name="Segment_Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="CURR_SP_Issuer" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="CURR_Moodys_Issuer" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="CURR_Fitch_Issuer" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="CURR_TW_Issuer" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="CURR_SP_Issue" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="CURR_Moodys_Issue" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="CURR_Fitch_Issue" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="CURR_TW_Issue" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Ori_Amount" Type="Double" />
           <Property Name="Current_Int_Rate" Type="Double" />
-          <Property Name="Mtr_Date" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Exp_Date" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Cur_Int" Type="Double" />
-          <Property Name="Lorg_Date" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Lexp_Date" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Cf_Type" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
-          <Property Name="Pay_Frq" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Init_Days" Type="Int32" />
-          <Property Name="Int_Type" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Obj_Impair" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
-          <Property Name="Mdr_Month" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Org_Pd" Type="Double" />
-          <Property Name="Org_Efint" Type="Double" />
-          <Property Name="Currency" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Current_Lgd" Type="Double" Nullable="false" />
-          <Property Name="Unpaid_Bal" Type="Double" />
-          <Property Name="Nxt_Int_Dt" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Nxt_Int_Rt" Type="Double" />
-          <Property Name="Tot_Trms" Type="Int32" />
-          <Property Name="Left_Trms" Type="Int32" />
+          <Property Name="Origination_Date" Type="DateTime" Precision="0" />
+          <Property Name="Maturity_Date" Type="DateTime" Precision="0" />
+          <Property Name="Principal_Payment_Method_Code" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Name="Payment_Frequency" Type="String" MaxLength="6" FixedLength="false" Unicode="false" />
+          <Property Name="Baloon_Freq" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="ISSUER_AREA" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Industry_Sector" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PRODUCT" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="FINANCE_INSTRUMENTS" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="IAS39_CATEGORY" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Principal" Type="Double" />
+          <Property Name="Amort_Amt_Tw" Type="Double" />
+          <Property Name="Interest_Receivable" Type="Double" />
+          <Property Name="Interest_Receivable_tw" Type="Double" />
+          <Property Name="Interest_Rate_Type" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="IMPAIR_YN" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="EIR" Type="Double" />
+          <Property Name="Currency_Code" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
+          <Property Name="Report_Date" Type="DateTime" Precision="0" />
+          <Property Name="ISSUER" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Country_Risk" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Ex_rate" Type="Double" />
+          <Property Name="Lien_position" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Portfolio" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="ASSET_SEG" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Ori_Ex_rate" Type="Double" />
+          <Property Name="Bond_Type" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Assessment_Sub_Kind" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Processing_Date" Type="DateTime" Precision="0" />
-          <Property Name="Report_Date" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="Rating_Date" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Version" Type="Int32" />
+          <Property Name="Bond_Aera" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Asset_Type" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="IH_OS" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
+          <Property Name="Amount_TW_Ori_Ex_rate" Type="Double" />
+          <Property Name="Amort_Amt_Ori_Tw" Type="Double" />
+          <Property Name="Market_Value_Ori" Type="Double" />
+          <Property Name="Market_Value_TW" Type="Double" />
+          <Property Name="Value_date" Type="DateTime" Precision="0" />
+          <Property Name="Portfolio_Name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
         </EntityType>
-        <EntityType Name="Loan_IAS39_Info">
-          <Key>
-            <PropertyRef Name="Reference_Nbr" />
-          </Key>
-          <Property Name="Reference_Nbr" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Mdr_Month" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="EIR" Type="Double" Nullable="false" />
-          <Property Name="NO34RCV" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
-          <Property Name="IAS39_Impaire_Ind" Type="String" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
-          <Property Name="IAS39_Impaire_Desc" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Principal" Type="Double" Nullable="false" />
-          <Property Name="Interest_Receivable" Type="Double" Nullable="false" />
-          <Property Name="Processing_Date" Type="DateTime" Precision="0" />
-          <Property Name="Report_Date" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="Restructure_Ind" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
-          <Property Name="Collateral_Legal_Action_Ind" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
-          <Property Name="Bad_Debt_Ind" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
-          <Property Name="Collection_Ind" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
-        </EntityType>
-        <EntityType Name="Moody_LGD_Info">
-          <Key>
-            <PropertyRef Name="Data_Year" />
-            <PropertyRef Name="Lien_Position" />
-          </Key>
-          <Property Name="Data_Year" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Lien_Position" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
-          <Property Name="Recovery_Rate" Type="Double" />
-          <Property Name="LGD" Type="Double" />
-        </EntityType>
-        <EntityType Name="Treasury_Securities_Info">
-          <Key>
-            <PropertyRef Name="Bond_Number" />
-            <PropertyRef Name="Lots" />
-            <PropertyRef Name="Report_Date" />
-          </Key>
-          <Property Name="Bond_Number" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
-          <Property Name="Lots" Type="String" Nullable="false" MaxLength="4" FixedLength="false" Unicode="false" />
-          <Property Name="Segment_Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Portfolio_Name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="Bond_Value" Type="Double" Nullable="false" />
-          <Property Name="Ori_Amount" Type="Double" Nullable="false" />
-          <Property Name="Principal" Type="Double" Nullable="false" />
-          <Property Name="Amort_value" Type="Double" Nullable="false" />
-          <Property Name="Processing_Date" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="Report_Date" Type="DateTime" Nullable="false" Precision="0" />
-        </EntityType>
-        <EntityType Name="Group_Product">
-          <Key>
-            <PropertyRef Name="Group_Product_Code" />
-          </Key>
-          <Property Name="Group_Product_Code" Type="String" Nullable="false" MaxLength="3" FixedLength="false" Unicode="false" />
-          <Property Name="Group_Product_Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Group_Product_Code_Mapping" Relationship="IFRS9Model.FK_Group_Product_Code_Mapping_Group_Product" FromRole="Group_Product" ToRole="Group_Product_Code_Mapping" />
-          <NavigationProperty Name="Flow_Info" Relationship="IFRS9Model.FK_Flow_Info_Flow_Info" FromRole="Group_Product" ToRole="Flow_Info" />
-        </EntityType>
-        <EntityType Name="Group_Product_Code_Mapping">
-          <Key>
-            <PropertyRef Name="Product_Code" />
-          </Key>
-          <Property Name="Group_Product_Code" Type="String" Nullable="false" MaxLength="3" FixedLength="false" Unicode="false" />
-          <Property Name="Product_Code" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="false" />
-          <Property Name="Processing_Date" Type="DateTime" Nullable="false" Precision="0" />
-          <NavigationProperty Name="Group_Product" Relationship="IFRS9Model.FK_Group_Product_Code_Mapping_Group_Product" FromRole="Group_Product_Code_Mapping" ToRole="Group_Product" />
-          <NavigationProperty Name="EL_Data_Out" Relationship="IFRS9Model.FK_EL_Data_Out_Group_Product_Code_Mapping" FromRole="Group_Product_Code_Mapping" ToRole="EL_Data_Out" />
-          <NavigationProperty Name="Rating_History" Relationship="IFRS9Model.FK_Rating_History_Group_Product_Code_Mapping" FromRole="Group_Product_Code_Mapping" ToRole="Rating_History" />
-        </EntityType>
-        <Association Name="FK_Group_Product_Code_Mapping_Group_Product">
-          <End Type="IFRS9Model.Group_Product" Role="Group_Product" Multiplicity="1" />
-          <End Type="IFRS9Model.Group_Product_Code_Mapping" Role="Group_Product_Code_Mapping" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Group_Product">
-              <PropertyRef Name="Group_Product_Code" />
-            </Principal>
-            <Dependent Role="Group_Product_Code_Mapping">
-              <PropertyRef Name="Group_Product_Code" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="Flow_Info">
-          <Key>
-            <PropertyRef Name="PRJID" />
-            <PropertyRef Name="FLOWID" />
-          </Key>
-          <Property Name="PRJID" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="FLOWID" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="Group_Product_Code" Type="String" Nullable="false" MaxLength="3" FixedLength="false" Unicode="false" />
-          <Property Name="Publish_Date" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="Apply_On_Date" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="Apply_Off_Date" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="Issuer" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Memo" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Group_Product" Relationship="IFRS9Model.FK_Flow_Info_Flow_Info" FromRole="Flow_Info" ToRole="Group_Product" />
-        </EntityType>
-        <Association Name="FK_Flow_Info_Flow_Info">
-          <End Type="IFRS9Model.Group_Product" Role="Group_Product" Multiplicity="1" />
-          <End Type="IFRS9Model.Flow_Info" Role="Flow_Info" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Group_Product">
-              <PropertyRef Name="Group_Product_Code" />
-            </Principal>
-            <Dependent Role="Flow_Info">
-              <PropertyRef Name="Group_Product_Code" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="EL_Data_Out">
-          <Key>
-            <PropertyRef Name="Report_Date" />
-            <PropertyRef Name="Product_Code" />
-            <PropertyRef Name="Reference_Nbr" />
-          </Key>
-          <Property Name="PID" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Data_ID" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="PRJID" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="FLOWID" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
-          <Property Name="Report_Date" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Processing_Date" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Product_Code" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="false" />
-          <Property Name="Reference_Nbr" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="PD" Type="Double" Nullable="false" />
-          <Property Name="Lifetime_EL" Type="Double" Nullable="false" />
-          <Property Name="Y1_EL" Type="Double" Nullable="false" />
-          <Property Name="EL" Type="Double" Nullable="false" />
-          <Property Name="Impairment_Stage" Type="String" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
-          <Property Name="Exec_Date" Type="DateTime" Precision="3" />
-          <Property Name="Version" Type="Int32" Nullable="false" />
-          <NavigationProperty Name="Group_Product_Code_Mapping" Relationship="IFRS9Model.FK_EL_Data_Out_Group_Product_Code_Mapping" FromRole="EL_Data_Out" ToRole="Group_Product_Code_Mapping" />
-        </EntityType>
-        <Association Name="FK_EL_Data_Out_Group_Product_Code_Mapping">
-          <End Type="IFRS9Model.Group_Product_Code_Mapping" Role="Group_Product_Code_Mapping" Multiplicity="1" />
-          <End Type="IFRS9Model.EL_Data_Out" Role="EL_Data_Out" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Group_Product_Code_Mapping">
-              <PropertyRef Name="Product_Code" />
-            </Principal>
-            <Dependent Role="EL_Data_Out">
-              <PropertyRef Name="Product_Code" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
         <EntityType Name="Bond_Rating_Info">
           <Key>
             <PropertyRef Name="Id" />
@@ -1091,6 +1181,18 @@
           <Property Name="Version" Type="Int32" />
           <Property Name="Security_Ticker" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
+        <EntityType Name="Bond_Rating_Parm">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Parm_ID" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Rating_Priority" Type="Int32" />
+          <Property Name="Rating_Object" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Rating_Org_Area" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Rating_Selection" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Name="Processing_Date" Type="DateTime" Precision="0" />
+        </EntityType>
         <EntityType Name="Bond_Rating_Summary">
           <Key>
             <PropertyRef Name="Id" />
@@ -1116,32 +1218,80 @@
           <Property Name="SMF" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="ISSUER" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
         </EntityType>
-        <EntityType Name="Rating_History">
+        <EntityType Name="Econ_D_YYYYMMDD">
           <Key>
-            <PropertyRef Name="Product_Code" />
-            <PropertyRef Name="Reference_Nbr" />
-            <PropertyRef Name="Rating_Date" />
+            <PropertyRef Name="Year_Quartly" />
           </Key>
-          <Property Name="Data_ID" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
           <Property Name="Processing_Date" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="Product_Code" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="false" />
-          <Property Name="Reference_Nbr" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
-          <Property Name="Current_Rating_Code" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Rating_Date" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <NavigationProperty Name="Group_Product_Code_Mapping" Relationship="IFRS9Model.FK_Rating_History_Group_Product_Code_Mapping" FromRole="Rating_History" ToRole="Group_Product_Code_Mapping" />
+          <Property Name="Data_ID" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Year_Quartly" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="PD_Quartly" Type="Double" Nullable="false" />
+          <Property Name="var1" Type="Double" />
+          <Property Name="var2" Type="Double" />
+          <Property Name="var3" Type="Double" />
+          <Property Name="var4" Type="Double" />
+          <Property Name="var5" Type="Double" />
+          <Property Name="var6" Type="Double" />
+          <Property Name="var7" Type="Double" />
+          <Property Name="var8" Type="Double" />
+          <Property Name="var9" Type="Double" />
+          <Property Name="var10" Type="Double" />
+          <Property Name="var11" Type="Double" />
+          <Property Name="var12" Type="Double" />
+          <Property Name="var13" Type="Double" />
+          <Property Name="var14" Type="Double" />
+          <Property Name="var15" Type="Double" />
+          <Property Name="var16" Type="Double" />
+          <Property Name="var17" Type="Double" />
+          <Property Name="var18" Type="Double" />
+          <Property Name="var19" Type="Double" />
+          <Property Name="var20" Type="Double" />
+          <Property Name="var21" Type="Double" />
+          <Property Name="var22" Type="Double" />
+          <Property Name="var23" Type="Double" />
+          <Property Name="var24" Type="Double" />
+          <Property Name="var25" Type="Double" />
+          <Property Name="var26" Type="Double" />
+          <Property Name="var27" Type="Double" />
+          <NavigationProperty Name="Econ_Domestic" Relationship="IFRS9Model.FK_Econ_D_YYYYMMDD_Econ_D_YYYYMMDD" FromRole="Econ_D_YYYYMMDD" ToRole="Econ_Domestic" />
+          <NavigationProperty Name="Group_Product_Code_Mapping" Relationship="IFRS9Model.FK_Econ_D_YYYYMMDD_Group_Product_Code_Mapping" FromRole="Econ_D_YYYYMMDD" ToRole="Group_Product_Code_Mapping" />
         </EntityType>
-        <Association Name="FK_Rating_History_Group_Product_Code_Mapping">
-          <End Type="IFRS9Model.Group_Product_Code_Mapping" Role="Group_Product_Code_Mapping" Multiplicity="1" />
-          <End Type="IFRS9Model.Rating_History" Role="Rating_History" Multiplicity="*" />
-          <ReferentialConstraint>
-            <Principal Role="Group_Product_Code_Mapping">
-              <PropertyRef Name="Product_Code" />
-            </Principal>
-            <Dependent Role="Rating_History">
-              <PropertyRef Name="Product_Code" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
+        <EntityType Name="Econ_Domestic">
+          <Key>
+            <PropertyRef Name="Year_Quartly" />
+          </Key>
+          <Property Name="Year_Quartly" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Date" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="TWSE_Index" Type="Double" />
+          <Property Name="TWRGSARP_Index" Type="Double" />
+          <Property Name="TWGDPCON_Index" Type="Double" />
+          <Property Name="TWLFADJ_Index" Type="Double" />
+          <Property Name="TWCPI_Index" Type="Double" />
+          <Property Name="TWMSA1A_Index" Type="Double" />
+          <Property Name="TWMSA1B_Index" Type="Double" />
+          <Property Name="TWMSAM2_Index" Type="Double" />
+          <Property Name="GVTW10YR_Index" Type="Double" />
+          <Property Name="TWTRBAL_Index" Type="Double" />
+          <Property Name="TWTREXP_Index" Type="Double" />
+          <Property Name="TWTRIMP_Index" Type="Double" />
+          <Property Name="TAREDSCD_Index" Type="Double" />
+          <Property Name="TWCILI_Index" Type="Double" />
+          <Property Name="TWBOPCUR_Index" Type="Double" />
+          <Property Name="EHCATW_Index" Type="Double" />
+          <Property Name="TWINDPI_Index" Type="Double" />
+          <Property Name="TWWPI_Index" Type="Double" />
+          <Property Name="TARSYOY_Index" Type="Double" />
+          <Property Name="TWEOTTL_Index" Type="Double" />
+          <Property Name="SLDETIGT_Index" Type="Double" />
+          <Property Name="TWIRFE_Index" Type="Double" />
+          <Property Name="SINYI_HOUSE_PRICE_index" Type="Double" />
+          <Property Name="CATHAY_ESTATE_index" Type="Double" />
+          <Property Name="Real_GDP2011" Type="Double" />
+          <Property Name="MCCCTW_Index" Type="Double" />
+          <Property Name="TRDR1T_Index" Type="Double" />
+          <NavigationProperty Name="Econ_D_YYYYMMDD" Relationship="IFRS9Model.FK_Econ_D_YYYYMMDD_Econ_D_YYYYMMDD" FromRole="Econ_Domestic" ToRole="Econ_D_YYYYMMDD" />
+        </EntityType>
         <EntityType Name="EL_Data_In">
           <Key>
             <PropertyRef Name="Report_Date" />
@@ -1167,6 +1317,107 @@
           <Property Name="Principal" Type="Double" />
           <Property Name="Interest_Receivable" Type="Double" />
           <Property Name="Payment_Frequency" Type="Int32" />
+        </EntityType>
+        <EntityType Name="EL_Data_Out">
+          <Key>
+            <PropertyRef Name="Report_Date" />
+            <PropertyRef Name="Product_Code" />
+            <PropertyRef Name="Reference_Nbr" />
+          </Key>
+          <Property Name="Report_Date" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Processing_Date" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Product_Code" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="false" />
+          <Property Name="Reference_Nbr" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="PD" Type="Double" Nullable="false" />
+          <Property Name="Lifetime_EL" Type="Double" Nullable="false" />
+          <Property Name="Y1_EL" Type="Double" Nullable="false" />
+          <Property Name="EL" Type="Double" Nullable="false" />
+          <Property Name="Impairment_Stage" Type="String" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="Version" Type="Int32" Nullable="false" />
+          <Property Name="PRJID" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="FLOWID" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Group_Product_Code_Mapping" Relationship="IFRS9Model.FK_EL_Data_Out_Group_Product_Code_Mapping" FromRole="EL_Data_Out" ToRole="Group_Product_Code_Mapping" />
+        </EntityType>
+        <EntityType Name="Flow_Info">
+          <Key>
+            <PropertyRef Name="PRJID" />
+            <PropertyRef Name="FLOWID" />
+          </Key>
+          <Property Name="PRJID" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="FLOWID" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="false" />
+          <Property Name="Group_Product_Code" Type="String" Nullable="false" MaxLength="3" FixedLength="false" Unicode="false" />
+          <Property Name="Publish_Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Apply_On_Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Apply_Off_Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Issuer" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Memo" Type="String" MaxLength="255" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Group_Product" Relationship="IFRS9Model.FK_Flow_Info_Flow_Info" FromRole="Flow_Info" ToRole="Group_Product" />
+        </EntityType>
+        <EntityType Name="GM_YYYY">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="TM" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Default_Value" Type="Double" />
+        </EntityType>
+        <EntityType Name="Grade_Mapping_Info">
+          <Key>
+            <PropertyRef Name="Rating_Org" />
+            <PropertyRef Name="PD_Grade" />
+            <PropertyRef Name="Rating" />
+          </Key>
+          <Property Name="Rating_Org" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="PD_Grade" Type="Int32" Nullable="false" />
+          <Property Name="Rating" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Grade_Moody_Info">
+          <Key>
+            <PropertyRef Name="Rating" />
+          </Key>
+          <Property Name="Data_Year" Type="String" Nullable="false" MaxLength="4" FixedLength="false" Unicode="false" />
+          <Property Name="Rating" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="PD_Grade" Type="Int32" />
+          <Property Name="Rating_Adjust" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Grade_Adjust" Type="Int32" />
+          <Property Name="Moodys_PD" Type="Double" />
+        </EntityType>
+        <EntityType Name="Group_Product">
+          <Key>
+            <PropertyRef Name="Group_Product_Code" />
+          </Key>
+          <Property Name="Group_Product_Code" Type="String" Nullable="false" MaxLength="3" FixedLength="false" Unicode="false" />
+          <Property Name="Group_Product_Name" Type="String" Nullable="false" MaxLength="100" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Flow_Info" Relationship="IFRS9Model.FK_Flow_Info_Flow_Info" FromRole="Group_Product" ToRole="Flow_Info" />
+          <NavigationProperty Name="Group_Product_Code_Mapping" Relationship="IFRS9Model.FK_Group_Product_Code_Mapping_Group_Product" FromRole="Group_Product" ToRole="Group_Product_Code_Mapping" />
+        </EntityType>
+        <EntityType Name="Group_Product_Code_Mapping">
+          <Key>
+            <PropertyRef Name="Product_Code" />
+          </Key>
+          <Property Name="Group_Product_Code" Type="String" Nullable="false" MaxLength="3" FixedLength="false" Unicode="false" />
+          <Property Name="Product_Code" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="false" />
+          <Property Name="Processing_Date" Type="DateTime" Nullable="false" Precision="0" />
+          <NavigationProperty Name="Econ_D_YYYYMMDD" Relationship="IFRS9Model.FK_Econ_D_YYYYMMDD_Group_Product_Code_Mapping" FromRole="Group_Product_Code_Mapping" ToRole="Econ_D_YYYYMMDD" />
+          <NavigationProperty Name="EL_Data_Out" Relationship="IFRS9Model.FK_EL_Data_Out_Group_Product_Code_Mapping" FromRole="Group_Product_Code_Mapping" ToRole="EL_Data_Out" />
+          <NavigationProperty Name="Group_Product" Relationship="IFRS9Model.FK_Group_Product_Code_Mapping_Group_Product" FromRole="Group_Product_Code_Mapping" ToRole="Group_Product" />
+          <NavigationProperty Name="Rating_History" Relationship="IFRS9Model.FK_Rating_History_Group_Product_Code_Mapping" FromRole="Group_Product_Code_Mapping" ToRole="Rating_History" />
+        </EntityType>
+        <EntityType Name="IFRS9_Log">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Table_type" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Table_name" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="File_name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Program_name" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Create_date" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="Create_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="End_date" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="End_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="TYPE" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Debt_Type" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
         </EntityType>
         <EntityType Name="IFRS9_Main">
           <Key>
@@ -1236,41 +1487,192 @@
           <Property Name="Ori_Amount" Type="Double" />
           <Property Name="Payment_Frequency" Type="Int32" />
         </EntityType>
-        <EntityType Name="Transfer_CheckTable">
+        <EntityType Name="IFRS9_Menu_Main">
           <Key>
-            <PropertyRef Name="Id" />
+            <PropertyRef Name="Menu" />
           </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="File_Name" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="ReportDate" Type="DateTime" Nullable="false" Precision="0" />
-          <Property Name="Version" Type="Int32" Nullable="false" />
-          <Property Name="TransferType" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
-          <Property Name="Create_date" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
-          <Property Name="Create_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
-          <Property Name="End_date" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
-          <Property Name="End_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="Menu" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Menu_Id" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Menu_Detail" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="Class" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="IFRS9_Menu_Sub" Relationship="IFRS9Model.fk_Menu" FromRole="IFRS9_Menu_Main" ToRole="IFRS9_Menu_Sub" />
         </EntityType>
-        <EntityType Name="Bond_Rating_Parm">
+        <EntityType Name="IFRS9_Menu_Set">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="Parm_ID" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
-          <Property Name="Rating_Priority" Type="Int32" />
-          <Property Name="Rating_Object" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Rating_Org_Area" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Rating_Selection" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Name="User_Name" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Menu_Id" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="IFRS9_Menu_Sub" Relationship="IFRS9Model.fk_Menu_Id" FromRole="IFRS9_Menu_Set" ToRole="IFRS9_Menu_Sub" />
+        </EntityType>
+        <EntityType Name="IFRS9_Menu_Sub">
+          <Key>
+            <PropertyRef Name="Menu_Id" />
+          </Key>
+          <Property Name="Menu" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Menu_Id" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Menu_Detail" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="Class" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Href" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="SortNum" Type="Int32" Nullable="false" />
+          <NavigationProperty Name="IFRS9_Menu_Main" Relationship="IFRS9Model.fk_Menu" FromRole="IFRS9_Menu_Sub" ToRole="IFRS9_Menu_Main" />
+          <NavigationProperty Name="IFRS9_Menu_Set" Relationship="IFRS9Model.fk_Menu_Id" FromRole="IFRS9_Menu_Sub" ToRole="IFRS9_Menu_Set" />
+        </EntityType>
+        <EntityType Name="IFRS9_User">
+          <Key>
+            <PropertyRef Name="User_Name" />
+          </Key>
+          <Property Name="User_Name" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="User_Password" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Loan_Account_Info">
+          <Key>
+            <PropertyRef Name="Reference_Nbr" />
+          </Key>
+          <Property Name="Reference_Nbr" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Seg_Name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Delinquent_Days" Type="Int32" Nullable="false" />
+          <Property Name="Current_Rating_Code" Type="String" Nullable="false" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="Org_Amt" Type="Double" />
+          <Property Name="Current_Int_Rate" Type="Double" />
+          <Property Name="Mtr_Date" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Exp_Date" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Cur_Int" Type="Double" />
+          <Property Name="Lorg_Date" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Lexp_Date" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Cf_Type" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Pay_Frq" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Init_Days" Type="Int32" />
+          <Property Name="Int_Type" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Obj_Impair" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="Mdr_Month" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Org_Pd" Type="Double" />
+          <Property Name="Org_Efint" Type="Double" />
+          <Property Name="Currency" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Current_Lgd" Type="Double" Nullable="false" />
+          <Property Name="Unpaid_Bal" Type="Double" />
+          <Property Name="Nxt_Int_Dt" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Nxt_Int_Rt" Type="Double" />
+          <Property Name="Tot_Trms" Type="Int32" />
+          <Property Name="Left_Trms" Type="Int32" />
+          <Property Name="Processing_Date" Type="DateTime" Precision="0" />
+          <Property Name="Report_Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Rating_Date" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Loan_default_Info">
+          <Key>
+            <PropertyRef Name="Year_Quartly" />
+          </Key>
+          <Property Name="Year_Month" Type="String" Nullable="false" MaxLength="6" FixedLength="false" Unicode="false" />
+          <Property Name="PD_Quartly" Type="Double" Nullable="false" />
+          <Property Name="Year_Quartly" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
           <Property Name="Processing_Date" Type="DateTime" Precision="0" />
         </EntityType>
-        <EntityType Name="Grade_Mapping_Info">
+        <EntityType Name="Loan_IAS39_Info">
           <Key>
-            <PropertyRef Name="Rating_Org" />
-            <PropertyRef Name="PD_Grade" />
-            <PropertyRef Name="Rating" />
+            <PropertyRef Name="Reference_Nbr" />
           </Key>
-          <Property Name="Rating_Org" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
-          <Property Name="PD_Grade" Type="Int32" Nullable="false" />
-          <Property Name="Rating" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Reference_Nbr" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Mdr_Month" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="EIR" Type="Double" Nullable="false" />
+          <Property Name="NO34RCV" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="IAS39_Impaire_Ind" Type="String" Nullable="false" MaxLength="2" FixedLength="false" Unicode="false" />
+          <Property Name="IAS39_Impaire_Desc" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Principal" Type="Double" Nullable="false" />
+          <Property Name="Interest_Receivable" Type="Double" Nullable="false" />
+          <Property Name="Processing_Date" Type="DateTime" Precision="0" />
+          <Property Name="Report_Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Restructure_Ind" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="Collateral_Legal_Action_Ind" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="Bad_Debt_Ind" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+          <Property Name="Collection_Ind" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Moody_LGD_Info">
+          <Key>
+            <PropertyRef Name="Data_Year" />
+            <PropertyRef Name="Lien_Position" />
+          </Key>
+          <Property Name="Data_Year" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Lien_Position" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Recovery_Rate" Type="Double" />
+          <Property Name="LGD" Type="Double" />
+        </EntityType>
+        <EntityType Name="Moody_Monthly_PD_Info">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Trailing_12m_Ending" Type="DateTime" Precision="0" />
+          <Property Name="Actual_Allcorp" Type="Double" />
+          <Property Name="Baseline_forecast_Allcorp" Type="Double" />
+          <Property Name="Pessimistic_Forecast_Allcorp" Type="Double" />
+          <Property Name="Actual_SG" Type="Double" />
+          <Property Name="Baseline_forecast_SG" Type="Double" />
+          <Property Name="Pessimistic_Forecast_SG" Type="Double" />
+          <Property Name="Data_Year" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Moody_Predit_PD_Info">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Data_Year" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
+          <Property Name="Period" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="PD_TYPE" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="PD" Type="Double" />
+        </EntityType>
+        <EntityType Name="Moody_Quartly_PD_Info">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="Data_Year" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
+          <Property Name="Year_Quartly" Type="String" MaxLength="6" FixedLength="false" Unicode="false" />
+          <Property Name="PD" Type="Double" />
+        </EntityType>
+        <EntityType Name="Moody_Tm_YYYY">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="From_To" Type="String" MaxLength="9" FixedLength="false" Unicode="false" />
+          <Property Name="Aaa" Type="Double" />
+          <Property Name="Aa1" Type="Double" />
+          <Property Name="Aa2" Type="Double" />
+          <Property Name="Aa3" Type="Double" />
+          <Property Name="A1" Type="Double" />
+          <Property Name="A2" Type="Double" />
+          <Property Name="A3" Type="Double" />
+          <Property Name="Baa1" Type="Double" />
+          <Property Name="Baa2" Type="Double" />
+          <Property Name="Baa3" Type="Double" />
+          <Property Name="Ba1" Type="Double" />
+          <Property Name="Ba2" Type="Double" />
+          <Property Name="Ba3" Type="Double" />
+          <Property Name="B1" Type="Double" />
+          <Property Name="B2" Type="Double" />
+          <Property Name="B3" Type="Double" />
+          <Property Name="Caa1" Type="Double" />
+          <Property Name="Caa2" Type="Double" />
+          <Property Name="Caa3" Type="Double" />
+          <Property Name="Ca_C" Type="Double" />
+          <Property Name="WR" Type="Double" />
+          <Property Name="Default_Value" Type="Double" />
+        </EntityType>
+        <EntityType Name="Rating_History">
+          <Key>
+            <PropertyRef Name="Product_Code" />
+            <PropertyRef Name="Reference_Nbr" />
+            <PropertyRef Name="Rating_Date" />
+          </Key>
+          <Property Name="Data_ID" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
+          <Property Name="Processing_Date" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Product_Code" Type="String" Nullable="false" MaxLength="64" FixedLength="false" Unicode="false" />
+          <Property Name="Reference_Nbr" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Current_Rating_Code" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Rating_Date" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Group_Product_Code_Mapping" Relationship="IFRS9Model.FK_Rating_History_Group_Product_Code_Mapping" FromRole="Rating_History" ToRole="Group_Product_Code_Mapping" />
         </EntityType>
         <EntityType Name="Rating_Info">
           <Key>
@@ -1291,154 +1693,536 @@
             <PropertyRef Name="Report_Date" />
           </Key>
           <Property Name="Bond_Number" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="Report_Date" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="ISSUER_TICKER" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="GUARANTOR_EQY_TICKER" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="GUARANTOR_NAME" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Tm_Adjust_YYYY">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="TM" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Aaa" Type="Double" />
+          <Property Name="Aa1" Type="Double" />
+          <Property Name="Aa2" Type="Double" />
+          <Property Name="Aa3" Type="Double" />
+          <Property Name="A1_A3" Type="Double" />
+          <Property Name="Baa1" Type="Double" />
+          <Property Name="Baa2" Type="Double" />
+          <Property Name="Baa3" Type="Double" />
+          <Property Name="Ba1" Type="Double" />
+          <Property Name="Ba2" Type="Double" />
+          <Property Name="Ba3" Type="Double" />
+          <Property Name="B1" Type="Double" />
+          <Property Name="B2" Type="Double" />
+          <Property Name="B3_Caa1" Type="Double" />
+          <Property Name="Caa2" Type="Double" />
+          <Property Name="Caa3" Type="Double" />
+          <Property Name="Ca_C" Type="Double" />
+          <Property Name="WR" Type="Double" />
+          <Property Name="Default_Value" Type="Double" />
+        </EntityType>
+        <EntityType Name="Transfer_CheckTable">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="File_Name" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="ReportDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Version" Type="Int32" Nullable="false" />
+          <Property Name="TransferType" Type="String" MaxLength="1" FixedLength="true" Unicode="false" />
+          <Property Name="Create_date" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="Create_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="End_date" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+          <Property Name="End_time" Type="String" MaxLength="8" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="Treasury_Securities_Info">
+          <Key>
+            <PropertyRef Name="Bond_Number" />
+            <PropertyRef Name="Lots" />
+            <PropertyRef Name="Report_Date" />
+          </Key>
+          <Property Name="Bond_Number" Type="String" Nullable="false" MaxLength="40" FixedLength="false" Unicode="false" />
+          <Property Name="Lots" Type="String" Nullable="false" MaxLength="4" FixedLength="false" Unicode="false" />
+          <Property Name="Segment_Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Portfolio_Name" Type="String" Nullable="false" MaxLength="20" FixedLength="false" Unicode="false" />
+          <Property Name="Bond_Value" Type="Double" Nullable="false" />
+          <Property Name="Ori_Amount" Type="Double" Nullable="false" />
+          <Property Name="Principal" Type="Double" Nullable="false" />
+          <Property Name="Amort_value" Type="Double" Nullable="false" />
+          <Property Name="Processing_Date" Type="DateTime" Nullable="false" Precision="0" />
           <Property Name="Report_Date" Type="DateTime" Nullable="false" Precision="0" />
         </EntityType>
-        <EntityType Name="Bond_Account_Info">
+        <EntityType Name="Loan_Cathay_Estate_Info">
+          <Key>
+            <PropertyRef Name="Date" />
+            <PropertyRef Name="Value" />
+            <PropertyRef Name="Year_Quartly" />
+          </Key>
+          <Property Name="Date" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="Value" Type="Double" Nullable="false" />
+          <Property Name="Year_Quartly" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <Property Name="Processing_Date" Type="DateTime" Precision="0" />
+        </EntityType>
+        <EntityType Name="Loan_Collateral_Legal_Action_Info">
+          <Key>
+            <PropertyRef Name="SEQ" />
+            <PropertyRef Name="Reference_Nbr" />
+          </Key>
+          <Property Name="SEQ" Type="Int32" Nullable="false" />
+          <Property Name="Reference_Nbr" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Processing_Date" Type="DateTime" Precision="0" />
+        </EntityType>
+        <EntityType Name="Loan_other_info">
           <Key>
             <PropertyRef Name="Reference_Nbr" />
           </Key>
           <Property Name="Reference_Nbr" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Bond_Number" Type="String" MaxLength="40" FixedLength="false" Unicode="false" />
-          <Property Name="Lots" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
-          <Property Name="Segment_Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="CURR_SP_Issuer" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="CURR_Moodys_Issuer" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="CURR_Fitch_Issuer" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="CURR_TW_Issuer" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="CURR_SP_Issue" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="CURR_Moodys_Issue" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="CURR_Fitch_Issue" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="CURR_TW_Issue" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Ori_Amount" Type="Double" />
-          <Property Name="Current_Int_Rate" Type="Double" />
-          <Property Name="Origination_Date" Type="DateTime" Precision="0" />
-          <Property Name="Maturity_Date" Type="DateTime" Precision="0" />
-          <Property Name="Principal_Payment_Method_Code" Type="String" MaxLength="2" FixedLength="false" Unicode="false" />
-          <Property Name="Payment_Frequency" Type="String" MaxLength="6" FixedLength="false" Unicode="false" />
-          <Property Name="Baloon_Freq" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="ISSUER_AREA" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Industry_Sector" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="PRODUCT" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="IAS39_CATEGORY" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Principal" Type="Double" />
-          <Property Name="Amort_Amt_Tw" Type="Double" />
-          <Property Name="Interest_Receivable" Type="Double" />
-          <Property Name="Interest_Receivable_tw" Type="Double" />
-          <Property Name="Interest_Rate_Type" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="IMPAIR_YN" Type="String" MaxLength="1" FixedLength="false" Unicode="false" />
-          <Property Name="EIR" Type="Double" />
-          <Property Name="Currency_Code" Type="String" MaxLength="5" FixedLength="false" Unicode="false" />
-          <Property Name="Report_Date" Type="DateTime" Precision="0" />
-          <Property Name="ISSUER" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Country_Risk" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
-          <Property Name="Ex_rate" Type="Double" />
-          <Property Name="Lien_position" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Portfolio" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="ASSET_SEG" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Ori_Ex_rate" Type="Double" />
-          <Property Name="Bond_Type" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
-          <Property Name="Assessment_Sub_Kind" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
           <Property Name="Processing_Date" Type="DateTime" Precision="0" />
-          <Property Name="Version" Type="Int32" />
-          <Property Name="Bond_Aera" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
-          <Property Name="Asset_Type" Type="String" MaxLength="100" FixedLength="false" Unicode="false" />
-          <Property Name="IH_OS" Type="String" MaxLength="4" FixedLength="false" Unicode="false" />
-          <Property Name="Amount_TW_Ori_Ex_rate" Type="Double" />
-          <Property Name="Amort_Amt_Ori_Tw" Type="Double" />
-          <Property Name="Market_Value_Ori" Type="Double" />
-          <Property Name="Market_Value_TW" Type="Double" />
-          <Property Name="Value_date" Type="DateTime" Precision="0" />
-          <Property Name="Portfolio_Name" Type="String" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Report_Date" Type="DateTime" Precision="0" />
+          <Property Name="Account_Code" Type="String" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Loan_Risk_Type" Type="String" MaxLength="10" FixedLength="false" Unicode="false" />
         </EntityType>
-      </Schema>
+        <EntityType Name="Loan_Recovery_Info">
+          <Key>
+            <PropertyRef Name="Data_Year" />
+            <PropertyRef Name="NO34RCV" />
+            <PropertyRef Name="Recovery_Rate_1" />
+            <PropertyRef Name="Recovery_Rate_2" />
+            <PropertyRef Name="Recovery_Rate_3" />
+            <PropertyRef Name="Recovery_Rate_4" />
+            <PropertyRef Name="Recovery_Rate_5" />
+            <PropertyRef Name="Recovery_Rate_6" />
+            <PropertyRef Name="Recovery_Rate_7" />
+            <PropertyRef Name="Recovery_Rate_8" />
+            <PropertyRef Name="Recovery_Rate_9" />
+            <PropertyRef Name="Recovery_Rate_10" />
+            <PropertyRef Name="Recovery_Rate_11" />
+            <PropertyRef Name="Recovery_Rate_12" />
+            <PropertyRef Name="Recovery_Rate_13" />
+            <PropertyRef Name="Recovery_Rate_14" />
+            <PropertyRef Name="Recovery_Rate_15" />
+            <PropertyRef Name="Recovery_Rate_16" />
+            <PropertyRef Name="Recovery_Rate_17" />
+            <PropertyRef Name="Recovery_Rate_18" />
+            <PropertyRef Name="Recovery_Rate_19" />
+            <PropertyRef Name="Recovery_Rate_20" />
+          </Key>
+          <Property Name="Data_Year" Type="String" Nullable="false" MaxLength="4" FixedLength="false" Unicode="false" />
+          <Property Name="NO34RCV" Type="String" Nullable="false" MaxLength="30" FixedLength="false" Unicode="false" />
+          <Property Name="Recovery_Rate_1" Type="Double" Nullable="false" />
+          <Property Name="Recovery_Rate_2" Type="Double" Nullable="false" />
+          <Property Name="Recovery_Rate_3" Type="Double" Nullable="false" />
+          <Property Name="Recovery_Rate_4" Type="Double" Nullable="false" />
+          <Property Name="Recovery_Rate_5" Type="Double" Nullable="false" />
+          <Property Name="Recovery_Rate_6" Type="Double" Nullable="false" />
+          <Property Name="Recovery_Rate_7" Type="Double" Nullable="false" />
+          <Property Name="Recovery_Rate_8" Type="Double" Nullable="false" />
+          <Property Name="Recovery_Rate_9" Type="Double" Nullable="false" />
+          <Property Name="Recovery_Rate_10" Type="Double" Nullable="false" />
+          <Property Name="Recovery_Rate_11" Type="Double" Nullable="false" />
+          <Property Name="Recovery_Rate_12" Type="Double" Nullable="false" />
+          <Property Name="Recovery_Rate_13" Type="Double" Nullable="false" />
+          <Property Name="Recovery_Rate_14" Type="Double" Nullable="false" />
+          <Property Name="Recovery_Rate_15" Type="Double" Nullable="false" />
+          <Property Name="Recovery_Rate_16" Type="Double" Nullable="false" />
+          <Property Name="Recovery_Rate_17" Type="Double" Nullable="false" />
+          <Property Name="Recovery_Rate_18" Type="Double" Nullable="false" />
+          <Property Name="Recovery_Rate_19" Type="Double" Nullable="false" />
+          <Property Name="Recovery_Rate_20" Type="Double" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Loan_Restructure_Info">
+          <Key>
+            <PropertyRef Name="SEQ" />
+            <PropertyRef Name="Reference_Nbr" />
+          </Key>
+          <Property Name="SEQ" Type="Int32" Nullable="false" />
+          <Property Name="Reference_Nbr" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Processing_Date" Type="DateTime" Precision="0" />
+        </EntityType>
+        <Association Name="FK_Econ_D_YYYYMMDD_Econ_D_YYYYMMDD">
+          <End Type="IFRS9Model.Econ_Domestic" Role="Econ_Domestic" Multiplicity="1" />
+          <End Type="IFRS9Model.Econ_D_YYYYMMDD" Role="Econ_D_YYYYMMDD" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="Econ_Domestic">
+              <PropertyRef Name="Year_Quartly" />
+            </Principal>
+            <Dependent Role="Econ_D_YYYYMMDD">
+              <PropertyRef Name="Year_Quartly" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Econ_D_YYYYMMDD_Group_Product_Code_Mapping">
+          <End Type="IFRS9Model.Group_Product_Code_Mapping" Role="Group_Product_Code_Mapping" Multiplicity="1" />
+          <End Type="IFRS9Model.Econ_D_YYYYMMDD" Role="Econ_D_YYYYMMDD" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group_Product_Code_Mapping">
+              <PropertyRef Name="Product_Code" />
+            </Principal>
+            <Dependent Role="Econ_D_YYYYMMDD">
+              <PropertyRef Name="Product_Code" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_EL_Data_Out_Group_Product_Code_Mapping">
+          <End Type="IFRS9Model.Group_Product_Code_Mapping" Role="Group_Product_Code_Mapping" Multiplicity="1" />
+          <End Type="IFRS9Model.EL_Data_Out" Role="EL_Data_Out" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group_Product_Code_Mapping">
+              <PropertyRef Name="Product_Code" />
+            </Principal>
+            <Dependent Role="EL_Data_Out">
+              <PropertyRef Name="Product_Code" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Flow_Info_Flow_Info">
+          <End Type="IFRS9Model.Group_Product" Role="Group_Product" Multiplicity="1" />
+          <End Type="IFRS9Model.Flow_Info" Role="Flow_Info" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group_Product">
+              <PropertyRef Name="Group_Product_Code" />
+            </Principal>
+            <Dependent Role="Flow_Info">
+              <PropertyRef Name="Group_Product_Code" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Group_Product_Code_Mapping_Group_Product">
+          <End Type="IFRS9Model.Group_Product" Role="Group_Product" Multiplicity="1" />
+          <End Type="IFRS9Model.Group_Product_Code_Mapping" Role="Group_Product_Code_Mapping" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group_Product">
+              <PropertyRef Name="Group_Product_Code" />
+            </Principal>
+            <Dependent Role="Group_Product_Code_Mapping">
+              <PropertyRef Name="Group_Product_Code" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Rating_History_Group_Product_Code_Mapping">
+          <End Type="IFRS9Model.Group_Product_Code_Mapping" Role="Group_Product_Code_Mapping" Multiplicity="1" />
+          <End Type="IFRS9Model.Rating_History" Role="Rating_History" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Group_Product_Code_Mapping">
+              <PropertyRef Name="Product_Code" />
+            </Principal>
+            <Dependent Role="Rating_History">
+              <PropertyRef Name="Product_Code" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_Menu">
+          <End Type="IFRS9Model.IFRS9_Menu_Main" Role="IFRS9_Menu_Main" Multiplicity="1" />
+          <End Type="IFRS9Model.IFRS9_Menu_Sub" Role="IFRS9_Menu_Sub" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IFRS9_Menu_Main">
+              <PropertyRef Name="Menu" />
+            </Principal>
+            <Dependent Role="IFRS9_Menu_Sub">
+              <PropertyRef Name="Menu" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="fk_Menu_Id">
+          <End Type="IFRS9Model.IFRS9_Menu_Sub" Role="IFRS9_Menu_Sub" Multiplicity="1" />
+          <End Type="IFRS9Model.IFRS9_Menu_Set" Role="IFRS9_Menu_Set" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="IFRS9_Menu_Sub">
+              <PropertyRef Name="Menu_Id" />
+            </Principal>
+            <Dependent Role="IFRS9_Menu_Set">
+              <PropertyRef Name="Menu_Id" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="IFRS9ModelStoreContainer" CdmEntityContainer="IFRS9Entities">
-          <EntitySetMapping Name="IFRS9_Log">
-            <EntityTypeMapping TypeName="IFRS9Model.IFRS9_Log">
-              <MappingFragment StoreEntitySet="IFRS9_Log">
-                <ScalarProperty Name="Debt_Type" ColumnName="Debt_Type" />
-                <ScalarProperty Name="Table_type" ColumnName="Table_type" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Table_name" ColumnName="Table_name" />
-                <ScalarProperty Name="File_name" ColumnName="File_name" />
-                <ScalarProperty Name="Program_name" ColumnName="Program_name" />
-                <ScalarProperty Name="Create_date" ColumnName="Create_date" />
-                <ScalarProperty Name="Create_time" ColumnName="Create_time" />
-                <ScalarProperty Name="End_date" ColumnName="End_date" />
-                <ScalarProperty Name="End_time" ColumnName="End_time" />
-                <ScalarProperty Name="TYPE" ColumnName="TYPE" />
+          <EntitySetMapping Name="Bond_Account_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Bond_Account_Info">
+              <MappingFragment StoreEntitySet="Bond_Account_Info">
+                <ScalarProperty Name="Portfolio_Name" ColumnName="Portfolio_Name" />
+                <ScalarProperty Name="Value_date" ColumnName="Value_date" />
+                <ScalarProperty Name="Market_Value_TW" ColumnName="Market_Value_TW" />
+                <ScalarProperty Name="Market_Value_Ori" ColumnName="Market_Value_Ori" />
+                <ScalarProperty Name="Amort_Amt_Ori_Tw" ColumnName="Amort_Amt_Ori_Tw" />
+                <ScalarProperty Name="Amount_TW_Ori_Ex_rate" ColumnName="Amount_TW_Ori_Ex_rate" />
+                <ScalarProperty Name="IH_OS" ColumnName="IH_OS" />
+                <ScalarProperty Name="Asset_Type" ColumnName="Asset_Type" />
+                <ScalarProperty Name="Bond_Aera" ColumnName="Bond_Aera" />
+                <ScalarProperty Name="Version" ColumnName="Version" />
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
+                <ScalarProperty Name="Assessment_Sub_Kind" ColumnName="Assessment_Sub_Kind" />
+                <ScalarProperty Name="Bond_Type" ColumnName="Bond_Type" />
+                <ScalarProperty Name="Ori_Ex_rate" ColumnName="Ori_Ex_rate" />
+                <ScalarProperty Name="ASSET_SEG" ColumnName="ASSET_SEG" />
+                <ScalarProperty Name="Portfolio" ColumnName="Portfolio" />
+                <ScalarProperty Name="Lien_position" ColumnName="Lien_position" />
+                <ScalarProperty Name="Ex_rate" ColumnName="Ex_rate" />
+                <ScalarProperty Name="Country_Risk" ColumnName="Country_Risk" />
+                <ScalarProperty Name="ISSUER" ColumnName="ISSUER" />
+                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
+                <ScalarProperty Name="Currency_Code" ColumnName="Currency_Code" />
+                <ScalarProperty Name="EIR" ColumnName="EIR" />
+                <ScalarProperty Name="IMPAIR_YN" ColumnName="IMPAIR_YN" />
+                <ScalarProperty Name="Interest_Rate_Type" ColumnName="Interest_Rate_Type" />
+                <ScalarProperty Name="Interest_Receivable_tw" ColumnName="Interest_Receivable_tw" />
+                <ScalarProperty Name="Interest_Receivable" ColumnName="Interest_Receivable" />
+                <ScalarProperty Name="Amort_Amt_Tw" ColumnName="Amort_Amt_Tw" />
+                <ScalarProperty Name="Principal" ColumnName="Principal" />
+                <ScalarProperty Name="IAS39_CATEGORY" ColumnName="IAS39_CATEGORY" />
+                <ScalarProperty Name="FINANCE_INSTRUMENTS" ColumnName="FINANCE_INSTRUMENTS" />
+                <ScalarProperty Name="PRODUCT" ColumnName="PRODUCT" />
+                <ScalarProperty Name="Industry_Sector" ColumnName="Industry_Sector" />
+                <ScalarProperty Name="ISSUER_AREA" ColumnName="ISSUER_AREA" />
+                <ScalarProperty Name="Baloon_Freq" ColumnName="Baloon_Freq" />
+                <ScalarProperty Name="Payment_Frequency" ColumnName="Payment_Frequency" />
+                <ScalarProperty Name="Principal_Payment_Method_Code" ColumnName="Principal_Payment_Method_Code" />
+                <ScalarProperty Name="Maturity_Date" ColumnName="Maturity_Date" />
+                <ScalarProperty Name="Origination_Date" ColumnName="Origination_Date" />
+                <ScalarProperty Name="Current_Int_Rate" ColumnName="Current_Int_Rate" />
+                <ScalarProperty Name="Ori_Amount" ColumnName="Ori_Amount" />
+                <ScalarProperty Name="CURR_TW_Issue" ColumnName="CURR_TW_Issue" />
+                <ScalarProperty Name="CURR_Fitch_Issue" ColumnName="CURR_Fitch_Issue" />
+                <ScalarProperty Name="CURR_Moodys_Issue" ColumnName="CURR_Moodys_Issue" />
+                <ScalarProperty Name="CURR_SP_Issue" ColumnName="CURR_SP_Issue" />
+                <ScalarProperty Name="CURR_TW_Issuer" ColumnName="CURR_TW_Issuer" />
+                <ScalarProperty Name="CURR_Fitch_Issuer" ColumnName="CURR_Fitch_Issuer" />
+                <ScalarProperty Name="CURR_Moodys_Issuer" ColumnName="CURR_Moodys_Issuer" />
+                <ScalarProperty Name="CURR_SP_Issuer" ColumnName="CURR_SP_Issuer" />
+                <ScalarProperty Name="Segment_Name" ColumnName="Segment_Name" />
+                <ScalarProperty Name="Lots" ColumnName="Lots" />
+                <ScalarProperty Name="Bond_Number" ColumnName="Bond_Number" />
+                <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Moody_Monthly_PD_Info">
-            <EntityTypeMapping TypeName="IFRS9Model.Moody_Monthly_PD_Info">
-              <MappingFragment StoreEntitySet="Moody_Monthly_PD_Info">
+          <EntitySetMapping Name="Bond_Rating_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Bond_Rating_Info">
+              <MappingFragment StoreEntitySet="Bond_Rating_Info">
+                <ScalarProperty Name="Security_Ticker" ColumnName="Security_Ticker" />
+                <ScalarProperty Name="Version" ColumnName="Version" />
+                <ScalarProperty Name="ISSUER" ColumnName="ISSUER" />
+                <ScalarProperty Name="SMF" ColumnName="SMF" />
+                <ScalarProperty Name="RTG_Bloomberg_Field" ColumnName="RTG_Bloomberg_Field" />
+                <ScalarProperty Name="Portfolio_Name" ColumnName="Portfolio_Name" />
+                <ScalarProperty Name="Parm_ID" ColumnName="Parm_ID" />
+                <ScalarProperty Name="GUARANTOR_EQY_TICKER" ColumnName="GUARANTOR_EQY_TICKER" />
+                <ScalarProperty Name="GUARANTOR_NAME" ColumnName="GUARANTOR_NAME" />
+                <ScalarProperty Name="ISSUER_TICKER" ColumnName="ISSUER_TICKER" />
+                <ScalarProperty Name="Grade_Adjust" ColumnName="Grade_Adjust" />
+                <ScalarProperty Name="PD_Grade" ColumnName="PD_Grade" />
+                <ScalarProperty Name="Fill_up_Date" ColumnName="Fill_up_Date" />
+                <ScalarProperty Name="Fill_up_YN" ColumnName="Fill_up_YN" />
+                <ScalarProperty Name="Rating_Org_Area" ColumnName="Rating_Org_Area" />
+                <ScalarProperty Name="Rating" ColumnName="Rating" />
+                <ScalarProperty Name="Rating_Org" ColumnName="Rating_Org" />
+                <ScalarProperty Name="Rating_Object" ColumnName="Rating_Object" />
+                <ScalarProperty Name="Rating_Type" ColumnName="Rating_Type" />
+                <ScalarProperty Name="Rating_Date" ColumnName="Rating_Date" />
+                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
+                <ScalarProperty Name="Origination_Date" ColumnName="Origination_Date" />
+                <ScalarProperty Name="Lien_position" ColumnName="Lien_position" />
+                <ScalarProperty Name="Bond_Type" ColumnName="Bond_Type" />
+                <ScalarProperty Name="Segment_Name" ColumnName="Segment_Name" />
+                <ScalarProperty Name="Portfolio" ColumnName="Portfolio" />
+                <ScalarProperty Name="Lots" ColumnName="Lots" />
+                <ScalarProperty Name="Bond_Number" ColumnName="Bond_Number" />
+                <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Trailing_12m_Ending" ColumnName="Trailing_12m_Ending" />
-                <ScalarProperty Name="Actual_Allcorp" ColumnName="Actual_Allcorp" />
-                <ScalarProperty Name="Baseline_forecast_Allcorp" ColumnName="Baseline_forecast_Allcorp" />
-                <ScalarProperty Name="Pessimistic_Forecast_Allcorp" ColumnName="Pessimistic_Forecast_Allcorp" />
-                <ScalarProperty Name="Actual_SG" ColumnName="Actual_SG" />
-                <ScalarProperty Name="Baseline_forecast_SG" ColumnName="Baseline_forecast_SG" />
-                <ScalarProperty Name="Pessimistic_Forecast_SG" ColumnName="Pessimistic_Forecast_SG" />
-                <ScalarProperty Name="Data_Year" ColumnName="Data_Year" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Moody_Predit_PD_Info">
-            <EntityTypeMapping TypeName="IFRS9Model.Moody_Predit_PD_Info">
-              <MappingFragment StoreEntitySet="Moody_Predit_PD_Info">
+          <EntitySetMapping Name="Bond_Rating_Parm">
+            <EntityTypeMapping TypeName="IFRS9Model.Bond_Rating_Parm">
+              <MappingFragment StoreEntitySet="Bond_Rating_Parm">
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
+                <ScalarProperty Name="Rating_Selection" ColumnName="Rating_Selection" />
+                <ScalarProperty Name="Rating_Org_Area" ColumnName="Rating_Org_Area" />
+                <ScalarProperty Name="Rating_Object" ColumnName="Rating_Object" />
+                <ScalarProperty Name="Rating_Priority" ColumnName="Rating_Priority" />
+                <ScalarProperty Name="Parm_ID" ColumnName="Parm_ID" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Data_Year" ColumnName="Data_Year" />
-                <ScalarProperty Name="Period" ColumnName="Period" />
-                <ScalarProperty Name="PD_TYPE" ColumnName="PD_TYPE" />
-                <ScalarProperty Name="PD" ColumnName="PD" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Moody_Quartly_PD_Info">
-            <EntityTypeMapping TypeName="IFRS9Model.Moody_Quartly_PD_Info">
-              <MappingFragment StoreEntitySet="Moody_Quartly_PD_Info">
+          <EntitySetMapping Name="Bond_Rating_Summary">
+            <EntityTypeMapping TypeName="IFRS9Model.Bond_Rating_Summary">
+              <MappingFragment StoreEntitySet="Bond_Rating_Summary">
+                <ScalarProperty Name="ISSUER" ColumnName="ISSUER" />
+                <ScalarProperty Name="SMF" ColumnName="SMF" />
+                <ScalarProperty Name="Portfolio_Name" ColumnName="Portfolio_Name" />
+                <ScalarProperty Name="Origination_Date" ColumnName="Origination_Date" />
+                <ScalarProperty Name="Portfolio" ColumnName="Portfolio" />
+                <ScalarProperty Name="Lots" ColumnName="Lots" />
+                <ScalarProperty Name="Bond_Number" ColumnName="Bond_Number" />
+                <ScalarProperty Name="Version" ColumnName="Version" />
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
+                <ScalarProperty Name="Rating_Priority" ColumnName="Rating_Priority" />
+                <ScalarProperty Name="Grade_Adjust" ColumnName="Grade_Adjust" />
+                <ScalarProperty Name="Rating_Selection" ColumnName="Rating_Selection" />
+                <ScalarProperty Name="Rating_Org_Area" ColumnName="Rating_Org_Area" />
+                <ScalarProperty Name="Rating_Object" ColumnName="Rating_Object" />
+                <ScalarProperty Name="Rating_Type" ColumnName="Rating_Type" />
+                <ScalarProperty Name="Bond_Type" ColumnName="Bond_Type" />
+                <ScalarProperty Name="Parm_ID" ColumnName="Parm_ID" />
+                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
+                <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="Data_Year" ColumnName="Data_Year" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Econ_D_YYYYMMDD">
+            <EntityTypeMapping TypeName="IFRS9Model.Econ_D_YYYYMMDD">
+              <MappingFragment StoreEntitySet="Econ_D_YYYYMMDD">
+                <ScalarProperty Name="var27" ColumnName="var27" />
+                <ScalarProperty Name="var26" ColumnName="var26" />
+                <ScalarProperty Name="var25" ColumnName="var25" />
+                <ScalarProperty Name="var24" ColumnName="var24" />
+                <ScalarProperty Name="var23" ColumnName="var23" />
+                <ScalarProperty Name="var22" ColumnName="var22" />
+                <ScalarProperty Name="var21" ColumnName="var21" />
+                <ScalarProperty Name="var20" ColumnName="var20" />
+                <ScalarProperty Name="var19" ColumnName="var19" />
+                <ScalarProperty Name="var18" ColumnName="var18" />
+                <ScalarProperty Name="var17" ColumnName="var17" />
+                <ScalarProperty Name="var16" ColumnName="var16" />
+                <ScalarProperty Name="var15" ColumnName="var15" />
+                <ScalarProperty Name="var14" ColumnName="var14" />
+                <ScalarProperty Name="var13" ColumnName="var13" />
+                <ScalarProperty Name="var12" ColumnName="var12" />
+                <ScalarProperty Name="var11" ColumnName="var11" />
+                <ScalarProperty Name="var10" ColumnName="var10" />
+                <ScalarProperty Name="var9" ColumnName="var9" />
+                <ScalarProperty Name="var8" ColumnName="var8" />
+                <ScalarProperty Name="var7" ColumnName="var7" />
+                <ScalarProperty Name="var6" ColumnName="var6" />
+                <ScalarProperty Name="var5" ColumnName="var5" />
+                <ScalarProperty Name="var4" ColumnName="var4" />
+                <ScalarProperty Name="var3" ColumnName="var3" />
+                <ScalarProperty Name="var2" ColumnName="var2" />
+                <ScalarProperty Name="var1" ColumnName="var1" />
+                <ScalarProperty Name="PD_Quartly" ColumnName="PD_Quartly" />
                 <ScalarProperty Name="Year_Quartly" ColumnName="Year_Quartly" />
-                <ScalarProperty Name="PD" ColumnName="PD" />
+                <ScalarProperty Name="Data_ID" ColumnName="Data_ID" />
+                <ScalarProperty Name="Product_Code" ColumnName="Product_Code" />
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Moody_Tm_YYYY">
-            <EntityTypeMapping TypeName="IFRS9Model.Moody_Tm_YYYY">
-              <MappingFragment StoreEntitySet="Moody_Tm_YYYY">
+          <EntitySetMapping Name="Econ_Domestic">
+            <EntityTypeMapping TypeName="IFRS9Model.Econ_Domestic">
+              <MappingFragment StoreEntitySet="Econ_Domestic">
+                <ScalarProperty Name="TRDR1T_Index" ColumnName="TRDR1T_Index" />
+                <ScalarProperty Name="MCCCTW_Index" ColumnName="MCCCTW_Index" />
+                <ScalarProperty Name="Real_GDP2011" ColumnName="Real_GDP2011" />
+                <ScalarProperty Name="CATHAY_ESTATE_index" ColumnName="CATHAY_ESTATE_index" />
+                <ScalarProperty Name="SINYI_HOUSE_PRICE_index" ColumnName="SINYI_HOUSE_PRICE_index" />
+                <ScalarProperty Name="TWIRFE_Index" ColumnName="TWIRFE_Index" />
+                <ScalarProperty Name="SLDETIGT_Index" ColumnName="SLDETIGT_Index" />
+                <ScalarProperty Name="TWEOTTL_Index" ColumnName="TWEOTTL_Index" />
+                <ScalarProperty Name="TARSYOY_Index" ColumnName="TARSYOY_Index" />
+                <ScalarProperty Name="TWWPI_Index" ColumnName="TWWPI_Index" />
+                <ScalarProperty Name="TWINDPI_Index" ColumnName="TWINDPI_Index" />
+                <ScalarProperty Name="EHCATW_Index" ColumnName="EHCATW_Index" />
+                <ScalarProperty Name="TWBOPCUR_Index" ColumnName="TWBOPCUR_Index" />
+                <ScalarProperty Name="TWCILI_Index" ColumnName="TWCILI_Index" />
+                <ScalarProperty Name="TAREDSCD_Index" ColumnName="TAREDSCD_Index" />
+                <ScalarProperty Name="TWTRIMP_Index" ColumnName="TWTRIMP_Index" />
+                <ScalarProperty Name="TWTREXP_Index" ColumnName="TWTREXP_Index" />
+                <ScalarProperty Name="TWTRBAL_Index" ColumnName="TWTRBAL_Index" />
+                <ScalarProperty Name="GVTW10YR_Index" ColumnName="GVTW10YR_Index" />
+                <ScalarProperty Name="TWMSAM2_Index" ColumnName="TWMSAM2_Index" />
+                <ScalarProperty Name="TWMSA1B_Index" ColumnName="TWMSA1B_Index" />
+                <ScalarProperty Name="TWMSA1A_Index" ColumnName="TWMSA1A_Index" />
+                <ScalarProperty Name="TWCPI_Index" ColumnName="TWCPI_Index" />
+                <ScalarProperty Name="TWLFADJ_Index" ColumnName="TWLFADJ_Index" />
+                <ScalarProperty Name="TWGDPCON_Index" ColumnName="TWGDPCON_Index" />
+                <ScalarProperty Name="TWRGSARP_Index" ColumnName="TWRGSARP_Index" />
+                <ScalarProperty Name="TWSE_Index" ColumnName="TWSE_Index" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+                <ScalarProperty Name="Year_Quartly" ColumnName="Year_Quartly" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EL_Data_In">
+            <EntityTypeMapping TypeName="IFRS9Model.EL_Data_In">
+              <MappingFragment StoreEntitySet="EL_Data_In">
+                <ScalarProperty Name="Payment_Frequency" ColumnName="Payment_Frequency" />
+                <ScalarProperty Name="Interest_Receivable" ColumnName="Interest_Receivable" />
+                <ScalarProperty Name="Principal" ColumnName="Principal" />
+                <ScalarProperty Name="Ori_Amount" ColumnName="Ori_Amount" />
+                <ScalarProperty Name="Lien_position" ColumnName="Lien_position" />
+                <ScalarProperty Name="Version" ColumnName="Version" />
+                <ScalarProperty Name="Impairment_Stage" ColumnName="Impairment_Stage" />
+                <ScalarProperty Name="EIR" ColumnName="EIR" />
+                <ScalarProperty Name="Current_Int_Rate" ColumnName="Current_Int_Rate" />
+                <ScalarProperty Name="Current_LGD" ColumnName="Current_LGD" />
+                <ScalarProperty Name="Remaining_Month" ColumnName="Remaining_Month" />
+                <ScalarProperty Name="Duration_Year" ColumnName="Duration_Year" />
+                <ScalarProperty Name="Actual_Year_To_Maturity" ColumnName="Actual_Year_To_Maturity" />
+                <ScalarProperty Name="Exposure" ColumnName="Exposure" />
+                <ScalarProperty Name="Current_Rating_Code" ColumnName="Current_Rating_Code" />
+                <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
+                <ScalarProperty Name="Product_Code" ColumnName="Product_Code" />
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
+                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="EL_Data_Out">
+            <EntityTypeMapping TypeName="IFRS9Model.EL_Data_Out">
+              <MappingFragment StoreEntitySet="EL_Data_Out">
+                <ScalarProperty Name="FLOWID" ColumnName="FLOWID" />
+                <ScalarProperty Name="PRJID" ColumnName="PRJID" />
+                <ScalarProperty Name="Version" ColumnName="Version" />
+                <ScalarProperty Name="Impairment_Stage" ColumnName="Impairment_Stage" />
+                <ScalarProperty Name="EL" ColumnName="EL" />
+                <ScalarProperty Name="Y1_EL" ColumnName="Y1_EL" />
+                <ScalarProperty Name="Lifetime_EL" ColumnName="Lifetime_EL" />
+                <ScalarProperty Name="PD" ColumnName="PD" />
+                <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
+                <ScalarProperty Name="Product_Code" ColumnName="Product_Code" />
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
+                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Flow_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Flow_Info">
+              <MappingFragment StoreEntitySet="Flow_Info">
+                <ScalarProperty Name="Memo" ColumnName="Memo" />
+                <ScalarProperty Name="Issuer" ColumnName="Issuer" />
+                <ScalarProperty Name="Apply_Off_Date" ColumnName="Apply_Off_Date" />
+                <ScalarProperty Name="Apply_On_Date" ColumnName="Apply_On_Date" />
+                <ScalarProperty Name="Publish_Date" ColumnName="Publish_Date" />
+                <ScalarProperty Name="Group_Product_Code" ColumnName="Group_Product_Code" />
+                <ScalarProperty Name="FLOWID" ColumnName="FLOWID" />
+                <ScalarProperty Name="PRJID" ColumnName="PRJID" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="GM_YYYY">
+            <EntityTypeMapping TypeName="IFRS9Model.GM_YYYY">
+              <MappingFragment StoreEntitySet="GM_YYYY">
                 <ScalarProperty Name="Default_Value" ColumnName="Default_Value" />
-                <ScalarProperty Name="WR" ColumnName="WR" />
-                <ScalarProperty Name="Ca_C" ColumnName="Ca_C" />
-                <ScalarProperty Name="Caa3" ColumnName="Caa3" />
-                <ScalarProperty Name="Caa2" ColumnName="Caa2" />
-                <ScalarProperty Name="Caa1" ColumnName="Caa1" />
-                <ScalarProperty Name="B3" ColumnName="B3" />
-                <ScalarProperty Name="B2" ColumnName="B2" />
-                <ScalarProperty Name="B1" ColumnName="B1" />
-                <ScalarProperty Name="Ba3" ColumnName="Ba3" />
-                <ScalarProperty Name="Ba2" ColumnName="Ba2" />
-                <ScalarProperty Name="Ba1" ColumnName="Ba1" />
-                <ScalarProperty Name="Baa3" ColumnName="Baa3" />
-                <ScalarProperty Name="Baa2" ColumnName="Baa2" />
-                <ScalarProperty Name="Baa1" ColumnName="Baa1" />
-                <ScalarProperty Name="A3" ColumnName="A3" />
-                <ScalarProperty Name="A2" ColumnName="A2" />
-                <ScalarProperty Name="A1" ColumnName="A1" />
-                <ScalarProperty Name="Aa3" ColumnName="Aa3" />
-                <ScalarProperty Name="Aa2" ColumnName="Aa2" />
-                <ScalarProperty Name="Aa1" ColumnName="Aa1" />
-                <ScalarProperty Name="Aaa" ColumnName="Aaa" />
-                <ScalarProperty Name="From_To" ColumnName="From_To" />
+                <ScalarProperty Name="TM" ColumnName="TM" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Grade_Mapping_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Grade_Mapping_Info">
+              <MappingFragment StoreEntitySet="Grade_Mapping_Info">
+                <ScalarProperty Name="Rating" ColumnName="Rating" />
+                <ScalarProperty Name="PD_Grade" ColumnName="PD_Grade" />
+                <ScalarProperty Name="Rating_Org" ColumnName="Rating_Org" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1451,6 +2235,108 @@
                 <ScalarProperty Name="PD_Grade" ColumnName="PD_Grade" />
                 <ScalarProperty Name="Rating" ColumnName="Rating" />
                 <ScalarProperty Name="Data_Year" ColumnName="Data_Year" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Group_Product">
+            <EntityTypeMapping TypeName="IFRS9Model.Group_Product">
+              <MappingFragment StoreEntitySet="Group_Product">
+                <ScalarProperty Name="Group_Product_Name" ColumnName="Group_Product_Name" />
+                <ScalarProperty Name="Group_Product_Code" ColumnName="Group_Product_Code" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Group_Product_Code_Mapping">
+            <EntityTypeMapping TypeName="IFRS9Model.Group_Product_Code_Mapping">
+              <MappingFragment StoreEntitySet="Group_Product_Code_Mapping">
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
+                <ScalarProperty Name="Product_Code" ColumnName="Product_Code" />
+                <ScalarProperty Name="Group_Product_Code" ColumnName="Group_Product_Code" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IFRS9_Log">
+            <EntityTypeMapping TypeName="IFRS9Model.IFRS9_Log">
+              <MappingFragment StoreEntitySet="IFRS9_Log">
+                <ScalarProperty Name="Debt_Type" ColumnName="Debt_Type" />
+                <ScalarProperty Name="TYPE" ColumnName="TYPE" />
+                <ScalarProperty Name="End_time" ColumnName="End_time" />
+                <ScalarProperty Name="End_date" ColumnName="End_date" />
+                <ScalarProperty Name="Create_time" ColumnName="Create_time" />
+                <ScalarProperty Name="Create_date" ColumnName="Create_date" />
+                <ScalarProperty Name="Program_name" ColumnName="Program_name" />
+                <ScalarProperty Name="File_name" ColumnName="File_name" />
+                <ScalarProperty Name="Table_name" ColumnName="Table_name" />
+                <ScalarProperty Name="Table_type" ColumnName="Table_type" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IFRS9_Main">
+            <EntityTypeMapping TypeName="IFRS9Model.IFRS9_Main">
+              <MappingFragment StoreEntitySet="IFRS9_Main">
+                <ScalarProperty Name="Payment_Frequency" ColumnName="Payment_Frequency" />
+                <ScalarProperty Name="Ori_Amount" ColumnName="Ori_Amount" />
+                <ScalarProperty Name="Lien_position" ColumnName="Lien_position" />
+                <ScalarProperty Name="Version" ColumnName="Version" />
+                <ScalarProperty Name="Write_Off_Ind" ColumnName="Write_Off_Ind" />
+                <ScalarProperty Name="Watch_List_Ind" ColumnName="Watch_List_Ind" />
+                <ScalarProperty Name="Ten_Types_Delinquent_Category" ColumnName="Ten_Types_Delinquent_Category" />
+                <ScalarProperty Name="Restructure_Ind" ColumnName="Restructure_Ind" />
+                <ScalarProperty Name="Product_Average_Rating" ColumnName="Product_Average_Rating" />
+                <ScalarProperty Name="Other_Lending_Max_Delinquent_Days" ColumnName="Other_Lending_Max_Delinquent_Days" />
+                <ScalarProperty Name="Other_BadCredit_Ind" ColumnName="Other_BadCredit_Ind" />
+                <ScalarProperty Name="Original_Internal_Rating" ColumnName="Original_Internal_Rating" />
+                <ScalarProperty Name="Original_External_Rating_On_Missing" ColumnName="Original_External_Rating_On_Missing" />
+                <ScalarProperty Name="Original_External_Rating_4" ColumnName="Original_External_Rating_4" />
+                <ScalarProperty Name="Original_External_Rating_3" ColumnName="Original_External_Rating_3" />
+                <ScalarProperty Name="Original_External_Rating_2" ColumnName="Original_External_Rating_2" />
+                <ScalarProperty Name="Original_External_Rating_1" ColumnName="Original_External_Rating_1" />
+                <ScalarProperty Name="Original_External_Rating" ColumnName="Original_External_Rating" />
+                <ScalarProperty Name="Off_Bs_Item_Paid_Amt" ColumnName="Off_Bs_Item_Paid_Amt" />
+                <ScalarProperty Name="Internal_Risk_Classification" ColumnName="Internal_Risk_Classification" />
+                <ScalarProperty Name="Manual_Identified_Impaire_Stage_Code" ColumnName="Manual_Identified_Impaire_Stage_Code" />
+                <ScalarProperty Name="Industry_Average_Rating" ColumnName="Industry_Average_Rating" />
+                <ScalarProperty Name="Ias39_Impaire_Desc" ColumnName="Ias39_Impaire_Desc" />
+                <ScalarProperty Name="Ias39_Impaire_Ind" ColumnName="Ias39_Impaire_Ind" />
+                <ScalarProperty Name="Five_Types_Delinquent_Category" ColumnName="Five_Types_Delinquent_Category" />
+                <ScalarProperty Name="Early_Warning_Ind" ColumnName="Early_Warning_Ind" />
+                <ScalarProperty Name="Delinquent_Days" ColumnName="Delinquent_Days" />
+                <ScalarProperty Name="Default_Ind" ColumnName="Default_Ind" />
+                <ScalarProperty Name="Current_Internal_Rating" ColumnName="Current_Internal_Rating" />
+                <ScalarProperty Name="Current_External_Rating_On_Missing" ColumnName="Current_External_Rating_On_Missing" />
+                <ScalarProperty Name="Current_External_Rating_4" ColumnName="Current_External_Rating_4" />
+                <ScalarProperty Name="Current_External_Rating_3" ColumnName="Current_External_Rating_3" />
+                <ScalarProperty Name="Current_External_Rating_2" ColumnName="Current_External_Rating_2" />
+                <ScalarProperty Name="Current_External_Rating_1" ColumnName="Current_External_Rating_1" />
+                <ScalarProperty Name="Current_External_Rating" ColumnName="Current_External_Rating" />
+                <ScalarProperty Name="Credit_Review_Risk_Grade" ColumnName="Credit_Review_Risk_Grade" />
+                <ScalarProperty Name="Credit_Card_Block_code" ColumnName="Credit_Card_Block_code" />
+                <ScalarProperty Name="Credit_Black_List_Ind" ColumnName="Credit_Black_List_Ind" />
+                <ScalarProperty Name="Collateral_Legal_Action_Ind" ColumnName="Collateral_Legal_Action_Ind" />
+                <ScalarProperty Name="Charge_Off_Ind" ColumnName="Charge_Off_Ind" />
+                <ScalarProperty Name="BadCredit_Ind" ColumnName="BadCredit_Ind" />
+                <ScalarProperty Name="Account_Code" ColumnName="Account_Code" />
+                <ScalarProperty Name="Maturity_Date" ColumnName="Maturity_Date" />
+                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
+                <ScalarProperty Name="Current_Rating_Code" ColumnName="Current_Rating_Code" />
+                <ScalarProperty Name="PD_Model_Code" ColumnName="PD_Model_Code" />
+                <ScalarProperty Name="Department" ColumnName="Department" />
+                <ScalarProperty Name="Product_Code" ColumnName="Product_Code" />
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
+                <ScalarProperty Name="CPD_Segment_Code" ColumnName="CPD_Segment_Code" />
+                <ScalarProperty Name="Eir" ColumnName="Eir" />
+                <ScalarProperty Name="Remaining_Month" ColumnName="Remaining_Month" />
+                <ScalarProperty Name="Current_Lgd" ColumnName="Current_Lgd" />
+                <ScalarProperty Name="Current_Pd" ColumnName="Current_Pd" />
+                <ScalarProperty Name="Current_Int_Rate" ColumnName="Current_Int_Rate" />
+                <ScalarProperty Name="Total_Period" ColumnName="Total_Period" />
+                <ScalarProperty Name="Principal_Payment_Method_Code" ColumnName="Principal_Payment_Method_Code" />
+                <ScalarProperty Name="Interest_Receivable" ColumnName="Interest_Receivable" />
+                <ScalarProperty Name="Principal" ColumnName="Principal" />
+                <ScalarProperty Name="Ead" ColumnName="Ead" />
+                <ScalarProperty Name="Customer_Nbr" ColumnName="Customer_Nbr" />
+                <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1528,6 +2414,16 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
+          <EntitySetMapping Name="Loan_default_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Loan_default_Info">
+              <MappingFragment StoreEntitySet="Loan_default_Info">
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
+                <ScalarProperty Name="Year_Quartly" ColumnName="Year_Quartly" />
+                <ScalarProperty Name="PD_Quartly" ColumnName="PD_Quartly" />
+                <ScalarProperty Name="Year_Month" ColumnName="Year_Month" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Loan_IAS39_Info">
             <EntityTypeMapping TypeName="IFRS9Model.Loan_IAS39_Info">
               <MappingFragment StoreEntitySet="Loan_IAS39_Info">
@@ -1558,132 +2454,68 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Treasury_Securities_Info">
-            <EntityTypeMapping TypeName="IFRS9Model.Treasury_Securities_Info">
-              <MappingFragment StoreEntitySet="Treasury_Securities_Info">
-                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
-                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
-                <ScalarProperty Name="Amort_value" ColumnName="Amort_value" />
-                <ScalarProperty Name="Principal" ColumnName="Principal" />
-                <ScalarProperty Name="Ori_Amount" ColumnName="Ori_Amount" />
-                <ScalarProperty Name="Bond_Value" ColumnName="Bond_Value" />
-                <ScalarProperty Name="Portfolio_Name" ColumnName="Portfolio_Name" />
-                <ScalarProperty Name="Segment_Name" ColumnName="Segment_Name" />
-                <ScalarProperty Name="Lots" ColumnName="Lots" />
-                <ScalarProperty Name="Bond_Number" ColumnName="Bond_Number" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Group_Product">
-            <EntityTypeMapping TypeName="IFRS9Model.Group_Product">
-              <MappingFragment StoreEntitySet="Group_Product">
-                <ScalarProperty Name="Group_Product_Name" ColumnName="Group_Product_Name" />
-                <ScalarProperty Name="Group_Product_Code" ColumnName="Group_Product_Code" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Group_Product_Code_Mapping">
-            <EntityTypeMapping TypeName="IFRS9Model.Group_Product_Code_Mapping">
-              <MappingFragment StoreEntitySet="Group_Product_Code_Mapping">
-                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
-                <ScalarProperty Name="Product_Code" ColumnName="Product_Code" />
-                <ScalarProperty Name="Group_Product_Code" ColumnName="Group_Product_Code" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Flow_Info">
-            <EntityTypeMapping TypeName="IFRS9Model.Flow_Info">
-              <MappingFragment StoreEntitySet="Flow_Info">
-                <ScalarProperty Name="Memo" ColumnName="Memo" />
-                <ScalarProperty Name="Issuer" ColumnName="Issuer" />
-                <ScalarProperty Name="Apply_Off_Date" ColumnName="Apply_Off_Date" />
-                <ScalarProperty Name="Apply_On_Date" ColumnName="Apply_On_Date" />
-                <ScalarProperty Name="Publish_Date" ColumnName="Publish_Date" />
-                <ScalarProperty Name="Group_Product_Code" ColumnName="Group_Product_Code" />
-                <ScalarProperty Name="FLOWID" ColumnName="FLOWID" />
-                <ScalarProperty Name="PRJID" ColumnName="PRJID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="EL_Data_Out">
-            <EntityTypeMapping TypeName="IFRS9Model.EL_Data_Out">
-              <MappingFragment StoreEntitySet="EL_Data_Out">
-                <ScalarProperty Name="Version" ColumnName="Version" />
-                <ScalarProperty Name="Exec_Date" ColumnName="Exec_Date" />
-                <ScalarProperty Name="Impairment_Stage" ColumnName="Impairment_Stage" />
-                <ScalarProperty Name="EL" ColumnName="EL" />
-                <ScalarProperty Name="Y1_EL" ColumnName="Y1_EL" />
-                <ScalarProperty Name="Lifetime_EL" ColumnName="Lifetime_EL" />
-                <ScalarProperty Name="PD" ColumnName="PD" />
-                <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
-                <ScalarProperty Name="Product_Code" ColumnName="Product_Code" />
-                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
-                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
-                <ScalarProperty Name="FLOWID" ColumnName="FLOWID" />
-                <ScalarProperty Name="PRJID" ColumnName="PRJID" />
-                <ScalarProperty Name="Data_ID" ColumnName="Data_ID" />
-                <ScalarProperty Name="PID" ColumnName="PID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Bond_Rating_Info">
-            <EntityTypeMapping TypeName="IFRS9Model.Bond_Rating_Info">
-              <MappingFragment StoreEntitySet="Bond_Rating_Info">
-                <ScalarProperty Name="Security_Ticker" ColumnName="Security_Ticker" />
-                <ScalarProperty Name="Version" ColumnName="Version" />
-                <ScalarProperty Name="ISSUER" ColumnName="ISSUER" />
-                <ScalarProperty Name="SMF" ColumnName="SMF" />
-                <ScalarProperty Name="RTG_Bloomberg_Field" ColumnName="RTG_Bloomberg_Field" />
-                <ScalarProperty Name="Portfolio_Name" ColumnName="Portfolio_Name" />
-                <ScalarProperty Name="Parm_ID" ColumnName="Parm_ID" />
-                <ScalarProperty Name="GUARANTOR_EQY_TICKER" ColumnName="GUARANTOR_EQY_TICKER" />
-                <ScalarProperty Name="GUARANTOR_NAME" ColumnName="GUARANTOR_NAME" />
-                <ScalarProperty Name="ISSUER_TICKER" ColumnName="ISSUER_TICKER" />
-                <ScalarProperty Name="Grade_Adjust" ColumnName="Grade_Adjust" />
-                <ScalarProperty Name="PD_Grade" ColumnName="PD_Grade" />
-                <ScalarProperty Name="Fill_up_Date" ColumnName="Fill_up_Date" />
-                <ScalarProperty Name="Fill_up_YN" ColumnName="Fill_up_YN" />
-                <ScalarProperty Name="Rating_Org_Area" ColumnName="Rating_Org_Area" />
-                <ScalarProperty Name="Rating" ColumnName="Rating" />
-                <ScalarProperty Name="Rating_Org" ColumnName="Rating_Org" />
-                <ScalarProperty Name="Rating_Object" ColumnName="Rating_Object" />
-                <ScalarProperty Name="Rating_Type" ColumnName="Rating_Type" />
-                <ScalarProperty Name="Rating_Date" ColumnName="Rating_Date" />
-                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
-                <ScalarProperty Name="Origination_Date" ColumnName="Origination_Date" />
-                <ScalarProperty Name="Lien_position" ColumnName="Lien_position" />
-                <ScalarProperty Name="Bond_Type" ColumnName="Bond_Type" />
-                <ScalarProperty Name="Segment_Name" ColumnName="Segment_Name" />
-                <ScalarProperty Name="Portfolio" ColumnName="Portfolio" />
-                <ScalarProperty Name="Lots" ColumnName="Lots" />
-                <ScalarProperty Name="Bond_Number" ColumnName="Bond_Number" />
-                <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
+          <EntitySetMapping Name="Moody_Monthly_PD_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Moody_Monthly_PD_Info">
+              <MappingFragment StoreEntitySet="Moody_Monthly_PD_Info">
+                <ScalarProperty Name="Data_Year" ColumnName="Data_Year" />
+                <ScalarProperty Name="Pessimistic_Forecast_SG" ColumnName="Pessimistic_Forecast_SG" />
+                <ScalarProperty Name="Baseline_forecast_SG" ColumnName="Baseline_forecast_SG" />
+                <ScalarProperty Name="Actual_SG" ColumnName="Actual_SG" />
+                <ScalarProperty Name="Pessimistic_Forecast_Allcorp" ColumnName="Pessimistic_Forecast_Allcorp" />
+                <ScalarProperty Name="Baseline_forecast_Allcorp" ColumnName="Baseline_forecast_Allcorp" />
+                <ScalarProperty Name="Actual_Allcorp" ColumnName="Actual_Allcorp" />
+                <ScalarProperty Name="Trailing_12m_Ending" ColumnName="Trailing_12m_Ending" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Bond_Rating_Summary">
-            <EntityTypeMapping TypeName="IFRS9Model.Bond_Rating_Summary">
-              <MappingFragment StoreEntitySet="Bond_Rating_Summary">
-                <ScalarProperty Name="ISSUER" ColumnName="ISSUER" />
-                <ScalarProperty Name="SMF" ColumnName="SMF" />
-                <ScalarProperty Name="Portfolio_Name" ColumnName="Portfolio_Name" />
-                <ScalarProperty Name="Origination_Date" ColumnName="Origination_Date" />
-                <ScalarProperty Name="Portfolio" ColumnName="Portfolio" />
-                <ScalarProperty Name="Lots" ColumnName="Lots" />
-                <ScalarProperty Name="Bond_Number" ColumnName="Bond_Number" />
-                <ScalarProperty Name="Version" ColumnName="Version" />
-                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
-                <ScalarProperty Name="Rating_Priority" ColumnName="Rating_Priority" />
-                <ScalarProperty Name="Grade_Adjust" ColumnName="Grade_Adjust" />
-                <ScalarProperty Name="Rating_Selection" ColumnName="Rating_Selection" />
-                <ScalarProperty Name="Rating_Org_Area" ColumnName="Rating_Org_Area" />
-                <ScalarProperty Name="Rating_Object" ColumnName="Rating_Object" />
-                <ScalarProperty Name="Rating_Type" ColumnName="Rating_Type" />
-                <ScalarProperty Name="Bond_Type" ColumnName="Bond_Type" />
-                <ScalarProperty Name="Parm_ID" ColumnName="Parm_ID" />
-                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
-                <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
+          <EntitySetMapping Name="Moody_Predit_PD_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Moody_Predit_PD_Info">
+              <MappingFragment StoreEntitySet="Moody_Predit_PD_Info">
+                <ScalarProperty Name="PD" ColumnName="PD" />
+                <ScalarProperty Name="PD_TYPE" ColumnName="PD_TYPE" />
+                <ScalarProperty Name="Period" ColumnName="Period" />
+                <ScalarProperty Name="Data_Year" ColumnName="Data_Year" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Moody_Quartly_PD_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Moody_Quartly_PD_Info">
+              <MappingFragment StoreEntitySet="Moody_Quartly_PD_Info">
+                <ScalarProperty Name="PD" ColumnName="PD" />
+                <ScalarProperty Name="Year_Quartly" ColumnName="Year_Quartly" />
+                <ScalarProperty Name="Data_Year" ColumnName="Data_Year" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Moody_Tm_YYYY">
+            <EntityTypeMapping TypeName="IFRS9Model.Moody_Tm_YYYY">
+              <MappingFragment StoreEntitySet="Moody_Tm_YYYY">
+                <ScalarProperty Name="Default_Value" ColumnName="Default_Value" />
+                <ScalarProperty Name="WR" ColumnName="WR" />
+                <ScalarProperty Name="Ca_C" ColumnName="Ca_C" />
+                <ScalarProperty Name="Caa3" ColumnName="Caa3" />
+                <ScalarProperty Name="Caa2" ColumnName="Caa2" />
+                <ScalarProperty Name="Caa1" ColumnName="Caa1" />
+                <ScalarProperty Name="B3" ColumnName="B3" />
+                <ScalarProperty Name="B2" ColumnName="B2" />
+                <ScalarProperty Name="B1" ColumnName="B1" />
+                <ScalarProperty Name="Ba3" ColumnName="Ba3" />
+                <ScalarProperty Name="Ba2" ColumnName="Ba2" />
+                <ScalarProperty Name="Ba1" ColumnName="Ba1" />
+                <ScalarProperty Name="Baa3" ColumnName="Baa3" />
+                <ScalarProperty Name="Baa2" ColumnName="Baa2" />
+                <ScalarProperty Name="Baa1" ColumnName="Baa1" />
+                <ScalarProperty Name="A3" ColumnName="A3" />
+                <ScalarProperty Name="A2" ColumnName="A2" />
+                <ScalarProperty Name="A1" ColumnName="A1" />
+                <ScalarProperty Name="Aa3" ColumnName="Aa3" />
+                <ScalarProperty Name="Aa2" ColumnName="Aa2" />
+                <ScalarProperty Name="Aa1" ColumnName="Aa1" />
+                <ScalarProperty Name="Aaa" ColumnName="Aaa" />
+                <ScalarProperty Name="From_To" ColumnName="From_To" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
@@ -1697,136 +2529,6 @@
                 <ScalarProperty Name="Product_Code" ColumnName="Product_Code" />
                 <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
                 <ScalarProperty Name="Data_ID" ColumnName="Data_ID" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="EL_Data_In">
-            <EntityTypeMapping TypeName="IFRS9Model.EL_Data_In">
-              <MappingFragment StoreEntitySet="EL_Data_In">
-                <ScalarProperty Name="Payment_Frequency" ColumnName="Payment_Frequency" />
-                <ScalarProperty Name="Interest_Receivable" ColumnName="Interest_Receivable" />
-                <ScalarProperty Name="Principal" ColumnName="Principal" />
-                <ScalarProperty Name="Ori_Amount" ColumnName="Ori_Amount" />
-                <ScalarProperty Name="Lien_position" ColumnName="Lien_position" />
-                <ScalarProperty Name="Version" ColumnName="Version" />
-                <ScalarProperty Name="Impairment_Stage" ColumnName="Impairment_Stage" />
-                <ScalarProperty Name="EIR" ColumnName="EIR" />
-                <ScalarProperty Name="Current_Int_Rate" ColumnName="Current_Int_Rate" />
-                <ScalarProperty Name="Current_LGD" ColumnName="Current_LGD" />
-                <ScalarProperty Name="Remaining_Month" ColumnName="Remaining_Month" />
-                <ScalarProperty Name="Duration_Year" ColumnName="Duration_Year" />
-                <ScalarProperty Name="Actual_Year_To_Maturity" ColumnName="Actual_Year_To_Maturity" />
-                <ScalarProperty Name="Exposure" ColumnName="Exposure" />
-                <ScalarProperty Name="Current_Rating_Code" ColumnName="Current_Rating_Code" />
-                <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
-                <ScalarProperty Name="Product_Code" ColumnName="Product_Code" />
-                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
-                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="IFRS9_Main">
-            <EntityTypeMapping TypeName="IFRS9Model.IFRS9_Main">
-              <MappingFragment StoreEntitySet="IFRS9_Main">
-                <ScalarProperty Name="Payment_Frequency" ColumnName="Payment_Frequency" />
-                <ScalarProperty Name="Ori_Amount" ColumnName="Ori_Amount" />
-                <ScalarProperty Name="Lien_position" ColumnName="Lien_position" />
-                <ScalarProperty Name="Version" ColumnName="Version" />
-                <ScalarProperty Name="Write_Off_Ind" ColumnName="Write_Off_Ind" />
-                <ScalarProperty Name="Watch_List_Ind" ColumnName="Watch_List_Ind" />
-                <ScalarProperty Name="Ten_Types_Delinquent_Category" ColumnName="Ten_Types_Delinquent_Category" />
-                <ScalarProperty Name="Restructure_Ind" ColumnName="Restructure_Ind" />
-                <ScalarProperty Name="Product_Average_Rating" ColumnName="Product_Average_Rating" />
-                <ScalarProperty Name="Other_Lending_Max_Delinquent_Days" ColumnName="Other_Lending_Max_Delinquent_Days" />
-                <ScalarProperty Name="Other_BadCredit_Ind" ColumnName="Other_BadCredit_Ind" />
-                <ScalarProperty Name="Original_Internal_Rating" ColumnName="Original_Internal_Rating" />
-                <ScalarProperty Name="Original_External_Rating_On_Missing" ColumnName="Original_External_Rating_On_Missing" />
-                <ScalarProperty Name="Original_External_Rating_4" ColumnName="Original_External_Rating_4" />
-                <ScalarProperty Name="Original_External_Rating_3" ColumnName="Original_External_Rating_3" />
-                <ScalarProperty Name="Original_External_Rating_2" ColumnName="Original_External_Rating_2" />
-                <ScalarProperty Name="Original_External_Rating_1" ColumnName="Original_External_Rating_1" />
-                <ScalarProperty Name="Original_External_Rating" ColumnName="Original_External_Rating" />
-                <ScalarProperty Name="Off_Bs_Item_Paid_Amt" ColumnName="Off_Bs_Item_Paid_Amt" />
-                <ScalarProperty Name="Internal_Risk_Classification" ColumnName="Internal_Risk_Classification" />
-                <ScalarProperty Name="Manual_Identified_Impaire_Stage_Code" ColumnName="Manual_Identified_Impaire_Stage_Code" />
-                <ScalarProperty Name="Industry_Average_Rating" ColumnName="Industry_Average_Rating" />
-                <ScalarProperty Name="Ias39_Impaire_Desc" ColumnName="Ias39_Impaire_Desc" />
-                <ScalarProperty Name="Ias39_Impaire_Ind" ColumnName="Ias39_Impaire_Ind" />
-                <ScalarProperty Name="Five_Types_Delinquent_Category" ColumnName="Five_Types_Delinquent_Category" />
-                <ScalarProperty Name="Early_Warning_Ind" ColumnName="Early_Warning_Ind" />
-                <ScalarProperty Name="Delinquent_Days" ColumnName="Delinquent_Days" />
-                <ScalarProperty Name="Default_Ind" ColumnName="Default_Ind" />
-                <ScalarProperty Name="Current_Internal_Rating" ColumnName="Current_Internal_Rating" />
-                <ScalarProperty Name="Current_External_Rating_On_Missing" ColumnName="Current_External_Rating_On_Missing" />
-                <ScalarProperty Name="Current_External_Rating_4" ColumnName="Current_External_Rating_4" />
-                <ScalarProperty Name="Current_External_Rating_3" ColumnName="Current_External_Rating_3" />
-                <ScalarProperty Name="Current_External_Rating_2" ColumnName="Current_External_Rating_2" />
-                <ScalarProperty Name="Current_External_Rating_1" ColumnName="Current_External_Rating_1" />
-                <ScalarProperty Name="Current_External_Rating" ColumnName="Current_External_Rating" />
-                <ScalarProperty Name="Credit_Review_Risk_Grade" ColumnName="Credit_Review_Risk_Grade" />
-                <ScalarProperty Name="Credit_Card_Block_code" ColumnName="Credit_Card_Block_code" />
-                <ScalarProperty Name="Credit_Black_List_Ind" ColumnName="Credit_Black_List_Ind" />
-                <ScalarProperty Name="Collateral_Legal_Action_Ind" ColumnName="Collateral_Legal_Action_Ind" />
-                <ScalarProperty Name="Charge_Off_Ind" ColumnName="Charge_Off_Ind" />
-                <ScalarProperty Name="BadCredit_Ind" ColumnName="BadCredit_Ind" />
-                <ScalarProperty Name="Account_Code" ColumnName="Account_Code" />
-                <ScalarProperty Name="Maturity_Date" ColumnName="Maturity_Date" />
-                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
-                <ScalarProperty Name="Current_Rating_Code" ColumnName="Current_Rating_Code" />
-                <ScalarProperty Name="PD_Model_Code" ColumnName="PD_Model_Code" />
-                <ScalarProperty Name="Department" ColumnName="Department" />
-                <ScalarProperty Name="Product_Code" ColumnName="Product_Code" />
-                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
-                <ScalarProperty Name="CPD_Segment_Code" ColumnName="CPD_Segment_Code" />
-                <ScalarProperty Name="Eir" ColumnName="Eir" />
-                <ScalarProperty Name="Remaining_Month" ColumnName="Remaining_Month" />
-                <ScalarProperty Name="Current_Lgd" ColumnName="Current_Lgd" />
-                <ScalarProperty Name="Current_Pd" ColumnName="Current_Pd" />
-                <ScalarProperty Name="Current_Int_Rate" ColumnName="Current_Int_Rate" />
-                <ScalarProperty Name="Total_Period" ColumnName="Total_Period" />
-                <ScalarProperty Name="Principal_Payment_Method_Code" ColumnName="Principal_Payment_Method_Code" />
-                <ScalarProperty Name="Interest_Receivable" ColumnName="Interest_Receivable" />
-                <ScalarProperty Name="Principal" ColumnName="Principal" />
-                <ScalarProperty Name="Ead" ColumnName="Ead" />
-                <ScalarProperty Name="Customer_Nbr" ColumnName="Customer_Nbr" />
-                <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Transfer_CheckTable">
-            <EntityTypeMapping TypeName="IFRS9Model.Transfer_CheckTable">
-              <MappingFragment StoreEntitySet="Transfer_CheckTable">
-                <ScalarProperty Name="End_time" ColumnName="End_time" />
-                <ScalarProperty Name="End_date" ColumnName="End_date" />
-                <ScalarProperty Name="Create_time" ColumnName="Create_time" />
-                <ScalarProperty Name="Create_date" ColumnName="Create_date" />
-                <ScalarProperty Name="TransferType" ColumnName="TransferType" />
-                <ScalarProperty Name="Version" ColumnName="Version" />
-                <ScalarProperty Name="ReportDate" ColumnName="ReportDate" />
-                <ScalarProperty Name="File_Name" ColumnName="File_Name" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Bond_Rating_Parm">
-            <EntityTypeMapping TypeName="IFRS9Model.Bond_Rating_Parm">
-              <MappingFragment StoreEntitySet="Bond_Rating_Parm">
-                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
-                <ScalarProperty Name="Rating_Selection" ColumnName="Rating_Selection" />
-                <ScalarProperty Name="Rating_Org_Area" ColumnName="Rating_Org_Area" />
-                <ScalarProperty Name="Rating_Object" ColumnName="Rating_Object" />
-                <ScalarProperty Name="Rating_Priority" ColumnName="Rating_Priority" />
-                <ScalarProperty Name="Parm_ID" ColumnName="Parm_ID" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Grade_Mapping_Info">
-            <EntityTypeMapping TypeName="IFRS9Model.Grade_Mapping_Info">
-              <MappingFragment StoreEntitySet="Grade_Mapping_Info">
-                <ScalarProperty Name="Rating" ColumnName="Rating" />
-                <ScalarProperty Name="PD_Grade" ColumnName="PD_Grade" />
-                <ScalarProperty Name="Rating_Org" ColumnName="Rating_Org" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1847,69 +2549,136 @@
           <EntitySetMapping Name="Rating_Info_SampleInfo">
             <EntityTypeMapping TypeName="IFRS9Model.Rating_Info_SampleInfo">
               <MappingFragment StoreEntitySet="Rating_Info_SampleInfo">
-                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
                 <ScalarProperty Name="GUARANTOR_NAME" ColumnName="GUARANTOR_NAME" />
                 <ScalarProperty Name="GUARANTOR_EQY_TICKER" ColumnName="GUARANTOR_EQY_TICKER" />
                 <ScalarProperty Name="ISSUER_TICKER" ColumnName="ISSUER_TICKER" />
+                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
                 <ScalarProperty Name="Bond_Number" ColumnName="Bond_Number" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Bond_Account_Info">
-            <EntityTypeMapping TypeName="IFRS9Model.Bond_Account_Info">
-              <MappingFragment StoreEntitySet="Bond_Account_Info">
-                <ScalarProperty Name="Portfolio_Name" ColumnName="Portfolio_Name" />
-                <ScalarProperty Name="Value_date" ColumnName="Value_date" />
-                <ScalarProperty Name="Market_Value_TW" ColumnName="Market_Value_TW" />
-                <ScalarProperty Name="Market_Value_Ori" ColumnName="Market_Value_Ori" />
-                <ScalarProperty Name="Amort_Amt_Ori_Tw" ColumnName="Amort_Amt_Ori_Tw" />
-                <ScalarProperty Name="Amount_TW_Ori_Ex_rate" ColumnName="Amount_TW_Ori_Ex_rate" />
-                <ScalarProperty Name="IH_OS" ColumnName="IH_OS" />
-                <ScalarProperty Name="Asset_Type" ColumnName="Asset_Type" />
-                <ScalarProperty Name="Bond_Aera" ColumnName="Bond_Aera" />
+          <EntitySetMapping Name="Tm_Adjust_YYYY">
+            <EntityTypeMapping TypeName="IFRS9Model.Tm_Adjust_YYYY">
+              <MappingFragment StoreEntitySet="Tm_Adjust_YYYY">
+                <ScalarProperty Name="Default_Value" ColumnName="Default_Value" />
+                <ScalarProperty Name="WR" ColumnName="WR" />
+                <ScalarProperty Name="Ca_C" ColumnName="Ca_C" />
+                <ScalarProperty Name="Caa3" ColumnName="Caa3" />
+                <ScalarProperty Name="Caa2" ColumnName="Caa2" />
+                <ScalarProperty Name="B3_Caa1" ColumnName="B3_Caa1" />
+                <ScalarProperty Name="B2" ColumnName="B2" />
+                <ScalarProperty Name="B1" ColumnName="B1" />
+                <ScalarProperty Name="Ba3" ColumnName="Ba3" />
+                <ScalarProperty Name="Ba2" ColumnName="Ba2" />
+                <ScalarProperty Name="Ba1" ColumnName="Ba1" />
+                <ScalarProperty Name="Baa3" ColumnName="Baa3" />
+                <ScalarProperty Name="Baa2" ColumnName="Baa2" />
+                <ScalarProperty Name="Baa1" ColumnName="Baa1" />
+                <ScalarProperty Name="A1_A3" ColumnName="A1_A3" />
+                <ScalarProperty Name="Aa3" ColumnName="Aa3" />
+                <ScalarProperty Name="Aa2" ColumnName="Aa2" />
+                <ScalarProperty Name="Aa1" ColumnName="Aa1" />
+                <ScalarProperty Name="Aaa" ColumnName="Aaa" />
+                <ScalarProperty Name="TM" ColumnName="TM" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Transfer_CheckTable">
+            <EntityTypeMapping TypeName="IFRS9Model.Transfer_CheckTable">
+              <MappingFragment StoreEntitySet="Transfer_CheckTable">
+                <ScalarProperty Name="End_time" ColumnName="End_time" />
+                <ScalarProperty Name="End_date" ColumnName="End_date" />
+                <ScalarProperty Name="Create_time" ColumnName="Create_time" />
+                <ScalarProperty Name="Create_date" ColumnName="Create_date" />
+                <ScalarProperty Name="TransferType" ColumnName="TransferType" />
                 <ScalarProperty Name="Version" ColumnName="Version" />
-                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
-                <ScalarProperty Name="Assessment_Sub_Kind" ColumnName="Assessment_Sub_Kind" />
-                <ScalarProperty Name="Bond_Type" ColumnName="Bond_Type" />
-                <ScalarProperty Name="Ori_Ex_rate" ColumnName="Ori_Ex_rate" />
-                <ScalarProperty Name="ASSET_SEG" ColumnName="ASSET_SEG" />
-                <ScalarProperty Name="Portfolio" ColumnName="Portfolio" />
-                <ScalarProperty Name="Lien_position" ColumnName="Lien_position" />
-                <ScalarProperty Name="Ex_rate" ColumnName="Ex_rate" />
-                <ScalarProperty Name="Country_Risk" ColumnName="Country_Risk" />
-                <ScalarProperty Name="ISSUER" ColumnName="ISSUER" />
+                <ScalarProperty Name="ReportDate" ColumnName="ReportDate" />
+                <ScalarProperty Name="File_Name" ColumnName="File_Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Treasury_Securities_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Treasury_Securities_Info">
+              <MappingFragment StoreEntitySet="Treasury_Securities_Info">
                 <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
-                <ScalarProperty Name="Currency_Code" ColumnName="Currency_Code" />
-                <ScalarProperty Name="EIR" ColumnName="EIR" />
-                <ScalarProperty Name="IMPAIR_YN" ColumnName="IMPAIR_YN" />
-                <ScalarProperty Name="Interest_Rate_Type" ColumnName="Interest_Rate_Type" />
-                <ScalarProperty Name="Interest_Receivable_tw" ColumnName="Interest_Receivable_tw" />
-                <ScalarProperty Name="Interest_Receivable" ColumnName="Interest_Receivable" />
-                <ScalarProperty Name="Amort_Amt_Tw" ColumnName="Amort_Amt_Tw" />
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
+                <ScalarProperty Name="Amort_value" ColumnName="Amort_value" />
                 <ScalarProperty Name="Principal" ColumnName="Principal" />
-                <ScalarProperty Name="IAS39_CATEGORY" ColumnName="IAS39_CATEGORY" />
-                <ScalarProperty Name="PRODUCT" ColumnName="PRODUCT" />
-                <ScalarProperty Name="Industry_Sector" ColumnName="Industry_Sector" />
-                <ScalarProperty Name="ISSUER_AREA" ColumnName="ISSUER_AREA" />
-                <ScalarProperty Name="Baloon_Freq" ColumnName="Baloon_Freq" />
-                <ScalarProperty Name="Payment_Frequency" ColumnName="Payment_Frequency" />
-                <ScalarProperty Name="Principal_Payment_Method_Code" ColumnName="Principal_Payment_Method_Code" />
-                <ScalarProperty Name="Maturity_Date" ColumnName="Maturity_Date" />
-                <ScalarProperty Name="Origination_Date" ColumnName="Origination_Date" />
-                <ScalarProperty Name="Current_Int_Rate" ColumnName="Current_Int_Rate" />
                 <ScalarProperty Name="Ori_Amount" ColumnName="Ori_Amount" />
-                <ScalarProperty Name="CURR_TW_Issue" ColumnName="CURR_TW_Issue" />
-                <ScalarProperty Name="CURR_Fitch_Issue" ColumnName="CURR_Fitch_Issue" />
-                <ScalarProperty Name="CURR_Moodys_Issue" ColumnName="CURR_Moodys_Issue" />
-                <ScalarProperty Name="CURR_SP_Issue" ColumnName="CURR_SP_Issue" />
-                <ScalarProperty Name="CURR_TW_Issuer" ColumnName="CURR_TW_Issuer" />
-                <ScalarProperty Name="CURR_Fitch_Issuer" ColumnName="CURR_Fitch_Issuer" />
-                <ScalarProperty Name="CURR_Moodys_Issuer" ColumnName="CURR_Moodys_Issuer" />
-                <ScalarProperty Name="CURR_SP_Issuer" ColumnName="CURR_SP_Issuer" />
+                <ScalarProperty Name="Bond_Value" ColumnName="Bond_Value" />
+                <ScalarProperty Name="Portfolio_Name" ColumnName="Portfolio_Name" />
                 <ScalarProperty Name="Segment_Name" ColumnName="Segment_Name" />
                 <ScalarProperty Name="Lots" ColumnName="Lots" />
                 <ScalarProperty Name="Bond_Number" ColumnName="Bond_Number" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Loan_Cathay_Estate_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Loan_Cathay_Estate_Info">
+              <MappingFragment StoreEntitySet="Loan_Cathay_Estate_Info">
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
+                <ScalarProperty Name="Year_Quartly" ColumnName="Year_Quartly" />
+                <ScalarProperty Name="Value" ColumnName="Value" />
+                <ScalarProperty Name="Date" ColumnName="Date" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Loan_Collateral_Legal_Action_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Loan_Collateral_Legal_Action_Info">
+              <MappingFragment StoreEntitySet="Loan_Collateral_Legal_Action_Info">
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
                 <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
+                <ScalarProperty Name="SEQ" ColumnName="SEQ" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Loan_other_info">
+            <EntityTypeMapping TypeName="IFRS9Model.Loan_other_info">
+              <MappingFragment StoreEntitySet="Loan_other_info">
+                <ScalarProperty Name="Loan_Risk_Type" ColumnName="Loan_Risk_Type" />
+                <ScalarProperty Name="Account_Code" ColumnName="Account_Code" />
+                <ScalarProperty Name="Report_Date" ColumnName="Report_Date" />
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
+                <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Loan_Recovery_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Loan_Recovery_Info">
+              <MappingFragment StoreEntitySet="Loan_Recovery_Info">
+                <ScalarProperty Name="Recovery_Rate_20" ColumnName="Recovery_Rate_20" />
+                <ScalarProperty Name="Recovery_Rate_19" ColumnName="Recovery_Rate_19" />
+                <ScalarProperty Name="Recovery_Rate_18" ColumnName="Recovery_Rate_18" />
+                <ScalarProperty Name="Recovery_Rate_17" ColumnName="Recovery_Rate_17" />
+                <ScalarProperty Name="Recovery_Rate_16" ColumnName="Recovery_Rate_16" />
+                <ScalarProperty Name="Recovery_Rate_15" ColumnName="Recovery_Rate_15" />
+                <ScalarProperty Name="Recovery_Rate_14" ColumnName="Recovery_Rate_14" />
+                <ScalarProperty Name="Recovery_Rate_13" ColumnName="Recovery_Rate_13" />
+                <ScalarProperty Name="Recovery_Rate_12" ColumnName="Recovery_Rate_12" />
+                <ScalarProperty Name="Recovery_Rate_11" ColumnName="Recovery_Rate_11" />
+                <ScalarProperty Name="Recovery_Rate_10" ColumnName="Recovery_Rate_10" />
+                <ScalarProperty Name="Recovery_Rate_9" ColumnName="Recovery_Rate_9" />
+                <ScalarProperty Name="Recovery_Rate_8" ColumnName="Recovery_Rate_8" />
+                <ScalarProperty Name="Recovery_Rate_7" ColumnName="Recovery_Rate_7" />
+                <ScalarProperty Name="Recovery_Rate_6" ColumnName="Recovery_Rate_6" />
+                <ScalarProperty Name="Recovery_Rate_5" ColumnName="Recovery_Rate_5" />
+                <ScalarProperty Name="Recovery_Rate_4" ColumnName="Recovery_Rate_4" />
+                <ScalarProperty Name="Recovery_Rate_3" ColumnName="Recovery_Rate_3" />
+                <ScalarProperty Name="Recovery_Rate_2" ColumnName="Recovery_Rate_2" />
+                <ScalarProperty Name="Recovery_Rate_1" ColumnName="Recovery_Rate_1" />
+                <ScalarProperty Name="NO34RCV" ColumnName="NO34RCV" />
+                <ScalarProperty Name="Data_Year" ColumnName="Data_Year" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Loan_Restructure_Info">
+            <EntityTypeMapping TypeName="IFRS9Model.Loan_Restructure_Info">
+              <MappingFragment StoreEntitySet="Loan_Restructure_Info">
+                <ScalarProperty Name="Processing_Date" ColumnName="Processing_Date" />
+                <ScalarProperty Name="Reference_Nbr" ColumnName="Reference_Nbr" />
+                <ScalarProperty Name="SEQ" ColumnName="SEQ" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

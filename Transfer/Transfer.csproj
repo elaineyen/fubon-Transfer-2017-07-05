@@ -204,6 +204,12 @@
     <Compile Include="Models\Bond_Rating_Summary.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Econ_Domestic.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Econ_D_YYYYMMDD.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\EL_Data_In.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
@@ -211,6 +217,9 @@
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Flow_Info.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\GM_YYYY.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Grade_Mapping_Info.cs">
@@ -273,7 +282,25 @@
     <Compile Include="Models\Loan_Account_Info.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
+    <Compile Include="Models\Loan_Cathay_Estate_Info.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Loan_Collateral_Legal_Action_Info.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Loan_default_Info.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Loan_IAS39_Info.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Loan_other_info.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Loan_Recovery_Info.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Loan_Restructure_Info.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\Moody_LGD_Info.cs">
@@ -311,6 +338,9 @@
     <Compile Include="Models\Repository\A7Repository.cs" />
     <Compile Include="Models\Repository\Common.cs" />
     <Compile Include="Models\Repository\DefaultCacheProvider.cs" />
+    <Compile Include="Models\Tm_Adjust_YYYY.cs">
+      <DependentUpon>IFRS9Model.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\Transfer_CheckTable.cs">
       <DependentUpon>IFRS9Model.tt</DependentUpon>
     </Compile>

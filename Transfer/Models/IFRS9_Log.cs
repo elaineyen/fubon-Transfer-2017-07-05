@@ -15,6 +15,7 @@ namespace Transfer.Models
     public partial class IFRS9_Log
     {
         public int Id { get; set; }
+        public string Table_type { get; set; }
         public string Table_name { get; set; }
         public string File_name { get; set; }
         public string Program_name { get; set; }
@@ -23,7 +24,6 @@ namespace Transfer.Models
         public string End_date { get; set; }
         public string End_time { get; set; }
         public string TYPE { get; set; }
-        public string Table_type { get; set; }
         public string Debt_Type { get; set; }
     }
 }

@@ -91,10 +91,6 @@ namespace Transfer.Models.Repository
         {
             return new C07ViewModel()
             {
-                PID = data.PID,
-                Data_ID = data.Data_ID,
-                PRJID = data.PRJID,
-                FLOWID = data.FLOWID,
                 Report_Date = data.Report_Date,
                 Processing_Date = data.Processing_Date,
                 Product_Code = data.Product_Code,
@@ -104,8 +100,9 @@ namespace Transfer.Models.Repository
                 Y1_EL = TypeTransfer.doubleNToString(data.Y1_EL),
                 EL = TypeTransfer.doubleNToString(data.EL),
                 Impairment_Stage = data.Impairment_Stage,
-                Exec_Date = data.Exec_Date?.ToString("yyyy/MM/dd HH:mm:ss"),
-                Version = data.Version.ToString()
+                Version = data.Version.ToString(),
+                PRJID = data.PRJID,
+                FLOWID = data.FLOWID
             };
         }
         #endregion

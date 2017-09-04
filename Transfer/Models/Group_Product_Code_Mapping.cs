@@ -17,6 +17,7 @@ namespace Transfer.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Group_Product_Code_Mapping()
         {
+            this.Econ_D_YYYYMMDD = new HashSet<Econ_D_YYYYMMDD>();
             this.EL_Data_Out = new HashSet<EL_Data_Out>();
             this.Rating_History = new HashSet<Rating_History>();
         }
@@ -25,9 +26,11 @@ namespace Transfer.Models
         public string Product_Code { get; set; }
         public System.DateTime Processing_Date { get; set; }
     
-        public virtual Group_Product Group_Product { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Econ_D_YYYYMMDD> Econ_D_YYYYMMDD { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EL_Data_Out> EL_Data_Out { get; set; }
+        public virtual Group_Product Group_Product { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Rating_History> Rating_History { get; set; }
     }

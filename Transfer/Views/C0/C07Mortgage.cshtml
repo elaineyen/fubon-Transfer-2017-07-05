@@ -140,9 +140,10 @@
             var urlString = "";
 
             title = '@ViewBag.Title';
-            colNameArray = ['PID', 'Data_ID', 'PRJID', 'FLOWID', 'Report_Date',
+            colNameArray = ['Report_Date',
                             'Processing_Date', 'Product_Code', 'Reference_Nbr', 'PD', 'Lifetime_EL',
-                            'Y1_EL', 'EL', 'Impairment_Stage', 'Exec_Date', 'Version'];
+                            'Y1_EL', 'EL', 'Impairment_Stage', 'Version',
+                            'PRJID', 'FLOWID'];
 
             dataString = JSON.stringify({
                 debtType: debtType,
@@ -166,9 +167,10 @@
             .done(function (result) {
                 if (result.RETURN_FLAG) {
                     var widthArray =
-                        ['L', 'L', 'L', 'L', 'L',
+                        ['L',
                          'L', 'L', 'L', 'L', 'L',
-                         'L', 'L', 'L', 'L', 'L'];
+                         'L', 'L', 'L', 'L',
+                         'L','L'];
 
                     var data = result.Datas.Data;
 
@@ -202,10 +204,6 @@
             if (colNameArray.length > 0 && colNameArray.length === widthArray.length) {
 
                 colModelArray = [
-                                    { name: "PID", index: "PID", align: 'left' },
-                                    { name: "Data_ID", index: "Data_ID", align: 'left' },
-                                    { name: "PRJID", index: "PRJID", align: 'left' },
-                                    { name: "FLOWID", index: "FLOWID", align: 'left' },
                                     { name: "Report_Date", index: "Report_Date", align: 'left' },
                                     { name: "Processing_Date", index: "Processing_Date", align: 'left' },
                                     { name: "Product_Code", index: "Product_Code", align: 'left' },
@@ -215,13 +213,15 @@
                                     { name: "Y1_EL", index: "Y1_EL", align: 'right' },
                                     { name: "EL", index: "EL", align: 'right' },
                                     { name: "Impairment_Stage", index: "Impairment_Stage", align: 'center' },
-                                    { name: "Exec_Date", index: "Exec_Date", align: 'left' },
-                                    { name: "Version", index: "Version", align: 'center' }
+                                    { name: "Version", index: "Version", align: 'center' },
+                                    { name: "PRJID", index: "PRJID", align: 'left', width: 210 },
+                                    { name: "FLOWID", index: "FLOWID", align: 'left', width: 260 },
                                 ];
 
-                colNameArray = ['元件執行程序編號', '元件執行資料批號 ', '專案名稱', '流程名稱', '評估基準日/報導日',
+                colNameArray = ['評估基準日/報導日',
                                 '資料處理日期', '產品 ', '案件編號/帳號', '第一年違約率', '存續期間預期信用損失',
-                                '一年期預期信用損失', '最終預期信用損失 ', '減損階段', '執行估算時間', '資料版本'];
+                                '一年期預期信用損失', '最終預期信用損失 ', '減損階段', '資料版本',
+                                '專案名稱', '流程名稱'];
 
                 $('#jqgridDiv').append('<table id="' + listId + '"></table>');
                 $('#jqgridDiv').append('<div id="' + pagerId + '"></div>');

@@ -25,34 +25,44 @@ namespace Transfer.Models
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<IFRS9_Log> IFRS9_Log { get; set; }
-        public virtual DbSet<Moody_Monthly_PD_Info> Moody_Monthly_PD_Info { get; set; }
-        public virtual DbSet<Moody_Predit_PD_Info> Moody_Predit_PD_Info { get; set; }
-        public virtual DbSet<Moody_Quartly_PD_Info> Moody_Quartly_PD_Info { get; set; }
-        public virtual DbSet<Moody_Tm_YYYY> Moody_Tm_YYYY { get; set; }
+        public virtual DbSet<Bond_Account_Info> Bond_Account_Info { get; set; }
+        public virtual DbSet<Bond_Rating_Info> Bond_Rating_Info { get; set; }
+        public virtual DbSet<Bond_Rating_Parm> Bond_Rating_Parm { get; set; }
+        public virtual DbSet<Bond_Rating_Summary> Bond_Rating_Summary { get; set; }
+        public virtual DbSet<Econ_D_YYYYMMDD> Econ_D_YYYYMMDD { get; set; }
+        public virtual DbSet<Econ_Domestic> Econ_Domestic { get; set; }
+        public virtual DbSet<EL_Data_In> EL_Data_In { get; set; }
+        public virtual DbSet<EL_Data_Out> EL_Data_Out { get; set; }
+        public virtual DbSet<Flow_Info> Flow_Info { get; set; }
+        public virtual DbSet<GM_YYYY> GM_YYYY { get; set; }
+        public virtual DbSet<Grade_Mapping_Info> Grade_Mapping_Info { get; set; }
         public virtual DbSet<Grade_Moody_Info> Grade_Moody_Info { get; set; }
+        public virtual DbSet<Group_Product> Group_Product { get; set; }
+        public virtual DbSet<Group_Product_Code_Mapping> Group_Product_Code_Mapping { get; set; }
+        public virtual DbSet<IFRS9_Log> IFRS9_Log { get; set; }
+        public virtual DbSet<IFRS9_Main> IFRS9_Main { get; set; }
         public virtual DbSet<IFRS9_Menu_Main> IFRS9_Menu_Main { get; set; }
         public virtual DbSet<IFRS9_Menu_Set> IFRS9_Menu_Set { get; set; }
         public virtual DbSet<IFRS9_Menu_Sub> IFRS9_Menu_Sub { get; set; }
         public virtual DbSet<IFRS9_User> IFRS9_User { get; set; }
         public virtual DbSet<Loan_Account_Info> Loan_Account_Info { get; set; }
+        public virtual DbSet<Loan_default_Info> Loan_default_Info { get; set; }
         public virtual DbSet<Loan_IAS39_Info> Loan_IAS39_Info { get; set; }
         public virtual DbSet<Moody_LGD_Info> Moody_LGD_Info { get; set; }
-        public virtual DbSet<Treasury_Securities_Info> Treasury_Securities_Info { get; set; }
-        public virtual DbSet<Group_Product> Group_Product { get; set; }
-        public virtual DbSet<Group_Product_Code_Mapping> Group_Product_Code_Mapping { get; set; }
-        public virtual DbSet<Flow_Info> Flow_Info { get; set; }
-        public virtual DbSet<EL_Data_Out> EL_Data_Out { get; set; }
-        public virtual DbSet<Bond_Rating_Info> Bond_Rating_Info { get; set; }
-        public virtual DbSet<Bond_Rating_Summary> Bond_Rating_Summary { get; set; }
+        public virtual DbSet<Moody_Monthly_PD_Info> Moody_Monthly_PD_Info { get; set; }
+        public virtual DbSet<Moody_Predit_PD_Info> Moody_Predit_PD_Info { get; set; }
+        public virtual DbSet<Moody_Quartly_PD_Info> Moody_Quartly_PD_Info { get; set; }
+        public virtual DbSet<Moody_Tm_YYYY> Moody_Tm_YYYY { get; set; }
         public virtual DbSet<Rating_History> Rating_History { get; set; }
-        public virtual DbSet<EL_Data_In> EL_Data_In { get; set; }
-        public virtual DbSet<IFRS9_Main> IFRS9_Main { get; set; }
-        public virtual DbSet<Transfer_CheckTable> Transfer_CheckTable { get; set; }
-        public virtual DbSet<Bond_Rating_Parm> Bond_Rating_Parm { get; set; }
-        public virtual DbSet<Grade_Mapping_Info> Grade_Mapping_Info { get; set; }
         public virtual DbSet<Rating_Info> Rating_Info { get; set; }
         public virtual DbSet<Rating_Info_SampleInfo> Rating_Info_SampleInfo { get; set; }
-        public virtual DbSet<Bond_Account_Info> Bond_Account_Info { get; set; }
+        public virtual DbSet<Tm_Adjust_YYYY> Tm_Adjust_YYYY { get; set; }
+        public virtual DbSet<Transfer_CheckTable> Transfer_CheckTable { get; set; }
+        public virtual DbSet<Treasury_Securities_Info> Treasury_Securities_Info { get; set; }
+        public virtual DbSet<Loan_Cathay_Estate_Info> Loan_Cathay_Estate_Info { get; set; }
+        public virtual DbSet<Loan_Collateral_Legal_Action_Info> Loan_Collateral_Legal_Action_Info { get; set; }
+        public virtual DbSet<Loan_other_info> Loan_other_info { get; set; }
+        public virtual DbSet<Loan_Recovery_Info> Loan_Recovery_Info { get; set; }
+        public virtual DbSet<Loan_Restructure_Info> Loan_Restructure_Info { get; set; }
     }
 }

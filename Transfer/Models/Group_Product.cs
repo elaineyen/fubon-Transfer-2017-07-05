@@ -17,16 +17,16 @@ namespace Transfer.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Group_Product()
         {
-            this.Group_Product_Code_Mapping = new HashSet<Group_Product_Code_Mapping>();
             this.Flow_Info = new HashSet<Flow_Info>();
+            this.Group_Product_Code_Mapping = new HashSet<Group_Product_Code_Mapping>();
         }
     
         public string Group_Product_Code { get; set; }
         public string Group_Product_Name { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
-        public virtual ICollection<Group_Product_Code_Mapping> Group_Product_Code_Mapping { get; set; }
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Flow_Info> Flow_Info { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<Group_Product_Code_Mapping> Group_Product_Code_Mapping { get; set; }
     }
 }

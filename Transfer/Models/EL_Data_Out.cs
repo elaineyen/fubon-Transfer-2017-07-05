@@ -14,10 +14,6 @@ namespace Transfer.Models
     
     public partial class EL_Data_Out
     {
-        public string PID { get; set; }
-        public string Data_ID { get; set; }
-        public string PRJID { get; set; }
-        public string FLOWID { get; set; }
         public string Report_Date { get; set; }
         public string Processing_Date { get; set; }
         public string Product_Code { get; set; }
@@ -27,8 +23,9 @@ namespace Transfer.Models
         public double Y1_EL { get; set; }
         public double EL { get; set; }
         public string Impairment_Stage { get; set; }
-        public Nullable<System.DateTime> Exec_Date { get; set; }
         public int Version { get; set; }
+        public string PRJID { get; set; }
+        public string FLOWID { get; set; }
     
         public virtual Group_Product_Code_Mapping Group_Product_Code_Mapping { get; set; }
     }
